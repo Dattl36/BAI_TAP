@@ -12,6 +12,9 @@ class EmployeeViewSet(viewsets.ModelViewSet):
     serializer_class = EmployeeProfileSerializer
 
     def get_queryset(self):
+        if self.action in ["list", "retrieve", "availability"]:
+            return EmployeeProfile.objects.all()
+            
         role = getattr(self.request.user, "role", None)
         if role in {Roles.MANAGER, Roles.RECEPTIONIST}:
             return EmployeeProfile.objects.all()
@@ -22,6 +25,10 @@ class EmployeeViewSet(viewsets.ModelViewSet):
     def availability(self, request, pk=None):
         employee = self.get_object()
         if request.method == "POST":
+            role = getattr(self.request.user, "role", None)
+            if role not in {Roles.MANAGER, Roles.RECEPTIONIST} and getattr(self.request.user, "employee_profile", None) != employee:
+                from rest_framework.exceptions import PermissionDenied
+                raise PermissionDenied("You do not have permission to manage this employee's availability.")
             serializer = StaffAvailabilitySerializer(data={**request.data, "employee": employee.id})
             serializer.is_valid(raise_exception=True)
             serializer.save()
