@@ -35,10 +35,21 @@ class LoginSerializer(serializers.Serializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    customer_profile_id = serializers.SerializerMethodField()
+    employee_profile_id = serializers.SerializerMethodField()
+
     class Meta:
         model = User
-        fields = ("id", "username", "email", "phone", "full_name", "role", "account_status", "is_active")
-        read_only_fields = ("role", "account_status", "is_active")
+        fields = ("id", "username", "email", "phone", "full_name", "role", "account_status", "is_active", "customer_profile_id", "employee_profile_id")
+        read_only_fields = ("role", "account_status", "is_active", "customer_profile_id", "employee_profile_id")
+
+    def get_customer_profile_id(self, obj):
+        profile = getattr(obj, "customer_profile", None)
+        return profile.id if profile else None
+
+    def get_employee_profile_id(self, obj):
+        profile = getattr(obj, "employee_profile", None)
+        return profile.id if profile else None
 
 
 class ManagerUserSerializer(serializers.ModelSerializer):
