@@ -29,8 +29,15 @@ export const useCustomerHomeData = () => {
   const normalizedVouchers = normalizePaginatedResponse(vouchersQuery.data ?? []).results;
   const normalizedRewards = normalizePaginatedResponse(rewardsQuery.data ?? []).results;
 
+  // Chỉ hiện lịch hẹn sắp tới: chờ xác nhận hoặc đã xác nhận hoặc đã đến
+  // Không hiện lịch đã hoàn thành, đã đóng, đã xuất hóa đơn, đã hủy, không đến
+  const FINISHED_STATUSES = ["completed", "cancelled", "no_show", "closed", "invoiced"];
+  const now = new Date();
   const nextAppointment = normalizedAppointments.find(
-    (apt) => apt.status !== "completed" && apt.status !== "cancelled" && apt.status !== "no_show"
+    (apt) =>
+      !FINISHED_STATUSES.includes(apt.status) &&
+      apt.scheduled_start &&
+      new Date(apt.scheduled_start) >= now
   );
 
   const currentPoints = normalizedRewards.length > 0 ? normalizedRewards[0].balance_after : 0;
