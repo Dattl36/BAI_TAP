@@ -1,16 +1,18 @@
 import { useState, useMemo } from "react";
 import {
   Card, Table, Tag, Button, Input, Select, Row, Col, Typography, Space,
-  Drawer, Descriptions, App, Tooltip, Statistic,
+  Drawer, Descriptions, App, Tooltip, Statistic, Popconfirm,
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import {
   SearchOutlined, ReloadOutlined, ExclamationCircleOutlined,
   CheckCircleOutlined, ClockCircleOutlined, FileTextOutlined, EyeOutlined,
+  UserAddOutlined,
 } from "@ant-design/icons";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { complaintsApi } from "../../api/complaints.api";
+import { useMe } from "../../hooks/useMe";
 import { ErrorState } from "../../components/common/ErrorState";
 import { queryKeys } from "../../constants/queryKeys";
 import type { Complaint } from "../../types/complaint";
@@ -46,6 +48,7 @@ const formatDate = (s?: string) => {
 export const ReceptionistComplaintsPage = () => {
   const { message } = App.useApp();
   const queryClient = useQueryClient();
+  const { data: currentUser } = useMe();
 
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string | undefined>(undefined);
@@ -78,12 +81,23 @@ export const ReceptionistComplaintsPage = () => {
     return matchSearch && matchStatus;
   }), [all, search, statusFilter]);
 
-  // Resolve mutation
+  // Assign to self mutation (received → assigned)
+  const assignMutation = useMutation({
+    mutationFn: ({ id }: { id: number }) =>
+      complaintsApi.assign(id, currentUser!.id, "Lễ tân tự tiếp nhận khiếu nại."),
+    onSuccess: () => {
+      void message.success("Đã tiếp nhận khiếu nại thành công.");
+      void queryClient.invalidateQueries({ queryKey: queryKeys.complaints.list() });
+    },
+    onError: () => void message.error("Không thể tiếp nhận. Vui lòng thử lại."),
+  });
+
+  // Resolve mutation (assigned / in_review / escalated → resolved)
   const resolveMutation = useMutation({
     mutationFn: ({ id }: { id: number }) =>
-      complaintsApi.resolve(id, "Đã được tiếp nhận và xử lý bởi lễ tân."),
+      complaintsApi.resolve(id, "Đã xử lý và giải quyết bởi lễ tân."),
     onSuccess: () => {
-      void message.success("Đã cập nhật trạng thái khiếu nại.");
+      void message.success("Đã đánh dấu khiếu nại là giải quyết xong.");
       void queryClient.invalidateQueries({ queryKey: queryKeys.complaints.list() });
     },
     onError: () => void message.error("Không thể cập nhật. Vui lòng thử lại."),
@@ -188,9 +202,31 @@ export const ReceptionistComplaintsPage = () => {
             onClick={() => openDetail(record)}
             style={{ borderRadius: 6, background: "#b89a63", borderColor: "#b89a63", fontSize: 11 }}
           >
-            Xem chi tiết
+            Chi tiết
           </Button>
-          {(record.status === "received" || record.status === "assigned" || record.status === "in_review") && (
+
+          {/* received → assign to self first */}
+          {record.status === "received" && (
+            <Popconfirm
+              title="Tiếp nhận khiếu nại"
+              description="Bạn xác nhận tiếp nhận khiếu nại này?"
+              okText="Xác nhận"
+              cancelText="Hủy"
+              onConfirm={() => assignMutation.mutate({ id: Number(record.id) })}
+            >
+              <Button
+                size="small"
+                icon={<UserAddOutlined />}
+                loading={assignMutation.isPending}
+                style={{ borderRadius: 6, borderColor: "#6366f1", color: "#6366f1", fontSize: 11 }}
+              >
+                Tiếp nhận
+              </Button>
+            </Popconfirm>
+          )}
+
+          {/* assigned / in_review / escalated → resolve */}
+          {(record.status === "assigned" || record.status === "in_review" || record.status === "escalated") && (
             <Button
               size="small"
               style={{ borderRadius: 6, borderColor: "#10b981", color: "#10b981", fontSize: 11 }}
@@ -200,6 +236,8 @@ export const ReceptionistComplaintsPage = () => {
               Giải quyết
             </Button>
           )}
+
+          {/* resolved → close */}
           {record.status === "resolved" && (
             <Button
               size="small"
@@ -408,12 +446,37 @@ export const ReceptionistComplaintsPage = () => {
           </Descriptions>
         )}
 
-        {/* Action buttons in drawer */}
+        {/* Action buttons in drawer — mirror the same transition rules */}
         {selectedComplaint && (
           <div style={{ marginTop: 24, display: "flex", flexDirection: "column", gap: 10 }}>
-            {(selectedComplaint.status === "received" ||
-              selectedComplaint.status === "assigned" ||
-              selectedComplaint.status === "in_review") && (
+
+            {/* Step 1: Tiếp nhận (received → assigned) */}
+            {selectedComplaint.status === "received" && (
+              <Popconfirm
+                title="Tiếp nhận khiếu nại"
+                description="Bạn xác nhận tiếp nhận khiếu nại này?"
+                okText="Xác nhận"
+                cancelText="Hủy"
+                onConfirm={() => {
+                  assignMutation.mutate({ id: Number(selectedComplaint.id) });
+                  setDrawerOpen(false);
+                }}
+              >
+                <Button
+                  block
+                  icon={<UserAddOutlined />}
+                  loading={assignMutation.isPending}
+                  style={{ borderRadius: 10, height: 42, borderColor: "#6366f1", color: "#6366f1" }}
+                >
+                  Tiếp nhận khiếu nại
+                </Button>
+              </Popconfirm>
+            )}
+
+            {/* Step 2: Giải quyết (assigned / in_review / escalated → resolved) */}
+            {(selectedComplaint.status === "assigned" ||
+              selectedComplaint.status === "in_review" ||
+              selectedComplaint.status === "escalated") && (
               <Button
                 block
                 style={{ borderRadius: 10, height: 42, borderColor: "#10b981", color: "#10b981" }}
@@ -426,6 +489,8 @@ export const ReceptionistComplaintsPage = () => {
                 Đánh dấu đã giải quyết
               </Button>
             )}
+
+            {/* Step 3: Đóng (resolved → closed) */}
             {selectedComplaint.status === "resolved" && (
               <Button
                 block
