@@ -81,19 +81,11 @@ export const CustomerVouchersPage = () => {
                   </Typography.Title>
                   
                   <Typography.Title level={5} style={{ margin: "0 0 12px", fontWeight: 600 }}>
-<<<<<<< HEAD
                     {v.min_invoice ? `Hóa đơn tối thiểu: ${Number(v.min_invoice).toLocaleString("vi-VN")} VNĐ` : "Không yêu cầu tối thiểu"}
                   </Typography.Title>
                   
                   <Typography.Paragraph type="secondary" style={{ fontSize: 13, minHeight: 40, margin: "0 0 16px" }}>
                     Áp dụng mã giảm giá khi thực hiện thanh toán hóa đơn dịch vụ.
-=======
-                    {v.min_invoice ? `Hóa đơn tối thiểu: ${Number(v.min_invoice).toLocaleString()} VND` : "Không yêu cầu tối thiểu"}
-                  </Typography.Title>
-                  
-                  <Typography.Paragraph type="secondary" style={{ fontSize: 13, minHeight: 40, margin: "0 0 16px" }}>
-                    {v.description || `Sử dụng mã giảm giá này khi thanh toán để được giảm ${isPercent ? `${v.discount_value}%` : `${Number(v.discount_value).toLocaleString()} VND`}.`}
->>>>>>> 27f04a9d6e7a8b6ed1ebe698fcfce256d759d88a
                   </Typography.Paragraph>
                   
                   <div 
@@ -121,11 +113,7 @@ export const CustomerVouchersPage = () => {
                   </div>
 
                   <Typography.Text type="secondary" style={{ fontSize: 11, display: "block" }}>
-<<<<<<< HEAD
                     {formatExpirationDate(v.expires_at)}
-=======
-                    Có hiệu lực đến: {v.expires_at || v.end_date ? new Date((v.expires_at || v.end_date) as string).toLocaleDateString() : "Vô thời hạn"}
->>>>>>> 27f04a9d6e7a8b6ed1ebe698fcfce256d759d88a
                   </Typography.Text>
                 </Card>
               </Col>

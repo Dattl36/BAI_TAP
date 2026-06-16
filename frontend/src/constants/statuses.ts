@@ -33,7 +33,6 @@ export const STATUS_COLORS: Record<string, string> = {
 };
 
 export const STATUS_LABELS: Record<string, string> = {
-<<<<<<< HEAD
   // Appointment & General Statuses
   pending: "Chờ xác nhận",
   requested: "Chờ xác nhận",
@@ -54,26 +53,11 @@ export const STATUS_LABELS: Record<string, string> = {
   redeemed: "Đã đổi",
   
   // Invoice & Payment Statuses
-=======
-  active: "Hoạt động",
-  inactive: "Ngưng hoạt động",
-  archived: "Đã lưu trữ",
-  requested: "Chờ xác nhận",
-  confirmed: "Đã xác nhận",
-  arrived: "Đã đến",
-  in_service: "Đang làm dịch vụ",
-  completed: "Hoàn thành",
-  invoiced: "Đã xuất hóa đơn",
-  closed: "Đã đóng",
-  cancelled: "Đã hủy",
-  no_show: "Vắng mặt",
->>>>>>> 27f04a9d6e7a8b6ed1ebe698fcfce256d759d88a
   draft: "Bản nháp",
   issued: "Đã phát hành",
   partially_paid: "Thanh toán một phần",
   paid: "Đã thanh toán",
   adjusted: "Đã điều chỉnh",
-<<<<<<< HEAD
   attempted: "Đang xử lý",
   successful: "Thành công",
   failed: "Thất bại",
@@ -92,31 +76,10 @@ export const STATUS_LABELS: Record<string, string> = {
   read: "Đã đọc",
   delivered: "Đã gửi",
   created: "Đã tạo"
-=======
-  attempted: "Đã thử",
-  pending: "Chờ xử lý",
-  successful: "Thành công",
-  failed: "Thất bại",
-  refunded: "Đã hoàn tiền",
-  received: "Đã nhận",
-  responded: "Đã phản hồi",
-  assigned: "Đã phân công",
-  in_review: "Đang đánh giá",
-  escalated: "Đã leo thang",
-  resolved: "Đã giải quyết",
-  read: "Đã đọc",
-  delivered: "Đã gửi",
-  created: "Đã tạo",
->>>>>>> 27f04a9d6e7a8b6ed1ebe698fcfce256d759d88a
 };
 
 export const formatStatusLabel = (status?: string) => {
   if (!status) return "Không xác định";
-<<<<<<< HEAD
   const s = status.toLowerCase();
   return STATUS_LABELS[s] || status.replace(/_/g, " ").replace(/\b\w/g, (char: string) => char.toUpperCase());
-=======
-  const lower = status.toLowerCase();
-  return STATUS_LABELS[lower] ?? lower.replace(/_/g, " ").replace(/\b\w/g, (char: string) => char.toUpperCase());
->>>>>>> 27f04a9d6e7a8b6ed1ebe698fcfce256d759d88a
 };

@@ -18,11 +18,7 @@ export const CustomerNavigation = () => {
 
   const menuItems = [
     { key: "/customer", icon: <HomeOutlined />, label: "Trang chủ" },
-<<<<<<< HEAD
     { key: "/customer/book", icon: <CalendarOutlined />, label: "Đặt lịch" },
-=======
-    { key: "/customer/book", icon: <CalendarOutlined />, label: "Đặt lịch ngay" },
->>>>>>> 27f04a9d6e7a8b6ed1ebe698fcfce256d759d88a
     { key: "/customer/appointments", icon: <ProfileOutlined />, label: "Lịch hẹn" },
     { key: "/customer/invoices", icon: <DollarOutlined />, label: "Hóa đơn" },
     { key: "/customer/rewards", icon: <WalletOutlined />, label: "Điểm thưởng" },
