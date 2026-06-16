@@ -3,6 +3,7 @@ from django.utils import timezone
 
 from apps.core.audit import record_event
 from apps.core.exceptions import BusinessError, ErrorCodes
+from apps.notifications.services import notify_user
 from apps.payments.models import PaymentStatusHistory, PaymentTransaction
 
 
@@ -42,5 +43,12 @@ def transition_payment(actor, payment, new_status, reason=""):
         invoice.balance_due = invoice.total_due - invoice.paid_amount
         invoice.status = "paid" if invoice.balance_due <= 0 else "partially_paid"
         invoice.save()
+        notify_user(
+            user=payment.customer.user,
+            category="payment",
+            title="Payment Successful",
+            message=f"We have received your payment of {payment.amount:,.0f} VND. Thank you!",
+            related=payment
+        )
     record_event(actor, f"payment.{new_status}", payment)
     return payment
