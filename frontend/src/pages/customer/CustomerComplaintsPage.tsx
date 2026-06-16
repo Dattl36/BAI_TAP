@@ -26,26 +26,36 @@ export const CustomerComplaintsPage = () => {
 
   const appointmentsList = normalizePaginatedResponse(appointmentsData || []).results;
 
+  const formatShortDate = (dateStr: string | null | undefined) => {
+    if (!dateStr) return "";
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return "";
+    const day = String(d.getDate()).padStart(2, "0");
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const year = d.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
   const appointmentOptions = [
-    { value: "none", label: "General Concern (Not tied to a specific session)" },
+    { value: "none", label: "Khiếu nại chung (Không gắn với lịch hẹn cụ thể)" },
     ...appointmentsList.map((app) => ({
       value: String(app.id),
-      label: `#${app.id} - ${app.service_details?.name || "Beauty Session"} with ${app.employee_details?.full_name || "Specialist"} on ${app.scheduled_start ? new Date(app.scheduled_start).toLocaleDateString() : ""}`
+      label: `#${app.id} - ${app.service_details?.name || "Lượt dịch vụ"} với ${app.employee_details?.full_name || "Chuyên gia"} vào ngày ${app.scheduled_start ? formatShortDate(app.scheduled_start) : ""}`
     }))
   ];
 
   const categories = [
-    { value: "billing", label: "Billing & Payment Disputes" },
-    { value: "service", label: "Treatment Execution Unsatisfactory" },
-    { value: "stylist", label: "Specialist Staff Behavior" },
-    { value: "booking", label: "Appointment Cancellations or Reschedules" },
-    { value: "other", label: "Other Issue" }
+    { value: "billing", label: "Tranh chấp hóa đơn & Thanh toán" },
+    { value: "service", label: "Chất lượng dịch vụ không đạt yêu cầu" },
+    { value: "stylist", label: "Thái độ của nhân viên/thợ làm tóc" },
+    { value: "booking", label: "Vấn đề hủy hoặc đổi lịch hẹn" },
+    { value: "other", label: "Vấn đề khác" }
   ];
 
   const severities = [
-    { value: "low", label: "Low (Minor discomfort, feedback)" },
-    { value: "normal", label: "Normal (Standard operational dispute)" },
-    { value: "high", label: "High (Severe dispute, billing failure)" }
+    { value: "low", label: "Thấp (Góp ý, bất tiện nhỏ)" },
+    { value: "normal", label: "Bình thường (Tranh chấp vận hành cơ bản)" },
+    { value: "high", label: "Cao (Sai sót nghiêm trọng, lỗi thanh toán)" }
   ];
 
   const complaintMutation = useMutation({
@@ -54,14 +64,14 @@ export const CustomerComplaintsPage = () => {
       return complaintsApi.create(payload);
     },
     onSuccess: () => {
-      void message.success("Your concern has been filed. A salon manager will contact you within 24 hours.");
+      void message.success("Khiếu nại của bạn đã được ghi nhận. Quản lý salon sẽ liên hệ với bạn trong vòng 24 giờ.");
       form.resetFields();
       void queryClient.invalidateQueries({ queryKey: ["appointments", "list"] });
       navigate("/customer");
     },
     onError: (err: any) => {
       console.error("Complaint submission error detail:", err.response?.data || err);
-      let errMsg = "Failed to file concern registry.";
+      let errMsg = "Gửi khiếu nại thất bại.";
       if (err.response?.data) {
         const errData = err.response.data;
         if (typeof errData === "object") {
@@ -81,11 +91,11 @@ export const CustomerComplaintsPage = () => {
   const handleComplaint = (values: any) => {
     const customerId = currentUser?.customer_profile_id;
     if (!customerId) {
-      void message.error("Could not determine your customer profile. Please log in again.");
+      void message.error("Không xác định được hồ sơ khách hàng. Vui lòng đăng nhập lại.");
       return;
     }
 
-    const selectedCategoryLabel = categories.find(c => c.value === values.category)?.label || "General Issue";
+    const selectedCategoryLabel = categories.find(c => c.value === values.category)?.label || "Vấn đề chung";
     
     const payload: any = {
       customer: customerId,
@@ -107,7 +117,7 @@ export const CustomerComplaintsPage = () => {
   if (isDataLoading) {
     return (
       <Card bordered={false} style={{ minHeight: 300, display: "flex", justifyContent: "center", alignItems: "center" }}>
-        <Spin size="large" tip="Loading your history...">
+        <Spin size="large" tip="Đang tải lịch sử lịch hẹn...">
           <div style={{ padding: 50 }} />
         </Spin>
       </Card>
@@ -120,10 +130,10 @@ export const CustomerComplaintsPage = () => {
         <div style={{ textAlign: "center", marginBottom: 32 }}>
           <WarningOutlined style={{ fontSize: 36, color: "#ff4d4f", marginBottom: 16 }} />
           <Typography.Title level={2} style={{ fontFamily: "'Playfair Display', serif", fontWeight: 400, margin: 0 }}>
-            Submit a Concern
+            Gửi khiếu nại / Phản hồi
           </Typography.Title>
           <Typography.Paragraph type="secondary" style={{ marginTop: 8 }}>
-            Encountered booking disputes, payment discrepancies, or service issues? We are here to help.
+            Gặp sự cố về đặt lịch, sai lệch thanh toán hoặc chất lượng dịch vụ? Chúng tôi luôn sẵn sàng hỗ trợ.
           </Typography.Paragraph>
         </div>
 
@@ -136,9 +146,9 @@ export const CustomerComplaintsPage = () => {
         >
           <Row gutter={16}>
             <Col xs={24} md={12}>
-              <Form.Item label="Concern Category" name="category" rules={[{ required: true, message: "Please select category" }]}>
+              <Form.Item label="Danh mục khiếu nại" name="category" rules={[{ required: true, message: "Vui lòng chọn danh mục khiếu nại" }]}>
                 <Select 
-                  placeholder="Select topic"
+                  placeholder="Chọn chủ đề"
                   options={categories}
                   style={{ height: 42 }}
                 />
@@ -146,7 +156,7 @@ export const CustomerComplaintsPage = () => {
             </Col>
             
             <Col xs={24} md={12}>
-              <Form.Item label="Severity Priority" name="severity" rules={[{ required: true }]}>
+              <Form.Item label="Mức độ nghiêm trọng" name="severity" rules={[{ required: true }]}>
                 <Select 
                   options={severities}
                   style={{ height: 42 }}
@@ -155,22 +165,22 @@ export const CustomerComplaintsPage = () => {
             </Col>
           </Row>
 
-          <Form.Item label="Subject / Brief Summary" name="title" rules={[{ required: true, message: "Please provide a brief title" }]}>
-            <Input placeholder="e.g. Charge error, stylist late" style={{ borderRadius: 8, height: 42 }} />
+          <Form.Item label="Tiêu đề / Tóm tắt ngắn" name="title" rules={[{ required: true, message: "Vui lòng cung cấp tiêu đề ngắn" }]}>
+            <Input placeholder="Ví dụ: Lỗi thanh toán hóa đơn, stylist đến trễ..." style={{ borderRadius: 8, height: 42 }} />
           </Form.Item>
 
-          <Form.Item label="Associated Appointment (Optional)" name="appointmentId">
+          <Form.Item label="Lịch hẹn liên quan (Không bắt buộc)" name="appointmentId">
             <Select 
-              placeholder="Select which appointment is this about"
+              placeholder="Chọn lịch hẹn xảy ra sự cố"
               options={appointmentOptions}
               style={{ height: 42 }}
             />
           </Form.Item>
 
-          <Form.Item label="Detailed Explanation" name="description" rules={[{ required: true, message: "Please provide incident details" }]}>
+          <Form.Item label="Mô tả chi tiết" name="description" rules={[{ required: true, message: "Vui lòng cung cấp chi tiết sự việc" }]}>
             <Input.TextArea 
               rows={4} 
-              placeholder="Kindly provide dates, names, or values to help us audit and resolve your dispute quickly..."
+              placeholder="Vui lòng cung cấp ngày, tên nhân viên hoặc các thông tin liên quan để giúp chúng tôi kiểm tra và giải quyết nhanh chóng..."
               style={{ borderRadius: 8 }}
             />
           </Form.Item>
@@ -184,7 +194,7 @@ export const CustomerComplaintsPage = () => {
             style={{ height: 44, marginTop: 12, borderRadius: 8, background: "#ff4d4f", borderColor: "#ff4d4f" }}
             loading={complaintMutation.isPending}
           >
-            File Concern Registry
+            Gửi đơn khiếu nại
           </Button>
         </Form>
       </Card>

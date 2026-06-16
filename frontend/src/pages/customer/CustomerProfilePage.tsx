@@ -14,11 +14,11 @@ export const CustomerProfilePage = () => {
   const updateMutation = useMutation({
     mutationFn: (payload: any) => authApi.updateMe(payload),
     onSuccess: () => {
-      void message.success("Sanctuary profile updated successfully!");
+      void message.success("Cập nhật thông tin hồ sơ thành công!");
       void queryClient.invalidateQueries({ queryKey: queryKeys.auth.me });
     },
     onError: (err: any) => {
-      const errMsg = err.response?.data?.message || err.message || "Failed to update profile settings.";
+      const errMsg = err.response?.data?.message || err.message || "Cập nhật thông tin thất bại.";
       void message.error(errMsg);
     }
   });
@@ -35,7 +35,7 @@ export const CustomerProfilePage = () => {
   if (isLoading) {
     return (
       <Card bordered={false} style={{ minHeight: 300, display: "flex", justifyContent: "center", alignItems: "center" }}>
-        <Spin size="large" tip="Loading profile configurations..." />
+        <Spin size="large" tip="Đang tải thông tin hồ sơ..." />
       </Card>
     );
   }
@@ -46,10 +46,10 @@ export const CustomerProfilePage = () => {
         <div style={{ textAlign: "center", marginBottom: 32 }}>
           <UserOutlined style={{ fontSize: 40, color: "var(--color-primary)", marginBottom: 12 }} />
           <Typography.Title level={2} style={{ fontFamily: "'Playfair Display', serif", fontWeight: 400, margin: 0 }}>
-            Your Profile Settings
+            Cài đặt hồ sơ của bạn
           </Typography.Title>
           <Typography.Paragraph type="secondary" style={{ marginTop: 8 }}>
-            Customize your credentials, phone, or billing details.
+            Tùy chỉnh thông tin đăng nhập, điện thoại hoặc thông tin tài khoản của bạn.
           </Typography.Paragraph>
         </div>
 
@@ -66,24 +66,24 @@ export const CustomerProfilePage = () => {
             phone: user?.phone,
           }}
         >
-          <Form.Item label="Username" name="username">
+          <Form.Item label="Tên đăng nhập" name="username">
             <Input disabled style={{ height: 42, borderRadius: 8 }} />
           </Form.Item>
 
-          <Form.Item label="First Name" name="first_name" rules={[{ required: true, message: "First name is required" }]}>
+          <Form.Item label="Tên" name="first_name" rules={[{ required: true, message: "Tên là bắt buộc" }]}>
             <Input prefix={<UserOutlined style={{ color: "var(--color-muted)" }} />} style={{ height: 42, borderRadius: 8 }} />
           </Form.Item>
 
-          <Form.Item label="Last Name" name="last_name" rules={[{ required: true, message: "Last name is required" }]}>
+          <Form.Item label="Họ" name="last_name" rules={[{ required: true, message: "Họ là bắt buộc" }]}>
             <Input prefix={<UserOutlined style={{ color: "var(--color-muted)" }} />} style={{ height: 42, borderRadius: 8 }} />
           </Form.Item>
 
-          <Form.Item label="Email Address" name="email" rules={[{ type: "email", required: true, message: "Please enter a valid email" }]}>
+          <Form.Item label="Địa chỉ Email" name="email" rules={[{ type: "email", required: true, message: "Vui lòng nhập địa chỉ email hợp lệ" }]}>
             <Input prefix={<MailOutlined style={{ color: "var(--color-muted)" }} />} style={{ height: 42, borderRadius: 8 }} />
           </Form.Item>
 
-          <Form.Item label="Phone Number" name="phone">
-            <Input prefix={<PhoneOutlined style={{ color: "var(--color-muted)" }} />} style={{ height: 42, borderRadius: 8 }} placeholder="e.g. 0912345678" />
+          <Form.Item label="Số điện thoại" name="phone">
+            <Input prefix={<PhoneOutlined style={{ color: "var(--color-muted)" }} />} style={{ height: 42, borderRadius: 8 }} placeholder="Ví dụ: 0912345678" />
           </Form.Item>
 
           <Button 
@@ -94,7 +94,7 @@ export const CustomerProfilePage = () => {
             style={{ height: 44, marginTop: 12 }}
             loading={updateMutation.isPending}
           >
-            Save Changes
+            Lưu thay đổi
           </Button>
         </Form>
       </Card>

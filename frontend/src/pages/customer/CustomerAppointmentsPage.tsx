@@ -39,28 +39,44 @@ export const CustomerAppointmentsPage = () => {
 
   const appointmentsList = normalizePaginatedResponse(data || []).results;
 
+  const formatShortDate = (dateStr: string | null | undefined) => {
+    if (!dateStr) return "TBD";
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return "TBD";
+    const day = String(d.getDate()).padStart(2, "0");
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const year = d.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
+  const formatShortTime = (dateStr: string) => {
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return "TBD";
+    return d.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" });
+  };
+
   return (
     <div style={{ maxWidth: 800, margin: "0 auto", animation: "fadeIn 0.5s ease" }}>
       <div style={{ marginBottom: 32 }}>
         <Typography.Title level={2} style={{ fontFamily: "'Playfair Display', serif", fontWeight: 400, margin: 0 }}>
-          Your Appointments Log
+          Lịch sử cuộc hẹn của bạn
         </Typography.Title>
         <Typography.Paragraph type="secondary" style={{ marginTop: 8 }}>
-          Track scheduled sessions, previous beauty experiences, and cancel bookings.
+          Theo dõi các lịch hẹn đã đặt, trải nghiệm dịch vụ trước đó và quản lý đặt lịch.
         </Typography.Paragraph>
       </div>
 
       {appointmentsList.length > 0 ? (
         <Timeline mode="left" style={{ marginTop: 24 }}>
           {appointmentsList.map((app) => {
-            const serviceName = app.service_details?.name || "Premium Beauty Session";
+            const serviceName = app.service_details?.name || "Phục hồi tóc tổng quát";
             return (
               <Timeline.Item 
                 key={app.id} 
                 dot={<CalendarOutlined style={{ fontSize: 16, color: "var(--color-primary)" }} />}
                 label={
                   <strong style={{ color: "var(--color-primary-dark)", fontSize: 13 }}>
-                    {app.scheduled_start ? new Date(app.scheduled_start).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" }) : "TBD"}
+                    {app.scheduled_start ? formatShortDate(app.scheduled_start) : "TBD"}
                   </strong>
                 }
               >
@@ -74,13 +90,13 @@ export const CustomerAppointmentsPage = () => {
                       />
                       <Space direction="vertical" size={2}>
                         <Typography.Text type="secondary" style={{ fontSize: 10, letterSpacing: "0.05em" }}>
-                          BOOKING ID #{app.id}
+                          MÃ ĐẶT LỊCH #{app.id}
                         </Typography.Text>
                         <Typography.Title level={5} style={{ margin: 0, fontWeight: 600 }}>
                           {serviceName}
                         </Typography.Title>
                         <Typography.Text style={{ color: "var(--color-muted)", fontSize: 12 }}>
-                          Stylist Specialist: <strong>{app.employee_details?.full_name || "Assigned Specialist"}</strong> at {app.scheduled_start ? new Date(app.scheduled_start).toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" }) : "TBD"}
+                          Stylist phụ trách: <strong>{app.employee_details?.full_name || "Stylist được phân công"}</strong> vào lúc {app.scheduled_start ? formatShortTime(app.scheduled_start) : "TBD"}
                         </Typography.Text>
                       </Space>
                     </div>
@@ -89,7 +105,7 @@ export const CustomerAppointmentsPage = () => {
                       <StatusTag status={app.status} />
                       <Link to={`/customer/appointments/${app.id}`}>
                         <Button type="default" size="small" icon={<EyeOutlined />} style={{ borderRadius: 6 }}>
-                          View Details
+                          Xem chi tiết
                         </Button>
                       </Link>
                     </Space>
@@ -103,14 +119,14 @@ export const CustomerAppointmentsPage = () => {
         <Card bordered={false} style={{ textAlign: "center", padding: "60px 0", borderRadius: 16, border: "1px dashed var(--color-primary)" }}>
           <CalendarOutlined style={{ fontSize: 48, color: "var(--color-primary)", marginBottom: 16, opacity: 0.7 }} />
           <Typography.Title level={4} style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 600, margin: "0 0 8px" }}>
-            No Bookings Found
+            Không tìm thấy lịch hẹn nào
           </Typography.Title>
           <Typography.Paragraph type="secondary" style={{ maxWidth: 400, margin: "0 auto 24px" }}>
-            You haven't scheduled any sessions yet. Let's pamper yourself with our high-end self-care care!
+            Bạn chưa đặt lịch hẹn nào. Hãy nuông chiều bản thân với dịch vụ chăm sóc cao cấp của chúng tôi!
           </Typography.Paragraph>
           <Link to="/customer/book">
             <Button type="primary" size="large" className="login-button-gold" icon={<EyeOutlined style={{ transform: "rotate(-45deg)" }} />}>
-              Book a Service
+              Đặt lịch ngay
             </Button>
           </Link>
         </Card>

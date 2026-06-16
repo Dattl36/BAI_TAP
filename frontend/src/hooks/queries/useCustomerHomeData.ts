@@ -35,28 +35,28 @@ export const useCustomerHomeData = () => {
 
   const currentPoints = normalizedRewards.length > 0 ? normalizedRewards[0].balance_after : 0;
 
-  let loyaltyTier = "Bronze Member";
+  let loyaltyTier = "Thành viên Đồng";
   let tierProgress = 0;
   let nextTierPoints = 200;
   let pointsAway = 200;
 
   if (currentPoints >= 1000) {
-    loyaltyTier = "Platinum VIP Member";
+    loyaltyTier = "Thành viên Bạch Kim VIP";
     tierProgress = 100;
     nextTierPoints = 1000;
     pointsAway = 0;
   } else if (currentPoints >= 500) {
-    loyaltyTier = "Gold VIP Member";
+    loyaltyTier = "Thành viên Vàng VIP";
     nextTierPoints = 1000;
     pointsAway = 1000 - currentPoints;
     tierProgress = Math.round(((currentPoints - 500) / 500) * 100);
   } else if (currentPoints >= 200) {
-    loyaltyTier = "Silver Member";
+    loyaltyTier = "Thành viên Bạc";
     nextTierPoints = 500;
     pointsAway = 500 - currentPoints;
     tierProgress = Math.round(((currentPoints - 200) / 300) * 100);
   } else {
-    loyaltyTier = "Bronze Member";
+    loyaltyTier = "Thành viên Đồng";
     nextTierPoints = 200;
     pointsAway = Math.max(0, 200 - currentPoints);
     tierProgress = Math.round((currentPoints / 200) * 100);

@@ -82,25 +82,25 @@ export const CustomerBookingPage = () => {
   const bookingMutation = useMutation({
     mutationFn: (payload: any) => appointmentsApi.create(payload),
     onSuccess: () => {
-      void message.success("Sanctuary booking request submitted successfully!");
+      void message.success("Đã gửi yêu cầu đặt lịch hẹn thành công!");
       navigate("/customer/appointments");
     },
     onError: (err: any) => {
-      const errMsg = err.response?.data?.message || err.message || "Failed to make reservation. Please try again.";
+      const errMsg = err.response?.data?.message || err.message || "Không thể đặt lịch hẹn. Vui lòng thử lại.";
       void message.error(errMsg);
     },
   });
 
   const handleConfirm = () => {
     if (!bookingData.service || !bookingData.stylist || !bookingData.date || !bookingData.time) {
-      void message.error("Please complete all booking steps.");
+      void message.error("Vui lòng hoàn thành tất cả các bước đặt lịch.");
       return;
     }
 
     // Combine date and time
     const startDateTime = new Date(`${bookingData.date}T${bookingData.time}:00`);
     if (isNaN(startDateTime.getTime())) {
-      void message.error("Invalid date or time selected.");
+      void message.error("Ngày hoặc giờ được chọn không hợp lệ.");
       return;
     }
 
@@ -130,7 +130,7 @@ export const CustomerBookingPage = () => {
   if (isDataLoading) {
     return (
       <Card bordered={false} style={{ minHeight: 400, display: "flex", justifyContent: "center", alignItems: "center" }}>
-        <Spin size="large" tip="Loading available slots, services and stylists..." />
+        <Spin size="large" tip="Đang tải khung giờ, dịch vụ và thợ làm tóc trống..." />
       </Card>
     );
   }
@@ -139,10 +139,10 @@ export const CustomerBookingPage = () => {
     <Card bordered={false} style={{ borderRadius: 16, animation: "fadeIn 0.5s ease" }}>
       <div style={{ textAlign: "center", marginBottom: 40 }}>
         <Typography.Title level={2} style={{ fontFamily: "'Playfair Display', serif", fontWeight: 400, margin: 0 }}>
-          Reserve Your Self-Care Session
+          Đặt lịch dịch vụ Salon
         </Typography.Title>
         <Typography.Paragraph type="secondary" style={{ marginTop: 8 }}>
-          Select your service, preferred expert specialist, and schedule details below.
+          Chọn dịch vụ, chuyên gia làm tóc và khung giờ hẹn mong muốn của bạn bên dưới.
         </Typography.Paragraph>
       </div>
 
@@ -150,10 +150,10 @@ export const CustomerBookingPage = () => {
         current={currentStep} 
         style={{ maxWidth: 800, margin: "0 auto 40px" }}
         items={[
-          { title: "Select Service", icon: <ScissorOutlined /> },
-          { title: "Choose Stylist", icon: <SmileOutlined /> },
-          { title: "Schedule", icon: <CalendarOutlined /> },
-          { title: "Confirm", icon: <CheckCircleOutlined /> },
+          { title: "Chọn dịch vụ", icon: <ScissorOutlined /> },
+          { title: "Chọn thợ", icon: <SmileOutlined /> },
+          { title: "Khung giờ", icon: <CalendarOutlined /> },
+          { title: "Xác nhận", icon: <CheckCircleOutlined /> },
         ]}
       />
 
@@ -162,7 +162,7 @@ export const CustomerBookingPage = () => {
         {currentStep === 0 && (
           <Space direction="vertical" size={20} style={{ width: "100%" }}>
             <Typography.Text strong style={{ fontSize: 16, fontFamily: "'Outfit', sans-serif" }}>
-              Select a Premium Salon Service
+              Chọn dịch vụ Salon cao cấp
             </Typography.Text>
             <Row gutter={[20, 20]}>
               {servicesList.map((service) => {
@@ -190,21 +190,21 @@ export const CustomerBookingPage = () => {
                     >
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
                         <span style={{ fontSize: 10, background: "var(--color-accent)", color: "var(--color-primary-dark)", padding: "2px 6px", borderRadius: 10, fontWeight: 600, textTransform: "uppercase" }}>
-                          {service.category || "Hair"}
+                          {service.category || "Chăm sóc tóc"}
                         </span>
                         <span style={{ fontSize: 11, color: "var(--color-muted)" }}>
-                          {service.duration_minutes} mins
+                          {service.duration_minutes} phút
                         </span>
                       </div>
                       <Typography.Title level={5} style={{ margin: "4px 0 8px", fontWeight: 600, fontSize: 15 }}>
                         {service.name}
                       </Typography.Title>
                       <Typography.Text type="secondary" style={{ fontSize: 12, display: "block", height: 36, overflow: "hidden", marginBottom: 12 }}>
-                        {service.description || "Our premium hair care formula tailored for your absolute comfort."}
+                        {service.description || "Dịch vụ chăm sóc tóc cao cấp được thiết kế riêng cho phong cách của bạn."}
                       </Typography.Text>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid var(--app-border)", paddingTop: 10 }}>
                         <strong style={{ color: "var(--color-primary-dark)", fontSize: 15 }}>
-                          {Number(service.base_price).toLocaleString()} VND
+                          {Number(service.base_price).toLocaleString("vi-VN")} VNĐ
                         </strong>
                         {isSelected && <CheckOutlined style={{ color: "var(--color-primary)", fontWeight: 700 }} />}
                       </div>
@@ -220,7 +220,7 @@ export const CustomerBookingPage = () => {
         {currentStep === 1 && (
           <Space direction="vertical" size={20} style={{ width: "100%" }}>
             <Typography.Text strong style={{ fontSize: 16, fontFamily: "'Outfit', sans-serif" }}>
-              Select Stylist Specialist
+              Chọn thợ làm mẫu tóc chuyên gia
             </Typography.Text>
             <Row gutter={[20, 20]}>
               {stylistsList.map((stylist) => {
@@ -251,11 +251,11 @@ export const CustomerBookingPage = () => {
                         {stylist.full_name}
                       </Typography.Title>
                       <Typography.Text type="secondary" style={{ fontSize: 12, display: "block", marginBottom: 16 }}>
-                        {stylist.specialties || "Senior Hair Stylist"}
+                        {stylist.specialties || "Chuyên gia tạo mẫu tóc"}
                       </Typography.Text>
                       <div style={{ display: "flex", justifyContent: "center", borderTop: "1px solid var(--app-border)", paddingTop: 10 }}>
                         <span style={{ fontSize: 12, color: isSelected ? "var(--color-primary-dark)" : "var(--color-muted)", fontWeight: 600 }}>
-                          {isSelected ? "Selected Stylist" : "Tap to Select"}
+                          {isSelected ? "Đã chọn chuyên gia" : "Nhấn để chọn"}
                         </span>
                       </div>
                     </Card>
@@ -270,16 +270,16 @@ export const CustomerBookingPage = () => {
         {currentStep === 2 && (
           <Space direction="vertical" size={24} style={{ width: "100%" }}>
             <Typography.Text strong style={{ fontSize: 16, fontFamily: "'Outfit', sans-serif" }}>
-              Select Date and Arrival Time Slot
+              Chọn ngày hẹn và khung giờ đến
             </Typography.Text>
             <Row gutter={[32, 24]}>
               <Col xs={24} md={10}>
                 <Card bordered style={{ borderRadius: 12, background: "var(--color-bg)" }}>
                   <Typography.Text type="secondary" style={{ display: "block", marginBottom: 8, fontSize: 12 }}>
-                    CHOOSE DATE
+                    CHỌN NGÀY
                   </Typography.Text>
                   <DatePicker 
-                    placeholder="Select Session Date"
+                    placeholder="Chọn ngày thực hiện"
                     style={{ width: "100%", height: 44, borderRadius: 8 }}
                     onChange={(date, dateStr) => setBookingData({ ...bookingData, date: String(dateStr) })}
                   />
@@ -288,7 +288,7 @@ export const CustomerBookingPage = () => {
               
               <Col xs={24} md={14}>
                 <Typography.Text type="secondary" style={{ display: "block", marginBottom: 12, fontSize: 12 }}>
-                  CHOOSE AVAILABLE SLOT
+                  CHỌN KHUNG GIỜ CÒN TRỐNG
                 </Typography.Text>
                 {bookingData.date ? (
                   <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(80px, 1fr))", gap: 10 }}>
@@ -316,7 +316,7 @@ export const CustomerBookingPage = () => {
                 ) : (
                   <Card bordered={false} style={{ background: "var(--color-bg)", border: "1px dashed var(--app-border)", textAlign: "center", padding: "16px 0", borderRadius: 12 }}>
                     <Typography.Text type="secondary">
-                      Please select a Date first to see available stylist slots.
+                      Vui lòng chọn Ngày trước để xem các khung giờ trống của chuyên gia.
                     </Typography.Text>
                   </Card>
                 )}
@@ -337,13 +337,13 @@ export const CustomerBookingPage = () => {
             }}
           >
             <Typography.Title level={4} style={{ margin: "0 0 24px", fontFamily: "'Outfit', sans-serif", fontWeight: 600, borderBottom: "1px solid var(--app-border)", paddingBottom: 16 }}>
-              Review Your Appointment Details
+              Xem lại chi tiết lịch hẹn của bạn
             </Typography.Title>
             
             <Row gutter={[24, 24]}>
               <Col xs={24} md={12}>
                 <Typography.Text type="secondary" style={{ fontSize: 11, letterSpacing: "0.05em", display: "block", marginBottom: 8 }}>
-                  SELECTED SERVICE
+                  DỊCH VỤ ĐÃ CHỌN
                 </Typography.Text>
                 {selectedServiceObj && (
                   <div style={{ display: "flex", gap: 16 }}>
@@ -357,10 +357,10 @@ export const CustomerBookingPage = () => {
                         {selectedServiceObj.name}
                       </Typography.Title>
                       <Typography.Text type="secondary" style={{ fontSize: 12, display: "block" }}>
-                        Category: {selectedServiceObj.category || "Hair Care"}
+                        Danh mục: {selectedServiceObj.category || "Chăm sóc tóc"}
                       </Typography.Text>
                       <Typography.Text type="secondary" style={{ fontSize: 12, display: "block" }}>
-                        Duration: {selectedServiceObj.duration_minutes} Mins
+                        Thời lượng: {selectedServiceObj.duration_minutes} phút
                       </Typography.Text>
                     </div>
                   </div>
@@ -369,7 +369,7 @@ export const CustomerBookingPage = () => {
               
               <Col xs={24} md={12} style={{ borderLeft: "1px solid var(--app-border)", paddingLeft: 24 }}>
                 <Typography.Text type="secondary" style={{ fontSize: 11, letterSpacing: "0.05em", display: "block", marginBottom: 8 }}>
-                  ASSIGNED SPECIALIST
+                  THỢ LÀM TÓC ĐÃ CHỌN
                 </Typography.Text>
                 {selectedStylistObj && (
                   <div style={{ display: "flex", gap: 16 }}>
@@ -383,7 +383,7 @@ export const CustomerBookingPage = () => {
                         {selectedStylistObj.full_name}
                       </Typography.Title>
                       <Typography.Text type="secondary" style={{ fontSize: 12, display: "block" }}>
-                        Role: {selectedStylistObj.specialties || "Stylist Specialist"}
+                        Vai trò: {selectedStylistObj.specialties || "Thợ làm tóc chuyên nghiệp"}
                       </Typography.Text>
                     </div>
                   </div>
@@ -409,18 +409,18 @@ export const CustomerBookingPage = () => {
                 <ClockCircleOutlined style={{ color: "var(--color-primary)" }} />
                 <div>
                   <Typography.Text type="secondary" style={{ fontSize: 11, display: "block" }}>
-                    SCHEDULED DATE & TIME
+                    NGÀY HẸN & GIỜ HẸN
                   </Typography.Text>
-                  <strong>{bookingData.date}</strong> at <strong>{bookingData.time}</strong>
+                  <strong>{bookingData.date ? new Date(bookingData.date).toLocaleDateString("vi-VN") : ""}</strong> vào lúc <strong>{bookingData.time}</strong>
                 </div>
               </div>
 
               <div style={{ textAlign: "right" }}>
                 <Typography.Text type="secondary" style={{ fontSize: 11, display: "block" }}>
-                  TOTAL PRICE
+                  TỔNG TIỀN
                 </Typography.Text>
                 <strong style={{ fontSize: 20, color: "var(--color-primary-dark)", fontFamily: "'Outfit', sans-serif" }}>
-                  {selectedServiceObj ? Number(selectedServiceObj.base_price).toLocaleString() : "0"} VND
+                  {selectedServiceObj ? Number(selectedServiceObj.base_price).toLocaleString("vi-VN") : "0"} VNĐ
                 </strong>
               </div>
             </div>
@@ -431,7 +431,7 @@ export const CustomerBookingPage = () => {
       <div style={{ display: "flex", justifyContent: "center", gap: 16 }}>
         {currentStep > 0 && (
           <Button onClick={prev} style={{ height: 40, width: 100 }} disabled={bookingMutation.isPending}>
-            Back
+            Quay lại
           </Button>
         )}
         {currentStep < 3 ? (
@@ -446,7 +446,7 @@ export const CustomerBookingPage = () => {
             }
             style={{ height: 40, width: 100 }}
           >
-            Next
+            Tiếp theo
           </Button>
         ) : (
           <Button 
@@ -456,7 +456,7 @@ export const CustomerBookingPage = () => {
             style={{ height: 40, width: 160 }}
             loading={bookingMutation.isPending}
           >
-            Confirm Reservation
+            Xác nhận đặt lịch
           </Button>
         )}
       </div>

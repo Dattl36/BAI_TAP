@@ -51,7 +51,6 @@ class VoucherViewSet(viewsets.ModelViewSet):
                 expires_at__gte=now,
                 usage_limit__gt=F("used_count")
             )
-
         return scope_queryset(user, Voucher.objects.all())
 
     @action(detail=True, methods=["post"])

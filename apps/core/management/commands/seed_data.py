@@ -18,6 +18,34 @@ class Command(BaseCommand):
         self.stdout.write(self.style.WARNING("Bat dau khoi tao du lieu mau Salon..."))
         User = get_user_model()
 
+        self.stdout.write("Dang lam sach co so du lieu...")
+        from apps.feedback.models import Feedback, Complaint, ComplaintStatusHistory
+        from apps.payments.models import PaymentTransaction, PaymentStatusHistory
+        from apps.billing.models import Invoice, InvoiceItem
+        from apps.service_execution.models import ServiceExecution, ServiceIncidental
+        from apps.appointments.models import Appointment, AppointmentService
+        from apps.notifications.models import Notification
+
+        ComplaintStatusHistory.objects.all().delete()
+        Complaint.objects.all().delete()
+        Feedback.objects.all().delete()
+        PaymentStatusHistory.objects.all().delete()
+        PaymentTransaction.objects.all().delete()
+        InvoiceItem.objects.all().delete()
+        Invoice.objects.all().delete()
+        ServiceIncidental.objects.all().delete()
+        ServiceExecution.objects.all().delete()
+        AppointmentService.objects.all().delete()
+        Appointment.objects.all().delete()
+        Notification.objects.all().delete()
+        StaffAvailability.objects.all().delete()
+        EmployeeProfile.objects.all().delete()
+        CustomerProfile.objects.all().delete()
+        Voucher.objects.all().delete()
+        Promotion.objects.all().delete()
+        Service.objects.all().delete()
+        User.objects.exclude(is_superuser=True).delete()
+
         # =========================================================================
         # 1. TẠO TÀI KHOẢN NGƯỜI DÙNG (Quản lý, Lễ tân, Nhân viên/Stylist, Khách hàng)
         # =========================================================================
@@ -397,6 +425,54 @@ class Command(BaseCommand):
             haircut_voucher.save()
 
         self.stdout.write(self.style.SUCCESS("Da khoi tao xong cac chuong trinh khuyen mai va voucher."))
+
+        # =========================================================================
+        # 3.5 TẠO LỊCH HẸN MẪU & ĐIỂM THƯỞNG CHO KHÁCH HÀNG customer_a
+        # =========================================================================
+        self.stdout.write("Dang tao lich hen mau va diem thuong cho customer_a...")
+        from apps.appointments.models import Appointment, AppointmentService
+        from apps.promotions.reward_services import add_ledger
+        import datetime
+        from django.utils.timezone import make_aware
+
+        cust_a_profile = CustomerProfile.objects.get(user__username="customer_a")
+        stylist_elena_profile = EmployeeProfile.objects.get(user__username="stylist_elena")
+        service_haircut_nam = Service.objects.get(name="Cắt tóc Nam")
+
+        # Create upcoming confirmed appointment on Wednesday, June 24, 2026 at 10:00 AM
+        start_dt = make_aware(datetime.datetime(2026, 6, 24, 10, 0, 0))
+        end_dt = start_dt + datetime.timedelta(minutes=30)
+
+        app_obj, app_created = Appointment.objects.get_or_create(
+            id=1,
+            defaults={
+                "customer": cust_a_profile,
+                "staff": stylist_elena_profile,
+                "scheduled_start": start_dt,
+                "scheduled_end": end_dt,
+                "status": "confirmed",
+                "source": "customer"
+            }
+        )
+        if app_created:
+            AppointmentService.objects.create(
+                appointment=app_obj,
+                service=service_haircut_nam,
+                price_at_booking=service_haircut_nam.base_price,
+                duration_at_booking=service_haircut_nam.duration_minutes,
+                quantity=1
+            )
+            self.stdout.write(self.style.SUCCESS("Da tao lich hen mau thanh cong."))
+
+        # Add initial points: 150 points (so that Bronze tier pointsAway shows up as 50)
+        add_ledger(
+            actor=manager_user,
+            customer=cust_a_profile,
+            movement_type="earn",
+            points=150,
+            reason="Điểm thưởng chào mừng thành viên mới"
+        )
+        self.stdout.write(self.style.SUCCESS("Da cap nhat diem thuong cho customer_a."))
 
         # =========================================================================
         # 4. PRINT SUMMARY TABLE
