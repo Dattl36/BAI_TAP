@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { ConfigProvider, App } from "antd";
+import viVN from "antd/locale/vi_VN";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { RouterProvider } from "react-router-dom";
 import "antd/dist/reset.css";
@@ -9,10 +10,15 @@ import "./assets/styles/global.css";
 
 import { queryClient } from "./app/queryClient";
 import { router } from "./app/router";
+import { initVietnameseTranslation } from "./utils/vietnameseTranslator";
+
+// Initialize dynamic translation observer
+initVietnameseTranslation();
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <ConfigProvider
+      locale={viVN}
       theme={{
         token: {
           colorPrimary: "#bca374",
