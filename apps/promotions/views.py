@@ -27,7 +27,32 @@ class VoucherViewSet(viewsets.ModelViewSet):
     serializer_class = VoucherSerializer
 
     def get_queryset(self):
-        return scope_queryset(self.request.user, Voucher.objects.all())
+        user = self.request.user
+        if not getattr(user, "is_authenticated", False):
+            return Voucher.objects.none()
+
+        if user.role == Roles.MANAGER or user.role == Roles.RECEPTIONIST:
+            return Voucher.objects.all()
+
+        if user.role == Roles.CUSTOMER:
+            customer = getattr(user, "customer_profile", None)
+            if not customer:
+                return Voucher.objects.none()
+
+            import django.utils.timezone as tz
+            from django.db.models import Q, F
+
+            now = tz.now()
+            return Voucher.objects.filter(
+                Q(customer=customer) | Q(customer__isnull=True)
+            ).filter(
+                status="active",
+                starts_at__lte=now,
+                expires_at__gte=now,
+                usage_limit__gt=F("used_count")
+            )
+
+        return scope_queryset(user, Voucher.objects.all())
 
     @action(detail=True, methods=["post"])
     def cancel(self, request, pk=None):
