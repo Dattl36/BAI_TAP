@@ -4,12 +4,17 @@ from apps.appointments.serializers import AppointmentSerializer, AppointmentTran
 from apps.appointments.services import create_appointment, reschedule_appointment, transition_appointment
 from apps.core.responses import success
 from apps.employees.models import EmployeeProfile
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from rest_framework.decorators import action
+from rest_framework.filters import OrderingFilter
 
 
 class AppointmentViewSet(viewsets.ModelViewSet):
     serializer_class = AppointmentSerializer
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
+    filterset_fields = ["status", "staff", "customer", "source"]
+    ordering_fields = ["scheduled_start", "created_at"]
 
     def get_queryset(self):
         return scope_queryset(self.request.user, Appointment.objects.all())
