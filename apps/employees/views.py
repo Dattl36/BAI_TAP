@@ -12,10 +12,13 @@ class EmployeeViewSet(viewsets.ModelViewSet):
     serializer_class = EmployeeProfileSerializer
 
     def get_queryset(self):
+        role = getattr(self.request.user, "role", None)
         if self.action in ["list", "retrieve", "availability"]:
+            if role == Roles.STAFF:
+                employee = getattr(self.request.user, "employee_profile", None)
+                return EmployeeProfile.objects.filter(id=getattr(employee, "id", None))
             return EmployeeProfile.objects.all()
             
-        role = getattr(self.request.user, "role", None)
         if role in {Roles.MANAGER, Roles.RECEPTIONIST}:
             return EmployeeProfile.objects.all()
         employee = getattr(self.request.user, "employee_profile", None)

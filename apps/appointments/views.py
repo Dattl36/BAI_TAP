@@ -23,6 +23,20 @@ class AppointmentViewSet(viewsets.ModelViewSet):
         appointment = create_appointment(request.user, **serializer.validated_data)
         return success(self.get_serializer(appointment).data, "Appointment created", 201)
 
+    def update(self, request, *args, **kwargs):
+        from rest_framework.exceptions import MethodNotAllowed
+        raise MethodNotAllowed("PUT", detail="Vui lòng sử dụng endpoint /reschedule/ để cập nhật lịch hẹn.")
+
+    def partial_update(self, request, *args, **kwargs):
+        data = request.data
+        if "status" in data and len(data) == 1:
+            from apps.appointments.services import transition_appointment
+            appointment = transition_appointment(request.user, self.get_object(), data["status"])
+            return success(self.get_serializer(appointment).data)
+        
+        from rest_framework.exceptions import MethodNotAllowed
+        raise MethodNotAllowed("PATCH", detail="Vui lòng sử dụng các endpoint cụ thể (/reschedule/, /cancel/...) để cập nhật lịch hẹn.")
+
     @action(detail=True, methods=["post"])
     def confirm(self, request, pk=None):
         return success(self.get_serializer(transition_appointment(request.user, self.get_object(), "confirmed")).data)

@@ -1,0 +1,32 @@
+:root {
+  --color-bg: #faf7f2;
+  --color-surface: #ffffff;
+  --color-primary: #bca374;
+  --color-primary-dark: #a38b5f;
+  --color-accent: #f5ebe0;
+  --color-text: #1a1a1a;
+  --color-muted: #8e8a80;
+  --border-radius-card: 16px;
+  --shadow-card: 0 4px 20px -2px rgba(188, 163, 116, 0.08), 0 2px 8px -1px rgba(0, 0, 0, 0.04);
+  --app-sidebar-width: 260px;
+  --app-header-height: 72px;
+  --app-border: #eae6df;
+  --app-muted: var(--color-muted);
+  --app-bg: var(--color-bg);
+  --app-surface: var(--color-surface);
+
+  /* Receptionist Operation Center tokens */
+  --rcpt-gold: #c9a96e;
+  --rcpt-gold-dark: #a38b5f;
+  --rcpt-gold-light: #f5ebe0;
+  --rcpt-cream: #faf7f2;
+  --rcpt-dark: #1a1814;
+  --rcpt-sidebar-width: 220px;
+  --rcpt-success: #10b981;
+  --rcpt-warning: #f59e0b;
+  --rcpt-danger: #ef4444;
+  --rcpt-info: #3b82f6;
+  --rcpt-purple: #8b5cf6;
+  --rcpt-cyan: #06b6d4;
+}
+
