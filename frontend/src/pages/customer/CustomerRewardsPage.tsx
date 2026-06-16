@@ -31,10 +31,10 @@ export const CustomerRewardsPage = () => {
     <div style={{ maxWidth: 800, margin: "0 auto", animation: "fadeIn 0.5s ease" }}>
       <div style={{ marginBottom: 32 }}>
         <Typography.Title level={2} style={{ fontFamily: "'Playfair Display', serif", fontWeight: 400, margin: 0 }}>
-          Your Loyalty Club
+          Câu lạc bộ thành viên
         </Typography.Title>
         <Typography.Paragraph type="secondary" style={{ marginTop: 8 }}>
-          Accumulate points with every self-care appointment and convert points to direct money discounts.
+          Tích lũy điểm qua mỗi lần làm đẹp và đổi điểm thành chiết khấu trực tiếp trên hóa đơn.
         </Typography.Paragraph>
       </div>
 
@@ -51,7 +51,7 @@ export const CustomerRewardsPage = () => {
         <Space direction="vertical" size={16} style={{ width: "100%" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <Space direction="vertical" size={4}>
-              <span style={{ fontSize: 13, color: "var(--color-primary)", fontWeight: 500 }}>ACTIVE MEMBERSHIP TIER</span>
+              <span style={{ fontSize: 13, color: "var(--color-primary)", fontWeight: 500 }}>HẠNG THÀNH VIÊN HIỆN TẠI</span>
               <Typography.Title level={2} style={{ margin: 0, color: "#ffffff", fontFamily: "'Outfit', sans-serif" }}>
                 {loyaltyTier}
               </Typography.Title>
@@ -62,18 +62,18 @@ export const CustomerRewardsPage = () => {
           <Progress percent={tierProgress} size="small" strokeColor="#bca374" trailColor="#33312e" />
           
           <div style={{ display: "flex", justifyContent: "space-between", color: "#a3a19c", fontSize: 13 }}>
-            <span>Available Balance: <strong>{currentPoints} Points</strong></span>
+            <span>Số dư khả dụng: <strong>{currentPoints} Điểm</strong></span>
             {pointsAway > 0 ? (
-              <span>Next target: {nextTierPoints} Points ({pointsAway} to go)</span>
+              <span>Mục tiêu tiếp theo: {nextTierPoints} Điểm (Còn {pointsAway} điểm)</span>
             ) : (
-              <span>Platinum Level Mastered</span>
+              <span>Đã đạt hạng Bạch Kim cao nhất</span>
             )}
           </div>
         </Space>
       </Card>
 
       <Typography.Title level={4} style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 600, marginBottom: 20 }}>
-        Loyalty Points Statement
+        Lịch sử giao dịch điểm
       </Typography.Title>
 
       <Card bordered={false} style={{ border: "1px solid var(--app-border)", borderRadius: 16 }}>
@@ -87,21 +87,21 @@ export const CustomerRewardsPage = () => {
                     ? <PlusOutlined style={{ color: "#10b981", fontSize: 14 }} />
                     : <MinusOutlined style={{ color: "#ef4444", fontSize: 14 }} />
                 }
-                label={<span style={{ color: "var(--color-muted)" }}>{item.created_at ? new Date(item.created_at).toLocaleDateString() : "TBD"}</span>}
+                label={<span style={{ color: "var(--color-muted)" }}>{item.created_at ? new Date(item.created_at).toLocaleDateString("vi-VN") : "Chưa xác định"}</span>}
               >
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                   <Typography.Text style={{ fontWeight: 500 }}>
-                    {item.reason || `${item.movement_type === "earn" ? "Earned reward points" : "Redeemed points discount"} INV-#${item.invoice || ""}`}
+                    {item.reason || `${item.movement_type === "earn" ? "Tích lũy điểm thưởng" : "Sử dụng điểm giảm giá"} hóa đơn #INV-${item.invoice || ""}`}
                   </Typography.Text>
                   <strong style={{ color: item.movement_type === "earn" || item.movement_type === "adjust" ? "#10b981" : "#ef4444", fontSize: 14 }}>
-                    {item.movement_type === "earn" || item.movement_type === "adjust" ? "+" : "-"}{Math.abs(item.points)} pts
+                    {item.movement_type === "earn" || item.movement_type === "adjust" ? "+" : "-"}{Math.abs(item.points)} điểm
                   </strong>
                 </div>
               </Timeline.Item>
             ))}
           </Timeline>
         ) : (
-          <EmptyState description="No points transactions recorded yet." />
+          <EmptyState description="Chưa có lịch sử giao dịch điểm nào." />
         )}
       </Card>
     </div>

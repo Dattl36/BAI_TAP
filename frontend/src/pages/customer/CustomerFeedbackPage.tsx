@@ -33,7 +33,7 @@ export const CustomerFeedbackPage = () => {
 
   const appointmentOptions = eligibleAppointments.map((app) => ({
     value: String(app.id),
-    label: `#${app.id} - ${app.service_details?.name || "Beauty Session"} with ${app.employee_details?.full_name || "Specialist"} on ${app.scheduled_start ? new Date(app.scheduled_start).toLocaleDateString() : ""}`
+    label: `#${app.id} - ${app.service_details?.name || "Buổi làm đẹp"} với ${app.employee_details?.full_name || "Stylist"} vào ngày ${app.scheduled_start ? new Date(app.scheduled_start).toLocaleDateString("vi-VN") : ""}`
   }));
 
   const feedbackMutation = useMutation({
@@ -42,14 +42,14 @@ export const CustomerFeedbackPage = () => {
       return feedbackApi.create(payload);
     },
     onSuccess: () => {
-      void message.success("Thank you for sharing your experience with us!");
+      void message.success("Cảm ơn bạn đã chia sẻ trải nghiệm với chúng tôi!");
       form.resetFields();
       void queryClient.invalidateQueries({ queryKey: ["appointments", "list"] });
       navigate("/customer");
     },
     onError: (err: any) => {
       console.error("Feedback submission error detail:", err.response?.data || err);
-      let errMsg = "Failed to submit review.";
+      let errMsg = "Gửi phản hồi thất bại.";
       if (err.response?.data) {
         const errData = err.response.data;
         if (typeof errData === "object") {
@@ -69,7 +69,7 @@ export const CustomerFeedbackPage = () => {
   const handleFeedback = (values: any) => {
     const customerId = currentUser?.customer_profile_id;
     if (!customerId) {
-      void message.error("Could not determine your customer profile. Please log in again.");
+      void message.error("Không xác định được hồ sơ khách hàng của bạn. Vui lòng đăng nhập lại.");
       return;
     }
 
@@ -88,7 +88,7 @@ export const CustomerFeedbackPage = () => {
   if (isDataLoading) {
     return (
       <Card bordered={false} style={{ minHeight: 300, display: "flex", justifyContent: "center", alignItems: "center" }}>
-        <Spin size="large" tip="Loading your appointment history...">
+        <Spin size="large" tip="Đang tải lịch sử lịch hẹn của bạn...">
           <div style={{ padding: 50 }} />
         </Spin>
       </Card>
@@ -103,17 +103,17 @@ export const CustomerFeedbackPage = () => {
         <div style={{ textAlign: "center", marginBottom: 32 }}>
           <SmileOutlined style={{ fontSize: 36, color: "var(--color-primary)", marginBottom: 16 }} />
           <Typography.Title level={2} style={{ fontFamily: "'Playfair Display', serif", fontWeight: 400, margin: 0 }}>
-            Share Your Experience
+            Chia sẻ trải nghiệm của bạn
           </Typography.Title>
           <Typography.Paragraph type="secondary" style={{ marginTop: 8 }}>
-            Your reviews help us maintain high-end stylist execution standards.
+            Ý kiến phản hồi của bạn giúp chúng tôi nâng cao chất lượng dịch vụ.
           </Typography.Paragraph>
         </div>
 
         {hasNoEligibleAppointments ? (
           <Alert
-            message="No Completed Sessions Found"
-            description="Reviews must be linked to a completed or paid appointment. You do not have any completed appointments to review at the moment."
+            message="Không tìm thấy buổi làm đẹp nào đã hoàn thành"
+            description="Phản hồi phải được liên kết với một lịch hẹn đã hoàn thành hoặc đã thanh toán. Hiện tại bạn không có lịch hẹn hoàn thành nào để đánh giá."
             type="warning"
             showIcon
             style={{ marginBottom: 24 }}
@@ -127,25 +127,25 @@ export const CustomerFeedbackPage = () => {
           disabled={hasNoEligibleAppointments || feedbackMutation.isPending}
         >
           <Form.Item 
-            label="Select Salon Session" 
+            label="Chọn buổi làm đẹp tại Salon" 
             name="appointment" 
-            rules={[{ required: true, message: "Please select a session to review" }]}
+            rules={[{ required: true, message: "Vui lòng chọn lịch hẹn muốn phản hồi" }]}
           >
             <Select 
-              placeholder="Select the session to review"
+              placeholder="Chọn lịch hẹn để phản hồi"
               options={appointmentOptions}
               style={{ height: 42 }}
             />
           </Form.Item>
 
-          <Form.Item label="Styling & Therapist Rating" name="rating" rules={[{ required: true, message: "Please give a star rating" }]}>
+          <Form.Item label="Đánh giá tay nghề Stylist & Kỹ thuật viên" name="rating" rules={[{ required: true, message: "Vui lòng chọn số sao đánh giá" }]}>
             <Rate style={{ color: "var(--color-primary)", fontSize: 24 }} />
           </Form.Item>
 
-          <Form.Item label="Your Comments" name="comment" rules={[{ required: true, message: "Please leave a brief review comment" }]}>
+          <Form.Item label="Bình luận của bạn" name="comment" rules={[{ required: true, message: "Vui lòng để lại bình luận đánh giá ngắn" }]}>
             <Input.TextArea 
               rows={4} 
-              placeholder="Tell us what you loved about your visit, styling formula, or ambient wellness comfort..."
+              placeholder="Hãy chia sẻ cảm nhận của bạn về buổi làm đẹp, tay nghề nhân viên hoặc không gian thư giãn tại salon..."
               style={{ borderRadius: 8 }}
             />
           </Form.Item>
@@ -159,7 +159,7 @@ export const CustomerFeedbackPage = () => {
             loading={feedbackMutation.isPending}
             disabled={hasNoEligibleAppointments}
           >
-            Submit Review
+            Gửi đánh giá
           </Button>
         </Form>
       </Card>

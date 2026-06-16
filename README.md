@@ -163,3 +163,34 @@ Dưới đây là các endpoints API có sẵn trong hệ thống (Tất cả b�
 
 ---
 *Lưu ý: Các API trên hầu hết đều nhận `GET` để lấy danh sách/chi tiết, `POST` để tạo mới, `PUT/PATCH` để cập nhật và `DELETE` để xóa (Tuỳ thuộc vào các quyền được cấu hình trong hệ thống).*
+
+Dữ liệu mẫu đã được nạp vào Database:
+1. Các tài khoản thử nghiệm (Mật khẩu mặc định: SalonPassword123!)
+Manager (Quản lý):
+Username: salon_manager
+Email: manager@salon.com
+Receptionist (Lễ tân):
+Username: salon_receptionist
+Email: receptionist@salon.com
+Staff / Stylist (Thợ làm tóc):
+Username: stylist_elena | Email: elena@salon.com
+Username: stylist_marcus | Email: marcus@salon.com
+Username: stylist_linh | Email: linh@salon.com
+Customer (Khách hàng):
+Username: customer_a | Email: customer_a@example.com
+Username: customer_b | Email: customer_b@example.com
+2. Dịch vụ Salon (Services)
+Men's Haircut: 150.000 VND (30 phút)
+Women's Haircut: 250.000 VND (60 phút)
+Hair Wash & Massage: 100.000 VND (30 phút)
+Premium Hair Coloring: 500.000 VND (90 phút)
+Special Event Hair Styling: 120.000 VND (45 phút)
+Keratin Repair Treatment: 350.000 VND (60 phút)
+Beard Grooming & Trim: 80.000 VND (20 phút)
+3. Mã giảm giá Voucher
+NEWCUSTOMER10: Giảm giá 10% (cho hóa đơn từ 200.000 VND).
+SUMMER20: Giảm giá 20% (cho hóa đơn từ 300.000 VND).
+VIP30: Giảm trực tiếp 100.000 VND (cho hóa đơn từ 500.000 VND).
+HAIRCUT15: Giảm giá 15% áp dụng riêng cho các dịch vụ cắt tóc (Men's Haircut, Women's Haircut).
+Lệnh này hoàn toàn idempotent, nghĩa là bạn có thể chạy lại bao nhiêu lần tùy ý mà không sợ bị trùng lặp dữ liệu trong database.
+
