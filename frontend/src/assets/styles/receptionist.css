@@ -1,0 +1,653 @@
+/* =============================================================
+   RECEPTIONIST OPERATION CENTER — Luxury Salon Dashboard Styles
+   ============================================================= */
+
+/* ── Sidebar ── */
+.rcpt-sidebar {
+  background: #ffffff !important;
+  border-right: 1px solid var(--app-border) !important;
+  box-shadow: 2px 0 20px rgba(0, 0, 0, 0.03) !important;
+}
+
+.rcpt-sidebar-logo {
+  height: var(--app-header-height);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-bottom: 1px solid var(--app-border);
+  font-family: 'Outfit', serif;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  color: var(--rcpt-gold);
+  text-transform: uppercase;
+}
+
+.rcpt-sidebar-logo .logo-icon {
+  font-size: 18px;
+  color: var(--rcpt-gold);
+}
+
+/* Sidebar Menu */
+.rcpt-sidebar .ant-menu {
+  background: transparent !important;
+  border-inline-end: none !important;
+  padding: 12px 8px !important;
+}
+
+.rcpt-sidebar .ant-menu-item {
+  height: 42px !important;
+  line-height: 42px !important;
+  margin-block: 2px !important;
+  border-radius: 10px !important;
+  color: #6b6966 !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  transition: all 0.25s ease !important;
+  padding-left: 16px !important;
+  position: relative;
+}
+
+.rcpt-sidebar .ant-menu-item .anticon {
+  font-size: 15px !important;
+  transition: all 0.25s ease !important;
+}
+
+.rcpt-sidebar .ant-menu-item:hover {
+  color: var(--rcpt-gold-dark) !important;
+  background: var(--rcpt-gold-light) !important;
+}
+
+.rcpt-sidebar .ant-menu-item-selected {
+  color: var(--rcpt-gold-dark) !important;
+  background: linear-gradient(135deg, rgba(201, 169, 110, 0.12) 0%, rgba(201, 169, 110, 0.06) 100%) !important;
+  font-weight: 600 !important;
+}
+
+.rcpt-sidebar .ant-menu-item-selected::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 6px;
+  bottom: 6px;
+  width: 3px;
+  border-radius: 0 4px 4px 0;
+  background: linear-gradient(180deg, var(--rcpt-gold) 0%, var(--rcpt-gold-dark) 100%);
+}
+
+.rcpt-sidebar .ant-menu-item-selected .anticon {
+  color: var(--rcpt-gold) !important;
+}
+
+.rcpt-nav-divider {
+  height: 1px;
+  background: var(--app-border);
+  margin: 8px 16px;
+  opacity: 0.6;
+}
+
+.rcpt-nav-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #b0ada8;
+  padding: 8px 16px 4px;
+  display: block;
+}
+
+/* ── Header ── */
+.rcpt-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--app-header-height);
+  padding: 0 28px;
+  background: #ffffff;
+  border-bottom: 1px solid var(--app-border);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.02);
+}
+
+.rcpt-header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.rcpt-header-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 17px;
+  font-weight: 500;
+  color: var(--color-text);
+  letter-spacing: 0.01em;
+}
+
+.rcpt-header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.rcpt-header-clock {
+  font-size: 13px;
+  color: var(--color-muted);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  min-width: 70px;
+}
+
+.rcpt-header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* ── Stat Cards ── */
+.rcpt-stat-card {
+  border-radius: 20px !important;
+  padding: 4px 0 !important;
+  position: relative;
+  overflow: hidden;
+  cursor: default;
+}
+
+.rcpt-stat-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 20%;
+  right: 20%;
+  height: 3px;
+  border-radius: 3px 3px 0 0;
+  background: var(--rcpt-gold);
+  opacity: 0;
+  transition: all 0.35s ease;
+}
+
+.rcpt-stat-card:hover::after {
+  opacity: 1;
+  left: 10%;
+  right: 10%;
+}
+
+.rcpt-stat-card .stat-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.rcpt-stat-card .stat-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-muted);
+  margin-bottom: 4px;
+}
+
+.rcpt-stat-card .stat-value {
+  font-family: 'Outfit', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--color-text);
+}
+
+.rcpt-stat-card .stat-icon-box {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  font-size: 20px;
+  transition: all 0.3s ease;
+}
+
+.rcpt-stat-card:hover .stat-icon-box {
+  transform: rotate(5deg) scale(1.08);
+}
+
+/* ── Queue Cards ── */
+.rcpt-queue-card {
+  border-radius: 16px !important;
+  margin-bottom: 12px !important;
+  border-left: 4px solid transparent !important;
+  transition: all 0.25s ease !important;
+}
+
+.rcpt-queue-card:hover {
+  transform: translateX(4px) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06) !important;
+}
+
+.rcpt-queue-card.status-requested { border-left-color: var(--rcpt-info) !important; }
+.rcpt-queue-card.status-confirmed { border-left-color: var(--rcpt-success) !important; }
+.rcpt-queue-card.status-arrived { border-left-color: var(--rcpt-cyan) !important; }
+.rcpt-queue-card.status-in_service { border-left-color: var(--rcpt-purple) !important; }
+.rcpt-queue-card.status-completed { border-left-color: var(--rcpt-gold) !important; }
+.rcpt-queue-card.status-paid,
+.rcpt-queue-card.status-invoiced,
+.rcpt-queue-card.status-closed { border-left-color: var(--rcpt-success) !important; }
+.rcpt-queue-card.status-cancelled { border-left-color: var(--rcpt-danger) !important; }
+
+.rcpt-queue-card .queue-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.rcpt-queue-card .queue-code {
+  font-family: 'Outfit', monospace;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--color-text);
+}
+
+.rcpt-queue-card .queue-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 16px;
+  font-size: 13px;
+  color: #555;
+}
+
+.rcpt-queue-card .queue-body .label {
+  color: var(--color-muted);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.rcpt-queue-card .queue-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+/* ── Staff Status Cards ── */
+.rcpt-staff-card {
+  border-radius: 12px !important;
+  padding: 12px 16px !important;
+  margin-bottom: 8px !important;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.rcpt-staff-card .staff-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--rcpt-gold-light);
+  display: grid;
+  place-items: center;
+  font-size: 16px;
+  color: var(--rcpt-gold-dark);
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.rcpt-staff-card .staff-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.rcpt-staff-card .staff-name {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rcpt-staff-card .staff-task {
+  font-size: 11px;
+  color: var(--color-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rcpt-staff-card .staff-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.rcpt-staff-card .staff-dot.available { background: var(--rcpt-success); box-shadow: 0 0 6px rgba(16, 185, 129, 0.4); }
+.rcpt-staff-card .staff-dot.busy { background: var(--rcpt-danger); box-shadow: 0 0 6px rgba(239, 68, 68, 0.4); }
+.rcpt-staff-card .staff-dot.on-break { background: var(--rcpt-warning); box-shadow: 0 0 6px rgba(245, 158, 11, 0.4); }
+.rcpt-staff-card .staff-dot.off { background: #ccc; }
+
+/* ── Status Badge ── */
+.rcpt-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.rcpt-status-badge.status-requested { background: #dbeafe; color: #1d4ed8; }
+.rcpt-status-badge.status-confirmed { background: #d1fae5; color: #065f46; }
+.rcpt-status-badge.status-arrived { background: #cffafe; color: #0e7490; }
+.rcpt-status-badge.status-in_service { background: #ede9fe; color: #6d28d9; }
+.rcpt-status-badge.status-completed { background: #fef3c7; color: #92400e; }
+.rcpt-status-badge.status-invoiced { background: #fef3c7; color: #92400e; }
+.rcpt-status-badge.status-paid { background: #d1fae5; color: #065f46; }
+.rcpt-status-badge.status-closed { background: #e5e7eb; color: #374151; }
+.rcpt-status-badge.status-cancelled { background: #fee2e2; color: #991b1b; }
+.rcpt-status-badge.status-no_show { background: #fff7ed; color: #9a3412; }
+
+/* ── Booking Summary ── */
+.rcpt-booking-summary {
+  background: var(--rcpt-cream);
+  border: 1px solid var(--app-border);
+  border-radius: 20px;
+  padding: 24px;
+  position: sticky;
+  top: 24px;
+}
+
+.rcpt-booking-summary .summary-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px dashed var(--app-border);
+}
+
+.rcpt-booking-summary .summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 8px 0;
+  font-size: 13px;
+}
+
+.rcpt-booking-summary .summary-row .row-label {
+  color: var(--color-muted);
+  font-weight: 500;
+}
+
+.rcpt-booking-summary .summary-row .row-value {
+  font-weight: 600;
+  color: var(--color-text);
+  text-align: right;
+  max-width: 60%;
+}
+
+.rcpt-booking-summary .summary-divider {
+  border: none;
+  border-top: 1px dashed var(--app-border);
+  margin: 12px 0;
+}
+
+.rcpt-booking-summary .summary-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--rcpt-gold-dark);
+}
+
+/* ── Payment Method Selector ── */
+.rcpt-payment-methods {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.rcpt-payment-method {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 16px 12px;
+  border: 2px solid var(--app-border);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  background: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  color: #666;
+}
+
+.rcpt-payment-method:hover {
+  border-color: var(--rcpt-gold);
+  background: var(--rcpt-gold-light);
+}
+
+.rcpt-payment-method.selected {
+  border-color: var(--rcpt-gold);
+  background: linear-gradient(135deg, rgba(201, 169, 110, 0.08) 0%, rgba(201, 169, 110, 0.04) 100%);
+  color: var(--rcpt-gold-dark);
+  font-weight: 600;
+}
+
+.rcpt-payment-method .method-icon {
+  font-size: 22px;
+  color: var(--rcpt-gold);
+}
+
+/* ── Appointment Status Flow ── */
+.rcpt-status-flow {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 16px 0;
+  overflow-x: auto;
+}
+
+.rcpt-status-flow .flow-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 80px;
+  position: relative;
+}
+
+.rcpt-status-flow .flow-dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  border: 2px solid #ddd;
+  background: #fff;
+  color: #999;
+  transition: all 0.3s ease;
+  z-index: 1;
+}
+
+.rcpt-status-flow .flow-dot.completed {
+  background: var(--rcpt-success);
+  border-color: var(--rcpt-success);
+  color: #fff;
+}
+
+.rcpt-status-flow .flow-dot.current {
+  background: var(--rcpt-gold);
+  border-color: var(--rcpt-gold);
+  color: #fff;
+  box-shadow: 0 0 0 4px rgba(201, 169, 110, 0.2);
+}
+
+.rcpt-status-flow .flow-dot.cancelled {
+  background: var(--rcpt-danger);
+  border-color: var(--rcpt-danger);
+  color: #fff;
+}
+
+.rcpt-status-flow .flow-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--color-muted);
+  text-align: center;
+  max-width: 70px;
+}
+
+.rcpt-status-flow .flow-label.current {
+  color: var(--rcpt-gold-dark);
+}
+
+.rcpt-status-flow .flow-connector {
+  flex: 1;
+  height: 2px;
+  background: #e5e7eb;
+  min-width: 20px;
+  margin-top: -18px;
+}
+
+.rcpt-status-flow .flow-connector.completed {
+  background: var(--rcpt-success);
+}
+
+/* ── Gold button variant ── */
+.rcpt-btn-gold {
+  background: linear-gradient(135deg, var(--rcpt-gold) 0%, var(--rcpt-gold-dark) 100%) !important;
+  border: none !important;
+  color: #fff !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.04em;
+  border-radius: 10px !important;
+  box-shadow: 0 4px 14px rgba(201, 169, 110, 0.2) !important;
+  transition: all 0.3s ease !important;
+}
+
+.rcpt-btn-gold:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(201, 169, 110, 0.3) !important;
+  opacity: 0.95;
+}
+
+/* ── Welcome Banner ── */
+.rcpt-welcome-banner {
+  background: linear-gradient(135deg, #1f1d1a 0%, #141412 100%);
+  border-radius: 20px;
+  padding: 28px 32px;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 28px;
+}
+
+.rcpt-welcome-banner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: radial-gradient(circle at 90% 20%, rgba(201, 169, 110, 0.15) 0%, transparent 60%);
+}
+
+.rcpt-welcome-banner .banner-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.rcpt-welcome-banner .banner-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 24px;
+  font-weight: 400;
+  color: #faf7f2;
+  margin: 0 0 6px;
+}
+
+.rcpt-welcome-banner .banner-subtitle {
+  font-size: 13px;
+  color: #a3a19c;
+  margin: 0;
+}
+
+/* ── Dashboard Sections ── */
+.rcpt-section-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rcpt-section-title .section-count {
+  background: var(--rcpt-gold-light);
+  color: var(--rcpt-gold-dark);
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* ── Tabs (Queue) ── */
+.rcpt-queue-tabs .ant-tabs-tab {
+  font-weight: 500 !important;
+  font-size: 13px !important;
+}
+
+.rcpt-queue-tabs .ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: var(--rcpt-gold-dark) !important;
+  font-weight: 600 !important;
+}
+
+.rcpt-queue-tabs .ant-tabs-ink-bar {
+  background: var(--rcpt-gold) !important;
+}
+
+/* ── Animations ── */
+@keyframes rcptSlideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes rcptSlideRight {
+  from { opacity: 0; transform: translateX(-12px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.rcpt-animate-up {
+  animation: rcptSlideUp 0.4s ease forwards;
+}
+
+.rcpt-animate-right {
+  animation: rcptSlideRight 0.4s ease forwards;
+}
+
+/* ── Responsive ── */
+@media (max-width: 1200px) {
+  .rcpt-dashboard-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .rcpt-queue-card .queue-body {
+    grid-template-columns: 1fr;
+  }
+  .rcpt-payment-methods {
+    grid-template-columns: 1fr;
+  }
+}
