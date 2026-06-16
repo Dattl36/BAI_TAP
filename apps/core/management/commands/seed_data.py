@@ -179,6 +179,7 @@ class Command(BaseCommand):
             }
         ]
 
+        customer_profiles = {}
         for c_data in customers_data:
             customer_user, created = User.objects.get_or_create(
                 username=c_data["username"],
@@ -193,7 +194,7 @@ class Command(BaseCommand):
                 customer_user.set_password(default_pwd)
                 customer_user.save()
 
-            CustomerProfile.objects.get_or_create(
+            profile, _ = CustomerProfile.objects.get_or_create(
                 user=customer_user,
                 defaults={
                     "full_name": customer_user.full_name,
@@ -202,6 +203,7 @@ class Command(BaseCommand):
                     "status": "active"
                 }
             )
+            customer_profiles[customer_user.username] = profile
 
         self.stdout.write(self.style.SUCCESS("Da khoi tao xong cac tai khoan nguoi dung mau."))
 
@@ -295,10 +297,25 @@ class Command(BaseCommand):
                 "active": True
             }
         )
-        Voucher.objects.get_or_create(
+        demo_customer = customer_profiles.get("customer_a")
+
+        # VIP Promotion
+        vip_promo, _ = Promotion.objects.get_or_create(
+            name="Chương trình ưu đãi VIP",
+            defaults={
+                "description": "Ưu đãi tri ân đặc quyền dành riêng cho khách hàng VIP của hệ thống",
+                "discount_type": "amount",
+                "discount_value": 100000,
+                "starts_at": timezone.now() - timedelta(days=5),
+                "ends_at": timezone.now() + timedelta(days=90),
+                "active": True
+            }
+        )
+        vip_voucher, created = Voucher.objects.get_or_create(
             code="VIP30",
             defaults={
                 "promotion": vip_promo,
+                "customer": demo_customer,
                 "discount_type": "amount",
                 "discount_value": 100000,
                 "min_invoice": 500000,
@@ -308,6 +325,9 @@ class Command(BaseCommand):
                 "usage_limit": 50
             }
         )
+        if not created or vip_voucher.customer != demo_customer:
+            vip_voucher.customer = demo_customer
+            vip_voucher.save()
 
         # Summer Promo
         summer_promo, _ = Promotion.objects.get_or_create(
@@ -321,10 +341,11 @@ class Command(BaseCommand):
                 "active": True
             }
         )
-        Voucher.objects.get_or_create(
+        summer_voucher, created = Voucher.objects.get_or_create(
             code="SUMMER20",
             defaults={
                 "promotion": summer_promo,
+                "customer": demo_customer,
                 "discount_type": "percent",
                 "discount_value": 20,
                 "min_invoice": 300000,
@@ -334,6 +355,9 @@ class Command(BaseCommand):
                 "usage_limit": 100
             }
         )
+        if not created or summer_voucher.customer != demo_customer:
+            summer_voucher.customer = demo_customer
+            summer_voucher.save()
 
         # New Customer Promo
         new_cust_promo, _ = Promotion.objects.get_or_create(
@@ -347,10 +371,11 @@ class Command(BaseCommand):
                 "active": True
             }
         )
-        Voucher.objects.get_or_create(
+        new_cust_voucher, created = Voucher.objects.get_or_create(
             code="NEWCUSTOMER10",
             defaults={
                 "promotion": new_cust_promo,
+                "customer": demo_customer,
                 "discount_type": "percent",
                 "discount_value": 10,
                 "min_invoice": 200000,
@@ -360,6 +385,9 @@ class Command(BaseCommand):
                 "usage_limit": 500
             }
         )
+        if not created or new_cust_voucher.customer != demo_customer:
+            new_cust_voucher.customer = demo_customer
+            new_cust_voucher.save()
 
         # Haircut Promo
         haircut_promo, _ = Promotion.objects.get_or_create(
@@ -378,10 +406,11 @@ class Command(BaseCommand):
         if "Cắt tóc Nữ" in created_services:
             haircut_promo.service_scope.add(created_services["Cắt tóc Nữ"])
 
-        Voucher.objects.get_or_create(
+        haircut_voucher, created = Voucher.objects.get_or_create(
             code="HAIRCUT15",
             defaults={
                 "promotion": haircut_promo,
+                "customer": demo_customer,
                 "discount_type": "percent",
                 "discount_value": 15,
                 "min_invoice": 150000,
@@ -391,6 +420,9 @@ class Command(BaseCommand):
                 "usage_limit": 200
             }
         )
+        if not created or haircut_voucher.customer != demo_customer:
+            haircut_voucher.customer = demo_customer
+            haircut_voucher.save()
 
         self.stdout.write(self.style.SUCCESS("Da khoi tao xong cac chuong trinh khuyen mai va voucher."))
 

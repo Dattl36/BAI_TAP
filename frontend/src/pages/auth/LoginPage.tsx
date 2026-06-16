@@ -39,9 +39,9 @@ export const LoginPage = () => {
       }}>
         <div className="login-brand-logo">S A L O N</div>
         <div className="login-brand-footer">
-          <h1 className="login-brand-slogan">Curating beautiful moments, one detail at a time.</h1>
+          <h1 className="login-brand-slogan">Kiến tạo khoảnh khắc đẹp, chăm chút từng chi tiết.</h1>
           <p className="login-brand-subtext">
-            Access the premium salon operations dashboard to manage bookings, optimize scheduling, and deliver unforgettable client care.
+            Truy cập bảng điều khiển vận hành salon cao cấp để quản lý lịch hẹn, tối ưu hóa lịch trình và đem lại dịch vụ khách hàng đáng nhớ.
           </p>
           <div style={{ width: 40, height: 3, background: "var(--color-primary)", marginTop: 24, borderRadius: 2 }} />
         </div>
@@ -52,23 +52,23 @@ export const LoginPage = () => {
         <Card className="login-form-card" bordered={false}>
           <div style={{ marginBottom: 32 }}>
             <Typography.Title level={2} style={{ margin: 0, fontFamily: "'Playfair Display', serif", fontWeight: 500 }}>
-              Salon Management
+              Quản lý Salon
             </Typography.Title>
             <Typography.Paragraph type="secondary" style={{ marginTop: 8, fontSize: 14 }}>
-              Premium salon operations dashboard
+              Hệ thống quản trị vận hành salon cao cấp
             </Typography.Paragraph>
           </div>
 
           <Form<LoginCredentials> layout="vertical" onFinish={(values) => mutation.mutate(values)}>
             <Form.Item 
               name="username" 
-              label={<span style={{ fontWeight: 600, fontSize: 13, color: "var(--color-text)" }}>Username</span>}
+              label={<span style={{ fontWeight: 600, fontSize: 13, color: "var(--color-text)" }}>Tên đăng nhập</span>}
               required
-              rules={[{ required: true, message: "Username is required" }]}
+              rules={[{ required: true, message: "Vui lòng nhập tên đăng nhập" }]}
             >
               <Input 
                 prefix={<UserOutlined style={{ color: "var(--color-muted)", marginRight: 4 }} />} 
-                placeholder="Enter your username"
+                placeholder="Nhập tên đăng nhập của bạn"
                 autoComplete="username" 
                 style={{ height: 42, borderRadius: 8 }}
               />
@@ -76,13 +76,13 @@ export const LoginPage = () => {
 
             <Form.Item 
               name="password" 
-              label={<span style={{ fontWeight: 600, fontSize: 13, color: "var(--color-text)" }}>Password</span>}
+              label={<span style={{ fontWeight: 600, fontSize: 13, color: "var(--color-text)" }}>Mật khẩu</span>}
               required
-              rules={[{ required: true, message: "Password is required" }]}
+              rules={[{ required: true, message: "Vui lòng nhập mật khẩu" }]}
             >
               <Input.Password 
                 prefix={<LockOutlined style={{ color: "var(--color-muted)", marginRight: 4 }} />} 
-                placeholder="Enter your password"
+                placeholder="Nhập mật khẩu của bạn"
                 autoComplete="current-password" 
                 style={{ height: 42, borderRadius: 8 }}
               />
@@ -96,12 +96,12 @@ export const LoginPage = () => {
               className="login-button-gold"
               style={{ marginTop: 8 }}
             >
-              Access Workspace
+              Vào không gian làm việc
             </Button>
           </Form>
 
           <Typography.Paragraph style={{ marginTop: 24, marginBottom: 0, textAlign: "center", fontSize: 13 }}>
-            New customer? <Link to={ROUTES.register} style={{ color: "var(--color-primary)", fontWeight: 600 }}>Create an account</Link>
+            Khách hàng mới? <Link to={ROUTES.register} style={{ color: "var(--color-primary)", fontWeight: 600 }}>Tạo tài khoản</Link>
           </Typography.Paragraph>
         </Card>
       </div>

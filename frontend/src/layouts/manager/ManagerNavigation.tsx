@@ -18,16 +18,16 @@ export const ManagerNavigation = () => {
   const location = useLocation();
 
   const menuItems = [
-    { key: "/manager", icon: <HomeOutlined />, label: "Dashboard" },
-    { key: "/manager/reports", icon: <AreaChartOutlined />, label: "Revenue Reports" },
-    { key: "/manager/invoices", icon: <FileTextOutlined />, label: "Invoices & Payments" },
-    { key: "/manager/scheduling", icon: <ScheduleOutlined />, label: "Staff Scheduling" },
-    { key: "/manager/appointments", icon: <CalendarOutlined />, label: "Salon Appointments" },
-    { key: "/manager/vouchers", icon: <GiftOutlined />, label: "Voucher & Promotions" },
-    { key: "/manager/customers", icon: <TeamOutlined />, label: "Customers" },
-    { key: "/manager/notifications", icon: <BellOutlined />, label: "Notifications" },
-    { key: "/manager/accounts", icon: <UserOutlined />, label: "User Access Control" },
-    { key: "/manager/settings", icon: <SettingOutlined />, label: "Settings" },
+    { key: "/manager", icon: <HomeOutlined />, label: "Bảng điều khiển" },
+    { key: "/manager/reports", icon: <AreaChartOutlined />, label: "Báo cáo doanh thu" },
+    { key: "/manager/invoices", icon: <FileTextOutlined />, label: "Hóa đơn & Thanh toán" },
+    { key: "/manager/scheduling", icon: <ScheduleOutlined />, label: "Lịch làm việc của thợ" },
+    { key: "/manager/appointments", icon: <CalendarOutlined />, label: "Lịch hẹn của Salon" },
+    { key: "/manager/vouchers", icon: <GiftOutlined />, label: "Mã giảm giá & Khuyến mãi" },
+    { key: "/manager/customers", icon: <TeamOutlined />, label: "Khách hàng" },
+    { key: "/manager/notifications", icon: <BellOutlined />, label: "Thông báo" },
+    { key: "/manager/accounts", icon: <UserOutlined />, label: "Kiểm soát truy cập" },
+    { key: "/manager/settings", icon: <SettingOutlined />, label: "Cài đặt" },
   ];
 
   const selectedKey = menuItems.find((item) => 

@@ -4,12 +4,17 @@ from apps.appointments.serializers import AppointmentSerializer, AppointmentTran
 from apps.appointments.services import create_appointment, reschedule_appointment, transition_appointment
 from apps.core.responses import success
 from apps.employees.models import EmployeeProfile
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from rest_framework.decorators import action
+from rest_framework.filters import OrderingFilter
 
 
 class AppointmentViewSet(viewsets.ModelViewSet):
     serializer_class = AppointmentSerializer
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
+    filterset_fields = ["status", "staff", "customer", "source"]
+    ordering_fields = ["scheduled_start", "created_at"]
 
     def get_queryset(self):
         return scope_queryset(self.request.user, Appointment.objects.all())
@@ -22,6 +27,20 @@ class AppointmentViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         appointment = create_appointment(request.user, **serializer.validated_data)
         return success(self.get_serializer(appointment).data, "Appointment created", 201)
+
+    def update(self, request, *args, **kwargs):
+        from rest_framework.exceptions import MethodNotAllowed
+        raise MethodNotAllowed("PUT", detail="Vui lòng sử dụng endpoint /reschedule/ để cập nhật lịch hẹn.")
+
+    def partial_update(self, request, *args, **kwargs):
+        data = request.data
+        if "status" in data and len(data) == 1:
+            from apps.appointments.services import transition_appointment
+            appointment = transition_appointment(request.user, self.get_object(), data["status"])
+            return success(self.get_serializer(appointment).data)
+        
+        from rest_framework.exceptions import MethodNotAllowed
+        raise MethodNotAllowed("PATCH", detail="Vui lòng sử dụng các endpoint cụ thể (/reschedule/, /cancel/...) để cập nhật lịch hẹn.")
 
     @action(detail=True, methods=["post"])
     def confirm(self, request, pk=None):

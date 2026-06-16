@@ -11,4 +11,11 @@ export interface Voucher extends BaseEntity {
   starts_at: string;
   expires_at: string;
   status: "active" | "redeemed" | "expired" | "cancelled";
+  title?: string;
+  name?: string;
+  description?: string;
+  start_date?: string;
+  end_date?: string;
+  quantity?: number;
+  is_active?: boolean;
 }

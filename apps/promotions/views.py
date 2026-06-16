@@ -28,12 +28,39 @@ class VoucherViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
+<<<<<<< HEAD
         if getattr(user, "role", None) == Roles.CUSTOMER:
             customer = getattr(user, "customer_profile", None)
             if customer:
                 from django.db.models import Q
                 return Voucher.objects.filter(Q(customer=customer) | Q(customer__isnull=True), status="active")
             return Voucher.objects.none()
+=======
+        if not getattr(user, "is_authenticated", False):
+            return Voucher.objects.none()
+
+        if user.role == Roles.MANAGER or user.role == Roles.RECEPTIONIST:
+            return Voucher.objects.all()
+
+        if user.role == Roles.CUSTOMER:
+            customer = getattr(user, "customer_profile", None)
+            if not customer:
+                return Voucher.objects.none()
+
+            import django.utils.timezone as tz
+            from django.db.models import Q, F
+
+            now = tz.now()
+            return Voucher.objects.filter(
+                Q(customer=customer) | Q(customer__isnull=True)
+            ).filter(
+                status="active",
+                starts_at__lte=now,
+                expires_at__gte=now,
+                usage_limit__gt=F("used_count")
+            )
+
+>>>>>>> 27f04a9d6e7a8b6ed1ebe698fcfce256d759d88a
         return scope_queryset(user, Voucher.objects.all())
 
     @action(detail=True, methods=["post"])
