@@ -6,6 +6,7 @@ from apps.accounts.roles import Roles
 from apps.appointments.models import Appointment
 from apps.core.audit import record_event, record_rejection
 from apps.core.exceptions import BusinessError, ErrorCodes
+from apps.notifications.services import notify_user
 
 
 ACTIVE_STATUSES = ["requested", "confirmed", "arrived", "in_service"]
@@ -41,6 +42,13 @@ def create_appointment(actor, **data):
     ensure_no_conflict(actor, data["staff"], data["scheduled_start"], data["scheduled_end"])
     appointment = Appointment.objects.create(**data)
     record_event(actor, "appointment.create", appointment)
+    notify_user(
+        user=appointment.customer,
+        category="appointment",
+        title="Appointment Confirmed",
+        message=f"Your appointment for {appointment.scheduled_start.strftime('%Y-%m-%d %H:%M')} has been booked.",
+        related=appointment
+    )
     return appointment
 
 
@@ -61,6 +69,13 @@ def transition_appointment(actor, appointment, new_status, reason=""):
     appointment.status = new_status
     if new_status == "cancelled":
         appointment.cancellation_reason = reason
+        notify_user(
+            user=appointment.customer,
+            category="appointment",
+            title="Appointment Cancelled",
+            message="Your appointment has been cancelled.",
+            related=appointment
+        )
     if new_status == "no_show":
         appointment.no_show_reason = reason
     appointment.save()
@@ -85,6 +100,13 @@ def reschedule_appointment(actor, appointment, start, end, staff=None):
     appointment.scheduled_end = end
     appointment.save()
     record_event(actor, "appointment.reschedule", appointment, prior_state=prior, resulting_state=appointment)
+    notify_user(
+        user=appointment.customer,
+        category="appointment",
+        title="Appointment Rescheduled",
+        message=f"Your appointment has been rescheduled to {start.strftime('%Y-%m-%d %H:%M')}.",
+        related=appointment
+    )
     return appointment
 
 
