@@ -44,7 +44,7 @@ def create_invoice_from_appointment(actor, appointment):
     invoice.save()
     record_event(actor, "invoice.create_from_appointment", invoice)
     notify_user(
-        user=invoice.customer,
+        user=invoice.customer.user,
         category="billing",
         title="Invoice Generated",
         message=f"An invoice of {invoice.total_due:,.0f} VND has been generated for your appointment.",
