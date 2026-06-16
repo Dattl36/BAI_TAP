@@ -1,10 +1,9 @@
 import {
   CalendarOutlined,
   CheckCircleOutlined,
-  DollarOutlined,
+  ClockCircleOutlined,
   PlusOutlined,
   TeamOutlined,
-  ClockCircleOutlined,
 } from "@ant-design/icons";
 import { Button, Card, Col, Row, Table, Typography } from "antd";
 import { Link } from "react-router-dom";
@@ -32,58 +31,59 @@ export const ReceptionistHomePage = () => {
   const checkInCount = allToday.length;
   const arrivedCount = allToday.filter((a) => a.status === "arrived").length;
   const inServiceCount = allToday.filter((a) => a.status === "in_service").length;
-  const completedCount = allToday.filter((a) => a.status === "completed" || a.status === "invoiced" || a.status === "closed").length;
+  const completedCount = allToday.filter(
+    (a) => a.status === "completed" || a.status === "invoiced" || a.status === "closed"
+  ).length;
 
   const stats = [
-    { label: "Appointments Today", count: checkInCount, icon: <TeamOutlined />, color: "var(--color-primary-dark)" },
-    { label: "Arrived / Waiting", count: arrivedCount, icon: <ClockCircleOutlined />, color: "#06b6d4" },
-    { label: "In Service Session", count: inServiceCount, icon: <CalendarOutlined />, color: "#8b5cf6" },
-    { label: "Completed Check-outs", count: completedCount, icon: <CheckCircleOutlined />, color: "#10b981" },
+    { label: "Lịch hẹn hôm nay", count: checkInCount, icon: <TeamOutlined />, color: "var(--color-primary-dark)" },
+    { label: "Đã đến / Chờ đợi", count: arrivedCount, icon: <ClockCircleOutlined />, color: "#06b6d4" },
+    { label: "Đang phục vụ", count: inServiceCount, icon: <CalendarOutlined />, color: "#8b5cf6" },
+    { label: "Đã hoàn thành", count: completedCount, icon: <CheckCircleOutlined />, color: "#10b981" },
   ];
 
-  // Checkout queue: arrived + in_service
   const checkoutQueue = allToday.filter(
     (a) => a.status === "arrived" || a.status === "in_service"
   );
 
   const checkoutColumns = [
     {
-      title: "Booking Code",
+      title: "Mã lịch hẹn",
       dataIndex: "id",
       key: "id",
       render: (id: number | string) => <span style={{ fontWeight: 600 }}>#{id}</span>,
     },
     {
-      title: "Customer",
+      title: "Khách hàng",
       dataIndex: "customer",
       key: "customer",
-      render: (val: number | string) => <span>Customer #{val}</span>,
+      render: (val: number | string) => <span>KH #{val}</span>,
     },
     {
-      title: "Staff",
+      title: "Nhân viên",
       dataIndex: "staff",
       key: "staff",
-      render: (val: number | string) => <span>Staff #{val}</span>,
+      render: (val: number | string) => <span>NV #{val}</span>,
     },
     {
-      title: "Scheduled At",
+      title: "Giờ hẹn",
       dataIndex: "scheduled_start",
       key: "scheduled_start",
-      render: (value: any) => formatDateTime(value),
+      render: (value: string) => formatDateTime(value),
     },
     {
-      title: "Status",
+      title: "Trạng thái",
       dataIndex: "status",
       key: "status",
       render: (status: string) => <StatusTag status={status} />,
     },
     {
-      title: "Quick Action",
+      title: "Thao tác nhanh",
       key: "action",
       render: (_: unknown, record: Appointment) => (
         <Link to={`/receptionist/invoices`}>
           <Button type="primary" size="small" style={{ borderRadius: 6, fontSize: 11 }}>
-            Checkout & Invoice #{record.id}
+            Thanh toán #{record.id}
           </Button>
         </Link>
       ),
@@ -92,35 +92,24 @@ export const ReceptionistHomePage = () => {
 
   return (
     <div style={{ animation: "fadeIn 0.5s ease" }}>
-      {/* Front Desk Header Panel */}
-      <Card
-        variant="borderless"
-        style={{
-          background: "linear-gradient(135deg, #1f1d1a 0%, #141412 100%)",
-          color: "#ffffff",
-          borderRadius: 20,
-          marginBottom: 32,
-          padding: 8,
-        }}
-      >
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
+      {/* Welcom Banner */}
+      <div className="rcpt-welcome-banner" style={{ marginBottom: 28 }}>
+        <div className="banner-content">
           <div>
-            <Typography.Title level={2} style={{ margin: 0, color: "#faf7f2", fontFamily: "'Playfair Display', serif", fontWeight: 400 }}>
-              Front Desk Workspace
-            </Typography.Title>
-            <Typography.Paragraph style={{ marginTop: 8, color: "#a3a19c", fontSize: 14, margin: 0 }}>
-              Today is {dayjs().format("dddd, MMMM D, YYYY")} — Review appointments, complete check-ins, and manage bills.
-            </Typography.Paragraph>
+            <h2 className="banner-title">Trung tâm điều hành lễ tân</h2>
+            <p className="banner-subtitle">
+              Hôm nay, {dayjs().format("dddd DD/MM/YYYY")} — Kiểm tra lịch hẹn, hoàn tất check-in và quản lý hóa đơn.
+            </p>
           </div>
           <Link to="/receptionist/appointments/create">
             <Button type="primary" size="large" className="login-button-gold" icon={<PlusOutlined />}>
-              Add Direct Walk-in
+              Thêm khách vãng lai
             </Button>
           </Link>
         </div>
-      </Card>
+      </div>
 
-      {/* Operations Quick Counters */}
+      {/* Stats */}
       <Row gutter={[24, 24]} style={{ marginBottom: 32 }}>
         {stats.map((s) => (
           <Col xs={12} sm={12} lg={6} key={s.label}>
@@ -137,8 +126,7 @@ export const ReceptionistHomePage = () => {
                 <div style={{
                   background: "var(--color-accent)",
                   color: s.color,
-                  width: 44,
-                  height: 44,
+                  width: 44, height: 44,
                   borderRadius: 10,
                   display: "grid",
                   placeItems: "center",
@@ -152,10 +140,18 @@ export const ReceptionistHomePage = () => {
         ))}
       </Row>
 
-      {/* Main Operational Table */}
-      <Card title="Active Desk Billing Queue" variant="borderless" style={{ marginBottom: 32 }}>
+      {/* Queue Table */}
+      <Card
+        title={
+          <span style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 600 }}>
+            Hàng đợi thanh toán đang hoạt động
+          </span>
+        }
+        variant="borderless"
+        style={{ marginBottom: 32 }}
+      >
         {checkoutQueue.length === 0 && !appointmentsQuery.isLoading ? (
-          <EmptyState description="No clients currently arrived or in service." />
+          <EmptyState description="Chưa có khách đã đến hoặc đang phục vụ." />
         ) : (
           <Table
             dataSource={checkoutQueue}
@@ -164,6 +160,7 @@ export const ReceptionistHomePage = () => {
             rowKey="id"
             pagination={false}
             size="middle"
+            locale={{ emptyText: "Không có dữ liệu" }}
           />
         )}
       </Card>
