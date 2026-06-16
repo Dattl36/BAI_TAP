@@ -1,6 +1,8 @@
+from datetime import timedelta
 from django.db import transaction
 from django.utils import timezone
 
+from apps.accounts.roles import Roles
 from apps.appointments.models import Appointment
 from apps.core.audit import record_event, record_rejection
 from apps.core.exceptions import BusinessError, ErrorCodes
@@ -61,6 +63,11 @@ def transition_appointment(actor, appointment, new_status, reason=""):
 
 @transaction.atomic
 def reschedule_appointment(actor, appointment, start, end, staff=None):
+    if getattr(actor, "role", None) == Roles.CUSTOMER:
+        if timezone.now() > appointment.created_at + timedelta(hours=1):
+            record_rejection(actor, "appointment.reschedule_timeout", "Passed 1 hour limit.", {"entity_type": "Appointment"})
+            raise BusinessError("Bạn chỉ có thể thay đổi lịch hẹn trong vòng 1 giờ sau khi đặt.", ErrorCodes.VALIDATION_ERROR, status_code=403)
+
     staff = staff or appointment.staff
     ensure_no_conflict(actor, staff, start, end, appointment.id)
     prior = {"scheduled_start": appointment.scheduled_start.isoformat(), "scheduled_end": appointment.scheduled_end.isoformat(), "staff": appointment.staff_id}
