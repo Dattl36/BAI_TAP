@@ -51,7 +51,8 @@ class ComplaintViewSet(viewsets.ModelViewSet):
     def assign(self, request, pk=None):
         from django.contrib.auth import get_user_model
 
-        user = get_user_model().objects.get(id=request.data["assigned_to"])
+        assignee_id = request.data.get("assigned_to") or request.data.get("assignee")
+        user = get_user_model().objects.get(id=assignee_id)
         return success(self.get_serializer(assign_complaint(request.user, self.get_object(), user, request.data.get("note", ""))).data)
 
     @action(detail=True, methods=["post"])

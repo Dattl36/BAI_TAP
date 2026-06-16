@@ -20,4 +20,5 @@ urlpatterns = [
     path("api/complaints/", include("apps.feedback.complaint_urls")),
     path("api/notifications/", include("apps.notifications.urls")),
     path("api/reports/", include("apps.reports.urls")),
+    path("api/public/", include("apps.core.public_urls")),
 ]
