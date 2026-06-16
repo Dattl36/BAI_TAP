@@ -67,7 +67,7 @@ export const useCustomerHomeData = () => {
     isError,
     error,
     nextAppointment,
-    activeVouchers: normalizedVouchers.filter((v) => v.status === "active"),
+    activeVouchers: normalizedVouchers.filter((v) => v.status === "active" || v.is_active === true),
     currentPoints,
     loyaltyTier,
     tierProgress,

@@ -10,7 +10,7 @@ interface ApiErrorResponse {
 }
 
 export function getErrorMessage(error: unknown): string {
-  if (!error) return "Something went wrong. Please try again.";
+  if (!error) return "Đã xảy ra lỗi. Vui lòng thử lại.";
 
   // Already a plain string
   if (typeof error === "string") return error;
@@ -44,5 +44,5 @@ export function getErrorMessage(error: unknown): string {
 
   if (error instanceof Error) return error.message;
 
-  return "Something went wrong. Please try again.";
+  return "Đã xảy ra lỗi. Vui lòng thử lại.";
 }

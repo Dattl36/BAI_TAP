@@ -66,15 +66,15 @@ export const CustomerVouchersPage = () => {
                   <GiftOutlined style={{ fontSize: 32, color: "var(--color-primary)", marginBottom: 16 }} />
                   
                   <Typography.Title level={3} style={{ margin: "0 0 4px", color: "var(--color-primary-dark)", fontFamily: "'Outfit', sans-serif" }}>
-                    {discountLabel}
+                    {v.title || v.name || discountLabel}
                   </Typography.Title>
                   
                   <Typography.Title level={5} style={{ margin: "0 0 12px", fontWeight: 600 }}>
-                    {v.min_invoice ? `Min Invoice: ${Number(v.min_invoice).toLocaleString()} VND` : "No Minimum Invoice"}
+                    {v.min_invoice ? `Hóa đơn tối thiểu: ${Number(v.min_invoice).toLocaleString()} VND` : "Không yêu cầu tối thiểu"}
                   </Typography.Title>
                   
                   <Typography.Paragraph type="secondary" style={{ fontSize: 13, minHeight: 40, margin: "0 0 16px" }}>
-                    Redeem this code at checkout to claim your self-care promotional discount.
+                    {v.description || `Sử dụng mã giảm giá này khi thanh toán để được giảm ${isPercent ? `${v.discount_value}%` : `${Number(v.discount_value).toLocaleString()} VND`}.`}
                   </Typography.Paragraph>
                   
                   <div 
@@ -102,7 +102,7 @@ export const CustomerVouchersPage = () => {
                   </div>
 
                   <Typography.Text type="secondary" style={{ fontSize: 11, display: "block" }}>
-                    Valid Until: {v.expires_at ? new Date(v.expires_at).toLocaleDateString() : "Never"}
+                    Có hiệu lực đến: {v.expires_at || v.end_date ? new Date((v.expires_at || v.end_date) as string).toLocaleDateString() : "Vô thời hạn"}
                   </Typography.Text>
                 </Card>
               </Col>

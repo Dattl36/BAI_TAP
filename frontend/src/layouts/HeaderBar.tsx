@@ -14,23 +14,23 @@ export const HeaderBar = () => {
 
   const getPageTitle = () => {
     const path = location.pathname;
-    if (path.startsWith(ROUTES.dashboard)) return "Dashboard";
-    if (path.startsWith(ROUTES.accounts)) return "Account Management";
-    if (path.startsWith(ROUTES.customers)) return "Customers Workspace";
-    if (path.startsWith(ROUTES.employees)) return "Staff Directory";
-    if (path.startsWith(ROUTES.services)) return "Service Catalog";
-    if (path.startsWith(ROUTES.appointments)) return "Bookings & Appointments";
-    if (path.startsWith(ROUTES.serviceExecutions)) return "Service Executions";
-    if (path.startsWith(ROUTES.invoices)) return "Billing & Invoices";
-    if (path.startsWith(ROUTES.payments)) return "Payments & Transactions";
-    if (path.startsWith(ROUTES.promotions)) return "Marketing Promotions";
-    if (path.startsWith(ROUTES.vouchers)) return "Discount Vouchers";
-    if (path.startsWith(ROUTES.rewards)) return "Customer Rewards";
-    if (path.startsWith(ROUTES.feedback)) return "Client Feedback";
-    if (path.startsWith(ROUTES.complaints)) return "Complaints Registry";
-    if (path.startsWith(ROUTES.notifications)) return "Activity Notifications";
-    if (path.startsWith(ROUTES.reports)) return "Analytics & Reports";
-    return "Salon Management";
+    if (path.startsWith(ROUTES.dashboard)) return "Bảng điều khiển";
+    if (path.startsWith(ROUTES.accounts)) return "Quản lý tài khoản";
+    if (path.startsWith(ROUTES.customers)) return "Không gian khách hàng";
+    if (path.startsWith(ROUTES.employees)) return "Danh bạ nhân viên";
+    if (path.startsWith(ROUTES.services)) return "Danh mục dịch vụ";
+    if (path.startsWith(ROUTES.appointments)) return "Lịch hẹn & Đặt chỗ";
+    if (path.startsWith(ROUTES.serviceExecutions)) return "Thực hiện dịch vụ";
+    if (path.startsWith(ROUTES.invoices)) return "Hóa đơn & Thanh toán";
+    if (path.startsWith(ROUTES.payments)) return "Giao dịch & Thanh toán";
+    if (path.startsWith(ROUTES.promotions)) return "Khuyến mãi tiếp thị";
+    if (path.startsWith(ROUTES.vouchers)) return "Mã giảm giá";
+    if (path.startsWith(ROUTES.rewards)) return "Điểm thưởng khách hàng";
+    if (path.startsWith(ROUTES.feedback)) return "Phản hồi khách hàng";
+    if (path.startsWith(ROUTES.complaints)) return "Sổ khiếu nại";
+    if (path.startsWith(ROUTES.notifications)) return "Thông báo hoạt động";
+    if (path.startsWith(ROUTES.reports)) return "Phân tích & Báo cáo";
+    return "Quản lý Salon";
   };
 
   return (
@@ -53,7 +53,7 @@ export const HeaderBar = () => {
         <div className="header-user-profile">
           <UserOutlined style={{ color: "var(--color-primary)", fontSize: 14 }} />
           <Typography.Text style={{ fontWeight: 500, fontSize: 13, color: "var(--color-text)" }}>
-            {user?.username ?? "Salon Admin"}
+            {user?.username ?? "Quản trị viên"}
           </Typography.Text>
         </div>
 
@@ -64,7 +64,7 @@ export const HeaderBar = () => {
           onClick={logout}
           style={{ fontSize: 13, fontWeight: 500 }}
         >
-          Logout
+          Đăng xuất
         </Button>
       </Space>
     </header>

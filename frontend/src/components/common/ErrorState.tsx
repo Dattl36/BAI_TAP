@@ -7,7 +7,7 @@ interface ErrorStateProps {
   onRetry?: () => void;
 }
 
-export const ErrorState = ({ message = "Unable to load data.", onRetry }: ErrorStateProps) => {
+export const ErrorState = ({ message = "Không thể tải dữ liệu.", onRetry }: ErrorStateProps) => {
   const errorString = getErrorMessage(message);
 
   return (
@@ -41,7 +41,7 @@ export const ErrorState = ({ message = "Unable to load data.", onRetry }: ErrorS
             fontWeight: 500 
           }}
         >
-          Retry
+          Thử lại
         </Button>
       ) : null}
     </div>

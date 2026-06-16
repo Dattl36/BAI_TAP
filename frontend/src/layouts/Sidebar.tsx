@@ -23,22 +23,22 @@ import { ROUTES } from "../constants/routes";
 type MenuItem = Required<MenuProps>["items"][number];
 
 const menuItems: MenuItem[] = [
-  { key: ROUTES.dashboard, icon: <DashboardOutlined />, label: "Dashboard" },
-  { key: ROUTES.accounts, icon: <UserOutlined />, label: "Accounts" },
-  { key: ROUTES.customers, icon: <TeamOutlined />, label: "Customers" },
-  { key: ROUTES.employees, icon: <ShopOutlined />, label: "Employees" },
-  { key: ROUTES.services, icon: <ScissorOutlined />, label: "Services" },
-  { key: ROUTES.appointments, icon: <CalendarOutlined />, label: "Appointments" },
-  { key: ROUTES.serviceExecutions, icon: <AppstoreOutlined />, label: "Service Executions" },
-  { key: ROUTES.invoices, icon: <FileTextOutlined />, label: "Invoices" },
-  { key: ROUTES.payments, icon: <CreditCardOutlined />, label: "Payments" },
-  { key: ROUTES.promotions, icon: <GiftOutlined />, label: "Promotions" },
-  { key: ROUTES.vouchers, icon: <DollarOutlined />, label: "Vouchers" },
-  { key: ROUTES.rewards, icon: <WalletOutlined />, label: "Rewards" },
-  { key: ROUTES.feedback, icon: <CommentOutlined />, label: "Feedback" },
-  { key: ROUTES.complaints, icon: <CommentOutlined />, label: "Complaints" },
-  { key: ROUTES.notifications, icon: <BellOutlined />, label: "Notifications" },
-  { key: ROUTES.reports, icon: <LineChartOutlined />, label: "Reports" },
+  { key: ROUTES.dashboard, icon: <DashboardOutlined />, label: "Bảng điều khiển" },
+  { key: ROUTES.accounts, icon: <UserOutlined />, label: "Tài khoản" },
+  { key: ROUTES.customers, icon: <TeamOutlined />, label: "Khách hàng" },
+  { key: ROUTES.employees, icon: <ShopOutlined />, label: "Nhân viên" },
+  { key: ROUTES.services, icon: <ScissorOutlined />, label: "Dịch vụ" },
+  { key: ROUTES.appointments, icon: <CalendarOutlined />, label: "Lịch hẹn" },
+  { key: ROUTES.serviceExecutions, icon: <AppstoreOutlined />, label: "Thực hiện dịch vụ" },
+  { key: ROUTES.invoices, icon: <FileTextOutlined />, label: "Hóa đơn" },
+  { key: ROUTES.payments, icon: <CreditCardOutlined />, label: "Thanh toán" },
+  { key: ROUTES.promotions, icon: <GiftOutlined />, label: "Khuyến mãi" },
+  { key: ROUTES.vouchers, icon: <DollarOutlined />, label: "Mã giảm giá" },
+  { key: ROUTES.rewards, icon: <WalletOutlined />, label: "Điểm thưởng" },
+  { key: ROUTES.feedback, icon: <CommentOutlined />, label: "Phản hồi" },
+  { key: ROUTES.complaints, icon: <CommentOutlined />, label: "Khiếu nại" },
+  { key: ROUTES.notifications, icon: <BellOutlined />, label: "Thông báo" },
+  { key: ROUTES.reports, icon: <LineChartOutlined />, label: "Báo cáo" },
 ];
 
 export const Sidebar = () => {

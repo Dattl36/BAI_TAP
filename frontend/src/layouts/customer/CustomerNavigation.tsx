@@ -17,15 +17,15 @@ export const CustomerNavigation = () => {
   const location = useLocation();
 
   const menuItems = [
-    { key: "/customer", icon: <HomeOutlined />, label: "Home" },
-    { key: "/customer/book", icon: <CalendarOutlined />, label: "Book Now" },
-    { key: "/customer/appointments", icon: <ProfileOutlined />, label: "Appointments" },
-    { key: "/customer/invoices", icon: <DollarOutlined />, label: "Invoices" },
-    { key: "/customer/rewards", icon: <WalletOutlined />, label: "Rewards" },
-    { key: "/customer/vouchers", icon: <GiftOutlined />, label: "Vouchers" },
-    { key: "/customer/feedback", icon: <StarOutlined />, label: "Feedback" },
-    { key: "/customer/complaints", icon: <CommentOutlined />, label: "Complaints" },
-    { key: "/customer/notifications", icon: <NotificationOutlined />, label: "Notifications" },
+    { key: "/customer", icon: <HomeOutlined />, label: "Trang chủ" },
+    { key: "/customer/book", icon: <CalendarOutlined />, label: "Đặt lịch ngay" },
+    { key: "/customer/appointments", icon: <ProfileOutlined />, label: "Lịch hẹn" },
+    { key: "/customer/invoices", icon: <DollarOutlined />, label: "Hóa đơn" },
+    { key: "/customer/rewards", icon: <WalletOutlined />, label: "Điểm thưởng" },
+    { key: "/customer/vouchers", icon: <GiftOutlined />, label: "Mã giảm giá" },
+    { key: "/customer/feedback", icon: <StarOutlined />, label: "Phản hồi" },
+    { key: "/customer/complaints", icon: <CommentOutlined />, label: "Khiếu nại" },
+    { key: "/customer/notifications", icon: <NotificationOutlined />, label: "Thông báo" },
   ];
 
   const selectedKey = menuItems.find((item) => 

@@ -223,13 +223,16 @@ export const CustomerHomePage = () => {
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <div>
                       <Typography.Title level={4} style={{ margin: 0, color: "var(--color-primary-dark)", fontFamily: "'Outfit', sans-serif" }}>
-                        {v.discount_type === "percent" ? `${v.discount_value}% OFF` : `${Number(v.discount_value).toLocaleString()} VND OFF`}
+                        {v.title || v.name || (v.discount_type === "percent" ? `${v.discount_value}% OFF` : `${Number(v.discount_value).toLocaleString()} VND OFF`)}
                       </Typography.Title>
-                      <Typography.Text style={{ fontWeight: 500, display: "block", fontSize: 13, marginTop: 4 }}>
-                        Min invoice: {Number(v.min_invoice || 0).toLocaleString()} VND
+                      <Typography.Text style={{ fontWeight: 600, display: "block", fontSize: 13, marginTop: 4 }}>
+                        {v.discount_type === "percent" ? `Giảm ${v.discount_value}%` : `Giảm ${Number(v.discount_value).toLocaleString()} VND`}
+                      </Typography.Text>
+                      <Typography.Text type="secondary" style={{ fontSize: 11, display: "block", marginTop: 2 }}>
+                        {v.description || `Hóa đơn tối thiểu: ${Number(v.min_invoice || 0).toLocaleString()} VND`}
                       </Typography.Text>
                       <Typography.Text type="secondary" style={{ fontSize: 11 }}>
-                        Expires: {v.expires_at ? new Date(v.expires_at).toLocaleDateString() : "Never"}
+                        Hạn dùng: {v.expires_at || v.end_date ? new Date((v.expires_at || v.end_date) as string).toLocaleDateString() : "Vô thời hạn"}
                       </Typography.Text>
                     </div>
 
