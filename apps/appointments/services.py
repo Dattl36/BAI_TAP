@@ -43,7 +43,7 @@ def create_appointment(actor, **data):
     appointment = Appointment.objects.create(**data)
     record_event(actor, "appointment.create", appointment)
     notify_user(
-        user=appointment.customer,
+        user=appointment.customer.user,
         category="appointment",
         title="Appointment Confirmed",
         message=f"Your appointment for {appointment.scheduled_start.strftime('%Y-%m-%d %H:%M')} has been booked.",
@@ -70,7 +70,7 @@ def transition_appointment(actor, appointment, new_status, reason=""):
     if new_status == "cancelled":
         appointment.cancellation_reason = reason
         notify_user(
-            user=appointment.customer,
+            user=appointment.customer.user,
             category="appointment",
             title="Appointment Cancelled",
             message="Your appointment has been cancelled.",
@@ -101,7 +101,7 @@ def reschedule_appointment(actor, appointment, start, end, staff=None):
     appointment.save()
     record_event(actor, "appointment.reschedule", appointment, prior_state=prior, resulting_state=appointment)
     notify_user(
-        user=appointment.customer,
+        user=appointment.customer.user,
         category="appointment",
         title="Appointment Rescheduled",
         message=f"Your appointment has been rescheduled to {start.strftime('%Y-%m-%d %H:%M')}.",

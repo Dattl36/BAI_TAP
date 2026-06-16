@@ -44,7 +44,7 @@ def transition_payment(actor, payment, new_status, reason=""):
         invoice.status = "paid" if invoice.balance_due <= 0 else "partially_paid"
         invoice.save()
         notify_user(
-            user=payment.customer,
+            user=payment.customer.user,
             category="payment",
             title="Payment Successful",
             message=f"We have received your payment of {payment.amount:,.0f} VND. Thank you!",
