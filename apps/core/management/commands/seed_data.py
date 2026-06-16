@@ -12,25 +12,25 @@ from apps.services.models import Service
 
 
 class Command(BaseCommand):
-    help = "Seed complete demo data for the Salon Management System, including users, services, and vouchers."
+    help = "Khoi tao du lieu mau tieng Viet cho He thong Quan ly Salon, bao gom tai khoan, dich vu va voucher."
 
     def handle(self, *args, **options):
-        self.stdout.write(self.style.WARNING("Starting premium database seeding..."))
+        self.stdout.write(self.style.WARNING("Bat dau khoi tao du lieu mau Salon..."))
         User = get_user_model()
 
         # =========================================================================
-        # 1. CREATE USER ACCOUNTS (Manager, Receptionist, Staff/Stylists, Customers)
+        # 1. TẠO TÀI KHOẢN NGƯỜI DÙNG (Quản lý, Lễ tân, Nhân viên/Stylist, Khách hàng)
         # =========================================================================
-        self.stdout.write("Creating user accounts...")
+        self.stdout.write("Dang khoi tao tai khoan nguoi dung...")
         default_pwd = "SalonPassword123!"
 
-        # Manager
+        # Quản lý (Manager)
         manager_user, created = User.objects.get_or_create(
             username="salon_manager",
             defaults={
                 "email": "manager@salon.com",
                 "phone": "0987654321",
-                "full_name": "Salon Manager",
+                "full_name": "Quản lý Salon",
                 "role": Roles.MANAGER,
             }
         )
@@ -47,13 +47,13 @@ class Command(BaseCommand):
             }
         )
 
-        # Receptionist
+        # Lễ tân (Receptionist)
         receptionist_user, created = User.objects.get_or_create(
             username="salon_receptionist",
             defaults={
                 "email": "receptionist@salon.com",
                 "phone": "0912345678",
-                "full_name": "Salon Receptionist",
+                "full_name": "Lễ tân Salon",
                 "role": Roles.RECEPTIONIST,
             }
         )
@@ -70,28 +70,28 @@ class Command(BaseCommand):
             }
         )
 
-        # Staff / Stylists
+        # Nhân viên / Stylist
         stylists_data = [
             {
                 "username": "stylist_elena",
                 "email": "elena@salon.com",
                 "phone": "0922334455",
-                "full_name": "Elena Nguyen",
-                "specialties": "Senior Hair Stylist, Keratin Treatment Specialist"
+                "full_name": "Elena Nguyễn",
+                "specialties": "Thợ tạo mẫu tóc chính, Chuyên gia phục hồi tóc Keratin"
             },
             {
                 "username": "stylist_marcus",
                 "email": "marcus@salon.com",
                 "phone": "0933445566",
-                "full_name": "Marcus Pham",
-                "specialties": "Master Barber, Precision Fade & Styling Specialist"
+                "full_name": "Marcus Phạm",
+                "specialties": "Thợ cắt tóc nam chính, Chuyên gia Fade & Tạo kiểu"
             },
             {
                 "username": "stylist_linh",
                 "email": "linh@salon.com",
                 "phone": "0944556677",
-                "full_name": "Linh Tran",
-                "specialties": "Colorist & Creative Highlights Specialist"
+                "full_name": "Linh Trần",
+                "specialties": "Chuyên gia nhuộm màu & Thiết kế Highlight sáng tạo"
             }
         ]
 
@@ -122,7 +122,7 @@ class Command(BaseCommand):
             )
             created_stylists.append(stylist_profile)
 
-            # Set availability for today & tomorrow
+            # Ca lam viec cho hom nay & ngay mai
             for day_offset in [0, 1]:
                 StaffAvailability.objects.get_or_create(
                     employee=stylist_profile,
@@ -131,23 +131,23 @@ class Command(BaseCommand):
                     end_time=time(18, 0),
                     defaults={
                         "availability_type": "available",
-                        "reason": "Standard shift"
+                        "reason": "Ca làm việc tiêu chuẩn"
                     }
                 )
 
-        # Customers
+        # Khách hàng (Customers)
         customers_data = [
             {
                 "username": "customer_a",
                 "email": "customer_a@example.com",
                 "phone": "0901112222",
-                "full_name": "Nguyen Van A"
+                "full_name": "Nguyễn Văn A"
             },
             {
                 "username": "customer_b",
                 "email": "customer_b@example.com",
                 "phone": "0902223333",
-                "full_name": "Tran Thi B"
+                "full_name": "Trần Thị B"
             }
         ]
 
@@ -175,59 +175,59 @@ class Command(BaseCommand):
                 }
             )
 
-        self.stdout.write(self.style.SUCCESS("User accounts successfully seeded."))
+        self.stdout.write(self.style.SUCCESS("Da khoi tao xong cac tai khoan nguoi dung mau."))
 
         # =========================================================================
-        # 2. CREATE SALON SERVICES
+        # 2. TẠO CÁC DỊCH VỤ SALON (Services)
         # =========================================================================
-        self.stdout.write("Creating salon services...")
+        self.stdout.write("Dang tao danh muc dich vu...")
         services_to_seed = [
             {
-                "name": "Men's Haircut",
-                "category": "Haircut",
-                "description": "Premium style cut, hot towel shave outline, and styling by expert stylists.",
+                "name": "Cắt tóc Nam",
+                "category": "Cắt tóc",
+                "description": "Cắt tạo kiểu tóc nam thời thượng, cạo viền khăn nóng và tạo kiểu sáp cao cấp.",
                 "base_price": 150000,
                 "duration_minutes": 30
             },
             {
-                "name": "Women's Haircut",
-                "category": "Haircut",
-                "description": "Detailed elegant layer cuts, deep hair wash, and blow dry finish.",
+                "name": "Cắt tóc Nữ",
+                "category": "Cắt tóc",
+                "description": "Cắt thiết kế dáng tóc nữ layer, bob thời trang, kết hợp gội sâu và sấy tạo kiểu.",
                 "base_price": 250000,
                 "duration_minutes": 60
             },
             {
-                "name": "Hair Wash & Massage",
-                "category": "Wash",
-                "description": "Relaxing double-wash shampoo, herbal head massage, and blowout styling.",
+                "name": "Gội đầu & Massage thư giãn",
+                "category": "Gội đầu",
+                "description": "Gội đầu thảo dược dưỡng sinh 2 lần, massage ấn huyệt đầu, cổ, vai gáy thư giãn.",
                 "base_price": 100000,
                 "duration_minutes": 30
             },
             {
-                "name": "Premium Hair Coloring",
-                "category": "Color",
-                "description": "Full-head luxury coloring or balayage highlights using ammonia-free dyes.",
+                "name": "Nhuộm tóc cao cấp",
+                "category": "Nhuộm tóc",
+                "description": "Nhuộm màu thời trang toàn đầu hoặc highlight balayage sử dụng màu nhuộm hữu cơ an toàn.",
                 "base_price": 500000,
                 "duration_minutes": 90
             },
             {
-                "name": "Special Event Hair Styling",
-                "category": "Styling",
-                "description": "Bridal styling, updos, curls, or braids for parties and formal events.",
+                "name": "Uốn / Duỗi tạo kiểu sự kiện",
+                "category": "Tạo kiểu",
+                "description": "Uốn giả tạo phồng, xoăn sóng nước hoặc duỗi thẳng phục vụ sự kiện, tiệc tùng.",
                 "base_price": 120000,
                 "duration_minutes": 45
             },
             {
-                "name": "Keratin Repair Treatment",
-                "category": "Treatment",
-                "description": "Deep keratin nourishing conditioning to restore damaged, dry, and frizzy hair.",
+                "name": "Hấp phục hồi Keratin chuyên sâu",
+                "category": "Phục hồi",
+                "description": "Liệu trình hấp nhiệt đưa hạt Keratin lấp đầy biểu bì tóc hư tổn do hóa chất, uốn nhuộm.",
                 "base_price": 350000,
                 "duration_minutes": 60
             },
             {
-                "name": "Beard Grooming & Trim",
-                "category": "Grooming",
-                "description": "Precision beard shaving or trimming with premium essential oils and hot towels.",
+                "name": "Cạo râu & Chăm sóc râu",
+                "category": "Cạo râu",
+                "description": "Cạo râu tạo kiểu nghệ thuật bằng dao cạo chuyên dụng, dưỡng dầu argan cao cấp.",
                 "base_price": 80000,
                 "duration_minutes": 20
             }
@@ -248,18 +248,18 @@ class Command(BaseCommand):
             )
             created_services[service.name] = service
 
-        self.stdout.write(self.style.SUCCESS("Salon services successfully seeded."))
+        self.stdout.write(self.style.SUCCESS("Da khoi tao xong danh muc dich vu."))
 
         # =========================================================================
-        # 3. CREATE PROMOTIONS & VOUCHERS
+        # 3. TẠO CÁC CHƯƠNG TRÌNH KHUYẾN MÃI & VOUCHERS
         # =========================================================================
-        self.stdout.write("Creating promotions and vouchers...")
+        self.stdout.write("Dang tao cac chuong trinh khuyen mai va voucher...")
 
         # VIP Promotion
         vip_promo, _ = Promotion.objects.get_or_create(
-            name="VIP Premium Promotion",
+            name="Chương trình ưu đãi VIP",
             defaults={
-                "description": "Premium rewards and discounts for VIP accounts",
+                "description": "Ưu đãi tri ân đặc quyền dành riêng cho khách hàng VIP của hệ thống",
                 "discount_type": "amount",
                 "discount_value": 100000,
                 "starts_at": timezone.now() - timedelta(days=5),
@@ -283,9 +283,9 @@ class Command(BaseCommand):
 
         # Summer Promo
         summer_promo, _ = Promotion.objects.get_or_create(
-            name="Summer Spark Promotion",
+            name="Khuyến mãi chào hè rực rỡ",
             defaults={
-                "description": "Beat the heat with hot summer discounts",
+                "description": "Chương trình ưu đãi giảm giá kích cầu mùa hè sôi động",
                 "discount_type": "percent",
                 "discount_value": 20,
                 "starts_at": timezone.now() - timedelta(days=1),
@@ -309,9 +309,9 @@ class Command(BaseCommand):
 
         # New Customer Promo
         new_cust_promo, _ = Promotion.objects.get_or_create(
-            name="New Customer Welcome",
+            name="Chào mừng khách hàng mới",
             defaults={
-                "description": "Warm welcome to our sanctuary salon with a 10% coupon",
+                "description": "Ưu đãi chào mừng khách hàng lần đầu đăng ký sử dụng dịch vụ tại salon",
                 "discount_type": "percent",
                 "discount_value": 10,
                 "starts_at": timezone.now() - timedelta(days=10),
@@ -335,9 +335,9 @@ class Command(BaseCommand):
 
         # Haircut Promo
         haircut_promo, _ = Promotion.objects.get_or_create(
-            name="Haircut Special discount",
+            name="Ưu đãi cắt tóc đặc biệt",
             defaults={
-                "description": "15% off specifically targeting haircut services",
+                "description": "Khuyến mãi giảm giá 15% áp dụng riêng cho các dịch vụ cắt tóc",
                 "discount_type": "percent",
                 "discount_value": 15,
                 "starts_at": timezone.now() - timedelta(days=2),
@@ -345,10 +345,10 @@ class Command(BaseCommand):
                 "active": True
             }
         )
-        if "Men's Haircut" in created_services:
-            haircut_promo.service_scope.add(created_services["Men's Haircut"])
-        if "Women's Haircut" in created_services:
-            haircut_promo.service_scope.add(created_services["Women's Haircut"])
+        if "Cắt tóc Nam" in created_services:
+            haircut_promo.service_scope.add(created_services["Cắt tóc Nam"])
+        if "Cắt tóc Nữ" in created_services:
+            haircut_promo.service_scope.add(created_services["Cắt tóc Nữ"])
 
         Voucher.objects.get_or_create(
             code="HAIRCUT15",
@@ -364,26 +364,26 @@ class Command(BaseCommand):
             }
         )
 
-        self.stdout.write(self.style.SUCCESS("Promotions and vouchers successfully seeded."))
+        self.stdout.write(self.style.SUCCESS("Da khoi tao xong cac chuong trinh khuyen mai va voucher."))
 
         # =========================================================================
         # 4. PRINT SUMMARY TABLE
         # =========================================================================
         self.stdout.write("\n" + "=" * 80)
-        self.stdout.write(self.style.SUCCESS("DATABASE SEEDING COMPLETED SUCCESSFULLY!"))
+        self.stdout.write(self.style.SUCCESS("KHOI TAO CO SO DU LIEU THANH CONG!"))
         self.stdout.write("=" * 80)
-        self.stdout.write("\nAvailable Demo Accounts for Testing:")
+        self.stdout.write("\nDanh sach tai khoan dung thu nghiem:")
         self.stdout.write("-" * 80)
-        self.stdout.write(f"{'Role':<15} | {'Username':<20} | {'Email':<25} | {'Password':<15}")
+        self.stdout.write(f"{'Vai tro':<15} | {'Tai khoan (User)':<20} | {'Email':<25} | {'Mat khau':<15}")
         self.stdout.write("-" * 80)
-        self.stdout.write(f"{'Manager':<15} | {'salon_manager':<20} | {'manager@salon.com':<25} | {default_pwd:<15}")
-        self.stdout.write(f"{'Receptionist':<15} | {'salon_receptionist':<20} | {'receptionist@salon.com':<25} | {default_pwd:<15}")
-        self.stdout.write(f"{'Staff (Stylist)':<15} | {'stylist_elena':<20} | {'elena@salon.com':<25} | {default_pwd:<15}")
-        self.stdout.write(f"{'Staff (Stylist)':<15} | {'stylist_marcus':<20} | {'marcus@salon.com':<25} | {default_pwd:<15}")
-        self.stdout.write(f"{'Staff (Stylist)':<15} | {'stylist_linh':<20} | {'linh@salon.com':<25} | {default_pwd:<15}")
-        self.stdout.write(f"{'Customer':<15} | {'customer_a':<20} | {'customer_a@example.com':<25} | {default_pwd:<15}")
-        self.stdout.write(f"{'Customer':<15} | {'customer_b':<20} | {'customer_b@example.com':<25} | {default_pwd:<15}")
+        self.stdout.write(f"{'Quan ly':<15} | {'salon_manager':<20} | {'manager@salon.com':<25} | {default_pwd:<15}")
+        self.stdout.write(f"{'Le tan':<15} | {'salon_receptionist':<20} | {'receptionist@salon.com':<25} | {default_pwd:<15}")
+        self.stdout.write(f"{'Nhan vien':<15} | {'stylist_elena':<20} | {'elena@salon.com':<25} | {default_pwd:<15}")
+        self.stdout.write(f"{'Nhan vien':<15} | {'stylist_marcus':<20} | {'marcus@salon.com':<25} | {default_pwd:<15}")
+        self.stdout.write(f"{'Nhan vien':<15} | {'stylist_linh':<20} | {'linh@salon.com':<25} | {default_pwd:<15}")
+        self.stdout.write(f"{'Khach hang':<15} | {'customer_a':<20} | {'customer_a@example.com':<25} | {default_pwd:<15}")
+        self.stdout.write(f"{'Khach hang':<15} | {'customer_b':<20} | {'customer_b@example.com':<25} | {default_pwd:<15}")
         self.stdout.write("-" * 80)
-        self.stdout.write("\nRun this command to seed data at any time:")
+        self.stdout.write("\nBan co the chay lai lenh nay bat cu luc nao bang cach su dung:")
         self.stdout.write(self.style.WARNING("python manage.py seed_data"))
         self.stdout.write("=" * 80 + "\n")
