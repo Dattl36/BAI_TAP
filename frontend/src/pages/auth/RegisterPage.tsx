@@ -40,9 +40,9 @@ export const RegisterPage = () => {
       >
         <div className="login-brand-logo">S A L O N</div>
         <div className="login-brand-footer">
-          <h1 className="login-brand-slogan">Book your style, own your look.</h1>
+          <h1 className="login-brand-slogan">Định hình phong cách, làm chủ diện mạo.</h1>
           <p className="login-brand-subtext">
-            Join our premium salon experience, book elite stylists, and manage your reservation schedule effortlessly.
+            Tham gia trải nghiệm dịch vụ salon cao cấp, đặt lịch chuyên gia hàng đầu và quản lý lịch trình của bạn dễ dàng.
           </p>
           <div style={{ width: 40, height: 3, background: "var(--color-primary)", marginTop: 24, borderRadius: 2 }} />
         </div>
@@ -58,10 +58,10 @@ export const RegisterPage = () => {
 
           <div style={{ marginBottom: 28 }}>
             <Typography.Title level={2} style={{ margin: 0, fontFamily: "'Playfair Display', serif", fontWeight: 500 }}>
-              Create customer account
+              Tạo tài khoản khách hàng
             </Typography.Title>
             <Typography.Paragraph type="secondary" style={{ marginTop: 6, fontSize: 14 }}>
-              Join our salon system and manage your appointments easily.
+              Tham gia hệ thống của chúng tôi để quản lý các lịch hẹn dễ dàng hơn.
             </Typography.Paragraph>
           </div>
 
@@ -72,12 +72,12 @@ export const RegisterPage = () => {
           >
             <Form.Item
               name="username"
-              label={<span style={{ fontWeight: 600, fontSize: 13, color: "var(--color-text)" }}>Username</span>}
-              rules={[{ required: true, message: "Please enter your username." }]}
+              label={<span style={{ fontWeight: 600, fontSize: 13, color: "var(--color-text)" }}>Tên đăng nhập</span>}
+              rules={[{ required: true, message: "Vui lòng nhập tên đăng nhập." }]}
             >
               <Input
                 prefix={<UserOutlined style={{ color: "var(--color-muted)", marginRight: 4 }} />}
-                placeholder="Choose a username"
+                placeholder="Chọn tên đăng nhập"
                 autoComplete="username"
                 style={{ height: 42, borderRadius: 8 }}
               />
@@ -85,15 +85,15 @@ export const RegisterPage = () => {
 
             <Form.Item
               name="email"
-              label={<span style={{ fontWeight: 600, fontSize: 13, color: "var(--color-text)" }}>Email Address</span>}
+              label={<span style={{ fontWeight: 600, fontSize: 13, color: "var(--color-text)" }}>Địa chỉ Email</span>}
               rules={[
-                { required: true, message: "Please enter your email." },
-                { type: "email", message: "Please enter a valid email address." }
+                { required: true, message: "Vui lòng nhập email của bạn." },
+                { type: "email", message: "Vui lòng nhập địa chỉ email hợp lệ." }
               ]}
             >
               <Input
                 prefix={<MailOutlined style={{ color: "var(--color-muted)", marginRight: 4 }} />}
-                placeholder="yourname@example.com"
+                placeholder="emailcuaban@example.com"
                 autoComplete="email"
                 style={{ height: 42, borderRadius: 8 }}
               />
@@ -101,15 +101,15 @@ export const RegisterPage = () => {
 
             <Form.Item
               name="password"
-              label={<span style={{ fontWeight: 600, fontSize: 13, color: "var(--color-text)" }}>Password</span>}
+              label={<span style={{ fontWeight: 600, fontSize: 13, color: "var(--color-text)" }}>Mật khẩu</span>}
               rules={[
-                { required: true, message: "Please input your password." },
-                { min: 8, message: "Password must be at least 8 characters." }
+                { required: true, message: "Vui lòng nhập mật khẩu." },
+                { min: 8, message: "Mật khẩu phải chứa ít nhất 8 ký tự." }
               ]}
             >
               <Input.Password
                 prefix={<LockOutlined style={{ color: "var(--color-muted)", marginRight: 4 }} />}
-                placeholder="Create a strong password"
+                placeholder="Tạo mật khẩu mạnh"
                 autoComplete="new-password"
                 style={{ height: 42, borderRadius: 8 }}
               />
@@ -123,14 +123,14 @@ export const RegisterPage = () => {
               className="login-button-gold"
               style={{ marginTop: 12, height: 44, borderRadius: 14 }}
             >
-              Register Account
+              Đăng ký tài khoản
             </Button>
           </Form>
 
           <Typography.Paragraph style={{ marginTop: 24, marginBottom: 0, textAlign: "center", fontSize: 13 }}>
-            Already have an account?{" "}
+            Đã có tài khoản?{" "}
             <Link to={ROUTES.login} style={{ color: "var(--color-primary)", fontWeight: 600 }}>
-              Login
+              Đăng nhập
             </Link>
           </Typography.Paragraph>
         </Card>

@@ -12,21 +12,21 @@ export const ManagerHeader = () => {
 
   const getPageTitle = () => {
     const path = location.pathname;
-    if (path === "/manager") return "Business Command Center";
-    if (path.startsWith("/manager/reports/revenue")) return "Revenue Streams Audit";
-    if (path.startsWith("/manager/reports/appointments")) return "Bookings Distribution";
-    if (path.startsWith("/manager/reports/services")) return "Catalog Performance Chart";
-    if (path.startsWith("/manager/reports/customers")) return "Client Acquisition Metrics";
-    if (path.startsWith("/manager/reports/staff-performance")) return "Stylist Commission Ledger";
-    if (path.startsWith("/manager/reports")) return "Executive Reports Folder";
-    if (path.startsWith("/manager/accounts")) return "Access Level Control";
-    if (path.startsWith("/manager/employees")) return "Stylist Roster & Hires";
-    if (path.startsWith("/manager/services")) return "Menu Offerings Catalog";
-    if (path.startsWith("/manager/promotions")) return "Marketing Campaign Console";
-    if (path.startsWith("/manager/vouchers")) return "Loyalty Discount Vouchers";
-    if (path.startsWith("/manager/customers")) return "Client Registry Database";
-    if (path.startsWith("/manager/notifications")) return "System Alarms Registry";
-    return "Salon Command Console";
+    if (path === "/manager") return "Trung tâm quản trị kinh doanh";
+    if (path.startsWith("/manager/reports/revenue")) return "Báo cáo doanh thu chi tiết";
+    if (path.startsWith("/manager/reports/appointments")) return "Thống kê phân bổ lịch hẹn";
+    if (path.startsWith("/manager/reports/services")) return "Hiệu suất danh mục dịch vụ";
+    if (path.startsWith("/manager/reports/customers")) return "Chỉ số thu hút khách hàng";
+    if (path.startsWith("/manager/reports/staff-performance")) return "Hiệu suất & Hoa hồng thợ";
+    if (path.startsWith("/manager/reports")) return "Báo cáo tổng hợp quản trị";
+    if (path.startsWith("/manager/accounts")) return "Phân quyền truy cập tài khoản";
+    if (path.startsWith("/manager/employees")) return "Danh sách & Tuyển dụng nhân viên";
+    if (path.startsWith("/manager/services")) return "Quản lý danh mục dịch vụ";
+    if (path.startsWith("/manager/promotions")) return "Chiến dịch khuyến mãi tiếp thị";
+    if (path.startsWith("/manager/vouchers")) return "Quản lý mã giảm giá tri ân";
+    if (path.startsWith("/manager/customers")) return "Cơ sở dữ liệu khách hàng";
+    if (path.startsWith("/manager/notifications")) return "Nhật ký cảnh báo hệ thống";
+    return "Bảng quản trị Salon";
   };
 
   return (
@@ -42,7 +42,7 @@ export const ManagerHeader = () => {
         <div className="header-user-profile" style={{ background: "var(--color-bg)", border: "1px solid var(--app-border)" }}>
           <UserOutlined style={{ color: "var(--color-primary)" }} />
           <Typography.Text style={{ fontWeight: 500, fontSize: 13 }}>
-            Admin: {user?.first_name || user?.username || "Manager"}
+            Quản trị viên: {user?.first_name || user?.username || "Manager"}
           </Typography.Text>
         </div>
 
@@ -53,7 +53,7 @@ export const ManagerHeader = () => {
           onClick={logout}
           style={{ fontSize: 13, fontWeight: 500 }}
         >
-          Logout
+          Đăng xuất
         </Button>
       </Space>
     </header>

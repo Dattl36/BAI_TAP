@@ -42,7 +42,63 @@ const dictionary: Record<string, string> = {
   "Password must be at least 8 characters.": "Mật khẩu phải dài ít nhất 8 ký tự.",
   "Account created. You can login now.": "Tạo tài khoản thành công. Bạn có thể đăng nhập ngay.",
   "Account created successfully. You can login now.": "Tạo tài khoản thành công. Bạn có thể đăng nhập ngay.",
-  
+  "Enter your username": "Nhập tên đăng nhập của bạn",
+  "Enter your password": "Nhập mật khẩu của bạn",
+  "Choose a username": "Chọn tên đăng nhập",
+  "Create a strong password": "Tạo mật khẩu mạnh",
+  "yourname@example.com": "emailcuaban@example.com",
+  "Please enter your username.": "Vui lòng nhập tên đăng nhập của bạn.",
+  "Please enter your email.": "Vui lòng nhập email của bạn.",
+  "Please enter a valid email address.": "Vui lòng nhập địa chỉ email hợp lệ.",
+  "Please input your password.": "Vui lòng nhập mật khẩu của bạn.",
+  "Book your style, own your look.": "Định hình phong cách, làm chủ diện mạo.",
+  "Join our premium salon experience, book elite stylists, and manage your reservation schedule effortlessly.": "Tham gia trải nghiệm dịch vụ salon cao cấp, đặt lịch chuyên gia hàng đầu và quản lý lịch trình dễ dàng.",
+
+  // Dashboard Page & KPIs
+  "Salon Overview": "Tổng quan Salon",
+  "Real-time operational insights, revenue stats, and guest bookings.": "Thông tin vận hành thời gian thực, thống kê doanh thu và đặt lịch của khách.",
+  "APPOINTMENTS TODAY": "LỊCH HẸN HÔM NAY",
+  "TODAY REVENUE": "DOANH THU HÔM NAY",
+  "ACTIVE CUSTOMERS": "KHÁCH HÀNG HOẠT ĐỘNG",
+  "STAFF ON DUTY": "THỢ ĐANG LÀM VIỆC",
+  "vs yesterday": "so với hôm qua",
+  "vs last week": "so với tuần trước",
+  "this month": "tháng này",
+  "attendance": "có mặt",
+  "Weekly Revenue Stream": "Dòng doanh thu hàng tuần",
+  "Popular Services": "Dịch vụ phổ biến",
+  "Recent Bookings & Check-ins": "Lịch đặt & Nhận khách gần đây",
+  "Appointment ID": "Mã lịch hẹn",
+  "Client": "Khách hàng",
+  "Requested Service": "Dịch vụ yêu cầu",
+  "Scheduled Time": "Thời gian hẹn",
+  "Booking Status": "Trạng thái đặt chỗ",
+  "Hair Cut & Styling": "Cắt tóc & Tạo kiểu",
+  "Facial Care & Spa": "Chăm sóc da mặt & Spa",
+  "Manicure & Nails": "Làm móng & Nails",
+  "Massage Therapy": "Trị liệu Massage",
+  "Hair Coloring": "Nhuộm tóc",
+  "Hair Washing": "Gội đầu",
+  "Hair Styling": "Tạo kiểu tóc",
+  "Hair Treatment": "Chăm sóc/Phục hồi tóc",
+  "Beard Trimming": "Tỉa râu",
+
+  // Dates and Weeks
+  "Mon": "Thứ 2",
+  "Tue": "Thứ 3",
+  "Wed": "Thứ 4",
+  "Thu": "Thứ 5",
+  "Fri": "Thứ 6",
+  "Sat": "Thứ 7",
+  "Sun": "Chủ Nhật",
+  "Monday": "Thứ Hai",
+  "Tuesday": "Thứ Ba",
+  "Wednesday": "Thứ Tư",
+  "Thursday": "Thứ Năm",
+  "Friday": "Thứ Sáu",
+  "Saturday": "Thứ Bảy",
+  "Sunday": "Chủ Nhật",
+
   // Receptionist today queue page
   "Today's Queue": "Hàng đợi hôm nay",
   "In Service": "Đang làm dịch vụ",
@@ -58,10 +114,8 @@ const dictionary: Record<string, string> = {
   "Checkout Desk": "Quầy thanh toán",
   "Cancel": "Hủy",
   "Details": "Chi tiết",
-  "Client": "Khách hàng",
   "Service": "Dịch vụ",
   "Stylist": "Thợ làm tóc",
-  "Scheduled Time": "Thời gian hẹn",
   "Status": "Trạng thái",
   "Front Desk Operations": "Thao tác quầy lễ tân",
   "Code": "Mã",
@@ -108,7 +162,7 @@ const dictionary: Record<string, string> = {
   "Start Time": "Giờ bắt đầu",
   "End Time": "Giờ kết thúc",
 
-  // Status mapping
+  // Status mapping (fallback dictionary mappings)
   "requested": "Chờ xác nhận",
   "confirmed": "Đã xác nhận",
   "arrived": "Đã đến",
@@ -121,7 +175,35 @@ const dictionary: Record<string, string> = {
   
   "Active": "Hoạt động",
   "Inactive": "Ngưng hoạt động",
-  "Archived": "Lưu trữ"
+  "Archived": "Lưu trữ",
+  
+  // Shared UI / Core Components
+  "No active records found.": "Không tìm thấy dữ liệu hoạt động.",
+  "Unable to load data.": "Không thể tải dữ liệu.",
+  "Retry": "Thử lại",
+  "Something went wrong. Please try again.": "Đã xảy ra lỗi. Vui lòng thử lại.",
+  "Loading...": "Đang tải...",
+  "Actions": "Hành động",
+  "Add": "Thêm",
+  "Edit": "Sửa",
+  "Delete": "Xóa",
+  "Save": "Lưu",
+  "Total": "Tổng cộng",
+  "Price": "Giá",
+  "Duration": "Thời gian",
+  "Description": "Mô tả",
+  "Voucher Code": "Mã giảm giá",
+  "Discount": "Giảm giá",
+  "Rating": "Đánh giá",
+  "Comment": "Bình luận",
+  "Search": "Tìm kiếm",
+  "Create": "Tạo",
+  "Submit": "Gửi",
+  "Reason": "Lý do",
+  "Notes": "Ghi chú",
+  "Date": "Ngày",
+  "Time": "Thời gian",
+  "None": "Không có"
 };
 
 const translateNode = (node: Node) => {
@@ -129,10 +211,8 @@ const translateNode = (node: Node) => {
     const originalText = node.nodeValue || "";
     const trimmed = originalText.trim();
     if (trimmed && dictionary[trimmed]) {
-      // Replace only the exact matched phrase to preserve spacing
       node.nodeValue = originalText.replace(trimmed, dictionary[trimmed]);
     } else {
-      // Check for exact substring match if the trimmed text isn't a direct key
       for (const [en, vi] of Object.entries(dictionary)) {
         if (trimmed === en) {
           node.nodeValue = originalText.replace(en, vi);
@@ -143,7 +223,14 @@ const translateNode = (node: Node) => {
   } else if (node.nodeType === Node.ELEMENT_NODE) {
     const element = node as Element;
     const tagName = element.tagName;
-    // Skip inputs, script/style tags, and fields that are editable
+
+    // Check and translate placeholder attribute if present
+    const placeholder = element.getAttribute("placeholder");
+    if (placeholder && dictionary[placeholder.trim()]) {
+      element.setAttribute("placeholder", dictionary[placeholder.trim()]);
+    }
+
+    // Skip scripts, styles, and editable inputs from traversing deep
     if (
       tagName === "SCRIPT" ||
       tagName === "STYLE" ||
@@ -163,14 +250,19 @@ export const initVietnameseTranslation = () => {
   // Monitor DOM changes to translate dynamic content
   const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
-      mutation.addedNodes.forEach((node) => {
-        translateNode(node);
-      });
+      if (mutation.type === "childList") {
+        mutation.addedNodes.forEach((node) => {
+          translateNode(node);
+        });
+      } else if (mutation.type === "characterData") {
+        translateNode(mutation.target);
+      }
     });
   });
 
   observer.observe(document.body, {
     childList: true,
     subtree: true,
+    characterData: true,
   });
 };

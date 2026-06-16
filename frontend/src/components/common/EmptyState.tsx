@@ -4,7 +4,7 @@ interface EmptyStateProps {
   description?: string;
 }
 
-export const EmptyState = ({ description = "No active records found." }: EmptyStateProps) => (
+export const EmptyState = ({ description = "Không tìm thấy dữ liệu hoạt động." }: EmptyStateProps) => (
   <div style={{ padding: "40px 0", display: "grid", placeItems: "center" }}>
     <Empty 
       image={Empty.PRESENTED_IMAGE_SIMPLE} 

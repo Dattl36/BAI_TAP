@@ -8,16 +8,16 @@ import { useAuth } from "../../hooks/useAuth";
 import { useMe } from "../../hooks/useMe";
 
 const PAGE_TITLES: Record<string, string> = {
-  "/receptionist": "Reception Operation Center",
-  "/receptionist/today": "Today's Service Queue",
-  "/receptionist/calendar": "Appointments Calendar",
-  "/receptionist/appointments/create": "New Booking",
-  "/receptionist/customers": "Client Database",
-  "/receptionist/invoices": "Invoices & Billing",
-  "/receptionist/payments": "Transaction Register",
-  "/receptionist/feedback": "Guest Feedback",
-  "/receptionist/complaints": "Client Disputes",
-  "/receptionist/notifications": "Alerts & Notifications",
+  "/receptionist": "Trung tâm điều hành lễ tân",
+  "/receptionist/today": "Hàng đợi dịch vụ hôm nay",
+  "/receptionist/calendar": "Lịch hẹn làm việc",
+  "/receptionist/appointments/create": "Đặt lịch mới",
+  "/receptionist/customers": "Cơ sở dữ liệu khách hàng",
+  "/receptionist/invoices": "Quản lý hóa đơn & Thanh toán",
+  "/receptionist/payments": "Sổ đăng ký giao dịch",
+  "/receptionist/feedback": "Ý kiến đóng góp khách hàng",
+  "/receptionist/complaints": "Sổ tranh chấp & Khiếu nại",
+  "/receptionist/notifications": "Cảnh báo & Thông báo hệ thống",
 };
 
 export const ReceptionistHeader = () => {
@@ -39,7 +39,7 @@ export const ReceptionistHeader = () => {
         return title;
       }
     }
-    return "Operations Desk";
+    return "Quầy lễ tân";
   };
 
   return (
@@ -60,7 +60,7 @@ export const ReceptionistHeader = () => {
             icon={<PlusOutlined />}
             onClick={() => navigate("/receptionist/appointments/create")}
           >
-            Walk-in
+            Vãng lai
           </Button>
           <Button
             size="small"
@@ -68,14 +68,14 @@ export const ReceptionistHeader = () => {
             onClick={() => navigate("/receptionist/appointments/create")}
             style={{ borderRadius: 8 }}
           >
-            Book
+            Đặt lịch
           </Button>
         </div>
 
         <div className="header-user-profile" style={{ background: "var(--color-bg)", border: "1px solid var(--app-border)" }}>
           <UserOutlined style={{ color: "var(--rcpt-gold)" }} />
           <Typography.Text style={{ fontWeight: 500, fontSize: 12 }}>
-            {user?.first_name || user?.username || "Receptionist"}
+            Lễ tân: {user?.first_name || user?.username || "Lễ tân"}
           </Typography.Text>
         </div>
 
@@ -86,7 +86,7 @@ export const ReceptionistHeader = () => {
           onClick={logout}
           style={{ fontSize: 12 }}
         >
-          Logout
+          Đăng xuất
         </Button>
       </div>
     </header>

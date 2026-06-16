@@ -19,23 +19,23 @@ export const ReceptionistNavigation = () => {
 
   const menuItems = [
     // Operations
-    { key: "__ops_label", label: <span className="rcpt-nav-label">Operations</span>, disabled: true, style: { height: 28, cursor: "default" } },
-    { key: "/receptionist", icon: <HomeOutlined />, label: "Desk Overview" },
-    { key: "/receptionist/today", icon: <DashboardOutlined />, label: "Today's Queue" },
-    { key: "/receptionist/calendar", icon: <CalendarOutlined />, label: "Appointments" },
-    { key: "/receptionist/appointments/create", icon: <PlusOutlined />, label: "New Booking" },
+    { key: "__ops_label", label: <span className="rcpt-nav-label">Vận hành</span>, disabled: true, style: { height: 28, cursor: "default" } },
+    { key: "/receptionist", icon: <HomeOutlined />, label: "Tổng quan quầy" },
+    { key: "/receptionist/today", icon: <DashboardOutlined />, label: "Hàng đợi hôm nay" },
+    { key: "/receptionist/calendar", icon: <CalendarOutlined />, label: "Lịch hẹn" },
+    { key: "/receptionist/appointments/create", icon: <PlusOutlined />, label: "Đặt lịch mới" },
 
     // Business
-    { key: "__biz_label", label: <span className="rcpt-nav-label">Business</span>, disabled: true, style: { height: 28, cursor: "default", marginTop: 4 } },
-    { key: "/receptionist/customers", icon: <TeamOutlined />, label: "Client Database" },
-    { key: "/receptionist/invoices", icon: <FileTextOutlined />, label: "Invoices" },
-    { key: "/receptionist/payments", icon: <CreditCardOutlined />, label: "Transactions" },
+    { key: "__biz_label", label: <span className="rcpt-nav-label">Kinh doanh</span>, disabled: true, style: { height: 28, cursor: "default", marginTop: 4 } },
+    { key: "/receptionist/customers", icon: <TeamOutlined />, label: "Cơ sở dữ liệu khách" },
+    { key: "/receptionist/invoices", icon: <FileTextOutlined />, label: "Hóa đơn" },
+    { key: "/receptionist/payments", icon: <CreditCardOutlined />, label: "Giao dịch" },
 
     // Support
-    { key: "__support_label", label: <span className="rcpt-nav-label">Support</span>, disabled: true, style: { height: 28, cursor: "default", marginTop: 4 } },
-    { key: "/receptionist/feedback", icon: <CommentOutlined />, label: "Feedback" },
-    { key: "/receptionist/complaints", icon: <ExclamationCircleOutlined />, label: "Disputes" },
-    { key: "/receptionist/notifications", icon: <NotificationOutlined />, label: "Alerts" },
+    { key: "__support_label", label: <span className="rcpt-nav-label">Hỗ trợ</span>, disabled: true, style: { height: 28, cursor: "default", marginTop: 4 } },
+    { key: "/receptionist/feedback", icon: <CommentOutlined />, label: "Phản hồi" },
+    { key: "/receptionist/complaints", icon: <ExclamationCircleOutlined />, label: "Tranh chấp / Khiếu nại" },
+    { key: "/receptionist/notifications", icon: <NotificationOutlined />, label: "Cảnh báo & Thông báo" },
   ];
 
   const navigableKeys = menuItems.filter((i) => !i.key.startsWith("__")).map((i) => i.key);

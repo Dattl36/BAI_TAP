@@ -52,7 +52,7 @@ export const CustomerHeader = () => {
               alignItems: "center",
               gap: 4
             }}>
-              <TrophyOutlined /> {currentPoints} pts
+              <TrophyOutlined /> {currentPoints} điểm
             </span>
           }
         />
@@ -63,7 +63,7 @@ export const CustomerHeader = () => {
         >
           <UserOutlined style={{ color: "var(--color-primary)" }} />
           <Typography.Text style={{ fontWeight: 500, fontSize: 13 }}>
-            Hello, {user?.first_name || user?.username || "Guest"}
+            Xin chào, {user?.first_name || user?.username || "Khách"}
           </Typography.Text>
         </Space>
 
@@ -74,7 +74,7 @@ export const CustomerHeader = () => {
           onClick={logout}
           style={{ fontSize: 13, fontWeight: 500 }}
         >
-          Logout
+          Đăng xuất
         </Button>
       </Space>
     </header>

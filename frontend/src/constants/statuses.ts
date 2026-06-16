@@ -32,5 +32,42 @@ export const STATUS_COLORS: Record<string, string> = {
   created: "blue",
 };
 
-export const formatStatusLabel = (status?: string) =>
-  status ? status.replace(/_/g, " ").replace(/\b\w/g, (char: string) => char.toUpperCase()) : "Unknown";
+export const STATUS_LABELS: Record<string, string> = {
+  active: "Hoạt động",
+  inactive: "Ngưng hoạt động",
+  archived: "Đã lưu trữ",
+  requested: "Chờ xác nhận",
+  confirmed: "Đã xác nhận",
+  arrived: "Đã đến",
+  in_service: "Đang làm dịch vụ",
+  completed: "Hoàn thành",
+  invoiced: "Đã xuất hóa đơn",
+  closed: "Đã đóng",
+  cancelled: "Đã hủy",
+  no_show: "Vắng mặt",
+  draft: "Bản nháp",
+  issued: "Đã phát hành",
+  partially_paid: "Thanh toán một phần",
+  paid: "Đã thanh toán",
+  adjusted: "Đã điều chỉnh",
+  attempted: "Đã thử",
+  pending: "Chờ xử lý",
+  successful: "Thành công",
+  failed: "Thất bại",
+  refunded: "Đã hoàn tiền",
+  received: "Đã nhận",
+  responded: "Đã phản hồi",
+  assigned: "Đã phân công",
+  in_review: "Đang đánh giá",
+  escalated: "Đã leo thang",
+  resolved: "Đã giải quyết",
+  read: "Đã đọc",
+  delivered: "Đã gửi",
+  created: "Đã tạo",
+};
+
+export const formatStatusLabel = (status?: string) => {
+  if (!status) return "Không xác định";
+  const lower = status.toLowerCase();
+  return STATUS_LABELS[lower] ?? lower.replace(/_/g, " ").replace(/\b\w/g, (char: string) => char.toUpperCase());
+};
