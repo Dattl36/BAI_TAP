@@ -1,11 +1,13 @@
-import { CalendarOutlined, TrophyOutlined, GiftOutlined, RightOutlined } from "@ant-design/icons";
-import { Button, Card, Col, Row, Typography, Space, Progress } from "antd";
+import { CalendarOutlined, TrophyOutlined, GiftOutlined, RightOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
+import { Button, Card, Col, Row, Typography, Space, Progress, Modal, Form, Input, App } from "antd";
 import { Link } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 
 import { useCustomerHomeData } from "../../hooks/queries/useCustomerHomeData";
 import { useMe } from "../../hooks/useMe";
 import { servicesApi } from "../../api/services.api";
+import { appointmentsApi } from "../../api/appointments.api";
 import { normalizePaginatedResponse } from "../../utils/apiResponse";
 import { PageLoading } from "../../components/common/PageLoading";
 import { ErrorState } from "../../components/common/ErrorState";
@@ -26,6 +28,8 @@ const getServiceImage = (name: string) => {
 
 export const CustomerHomePage = () => {
   const { data: user } = useMe();
+  const { message } = App.useApp();
+  const queryClient = useQueryClient();
   const {
     isLoading: isHomeLoading,
     isError: isHomeError,
@@ -39,6 +43,70 @@ export const CustomerHomePage = () => {
     nextTierPoints,
     refetch,
   } = useCustomerHomeData();
+
+  // --- Reschedule Modal State ---
+  const [rescheduleOpen, setRescheduleOpen] = useState(false);
+  const [rescheduleForm] = Form.useForm();
+
+  // Reschedule mutation
+  const rescheduleMutation = useMutation({
+    mutationFn: ({ id, newDate, newTime, reason }: { id: number; newDate: string; newTime: string; reason?: string }) => {
+      const [year, month, day] = newDate.split("-");
+      const dateTimeStr = `${year}-${month}-${day}T${newTime}:00`;
+      const scheduledStart = new Date(dateTimeStr).toISOString();
+      // Estimate end = start + service duration (default 60 min)
+      const durationMin = nextAppointment?.service_details?.duration || 60;
+      const endDate = new Date(new Date(dateTimeStr).getTime() + durationMin * 60 * 1000);
+      return appointmentsApi.reschedule(id, {
+        scheduled_start: scheduledStart,
+        scheduled_end: endDate.toISOString(),
+      });
+    },
+    onSuccess: () => {
+      void message.success("Đổi lịch hẹn thành công!");
+      setRescheduleOpen(false);
+      rescheduleForm.resetFields();
+      refetch();
+      void queryClient.invalidateQueries({ queryKey: ["appointments"] });
+    },
+    onError: () => {
+      void message.error("Không thể đổi lịch hẹn. Vui lòng thử lại.");
+    },
+  });
+
+  // Cancel mutation
+  const cancelMutation = useMutation({
+    mutationFn: (id: number) => appointmentsApi.cancel(id, "Khách hàng tự hủy qua cổng thông tin"),
+    onSuccess: () => {
+      void message.success("Hủy lịch hẹn thành công!");
+      refetch();
+      void queryClient.invalidateQueries({ queryKey: ["appointments"] });
+    },
+    onError: () => {
+      void message.error("Không thể hủy lịch hẹn. Vui lòng thử lại.");
+    },
+  });
+
+  const handleRescheduleSubmit = (values: { newDate: string; newTime: string; reason?: string }) => {
+    if (!nextAppointment) return;
+    rescheduleMutation.mutate({ id: Number(nextAppointment.id), ...values });
+  };
+
+  const handleCancelConfirm = () => {
+    if (!nextAppointment) return;
+    Modal.confirm({
+      title: "Bạn có chắc chắn muốn hủy lịch hẹn này không?",
+      icon: <ExclamationCircleOutlined style={{ color: "#ef4444" }} />,
+      content: "Hành động này không thể hoàn tác.",
+      okText: "Có, hủy lịch hẹn",
+      okType: "danger",
+      cancelText: "Không, giữ lại",
+      onOk: () => cancelMutation.mutateAsync(Number(nextAppointment.id)),
+    });
+  };
+
+  // Min date = today
+  const todayStr = new Date().toISOString().split("T")[0];
 
   // Fetch recommended services
   const { data: servicesData, isLoading: servicesLoading, isError: isServicesError, error: servicesError } = useQuery({
@@ -233,12 +301,24 @@ export const CustomerHomePage = () => {
               </div>
 
               <div style={{ display: "flex", justifyContent: "flex-end", gap: 12, marginTop: 24, borderTop: "1px solid var(--app-border)", paddingTop: 16 }}>
-                <Link to={`/customer/appointments`}>
-                  <Button type="default" style={{ borderRadius: 8 }}>
-                    Đổi lịch hoặc hủy
-                  </Button>
-                </Link>
-                <Link to={`/customer/appointments`}>
+                {/* Hủy lịch */}
+                <Button
+                  danger
+                  style={{ borderRadius: 8 }}
+                  loading={cancelMutation.isPending}
+                  onClick={handleCancelConfirm}
+                >
+                  Hủy lịch hẹn
+                </Button>
+                {/* Đổi lịch */}
+                <Button
+                  type="default"
+                  style={{ borderRadius: 8 }}
+                  onClick={() => setRescheduleOpen(true)}
+                >
+                  Đổi lịch hẹn
+                </Button>
+                <Link to={`/customer/appointments/${nextAppointment.id}`}>
                   <Button type="primary" className="login-button-gold" style={{ borderRadius: 8 }}>
                     Xem chi tiết lịch hẹn
                   </Button>
@@ -370,6 +450,123 @@ export const CustomerHomePage = () => {
           ))}
         </Row>
       </div>
+
+      {/* =================== MODAL ĐỔI LỊCH HẸN =================== */}
+      <Modal
+        open={rescheduleOpen}
+        title={
+          <span style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 600, fontSize: 18 }}>
+            Đổi lịch hẹn
+          </span>
+        }
+        onCancel={() => { setRescheduleOpen(false); rescheduleForm.resetFields(); }}
+        footer={null}
+        centered
+        width={480}
+        styles={{ body: { paddingTop: 8 } }}
+      >
+        {/* Current appointment info */}
+        {nextAppointment && (
+          <div style={{
+            background: "var(--color-accent)",
+            borderRadius: 10,
+            padding: "12px 16px",
+            marginBottom: 20,
+            border: "1px solid var(--app-border)"
+          }}>
+            <Typography.Text style={{ fontWeight: 600, display: "block", marginBottom: 4 }}>
+              {nextAppointment.service_details?.name || "Phục hồi tóc tổng quát"}
+            </Typography.Text>
+            <Typography.Text type="secondary" style={{ fontSize: 13 }}>
+              Lịch hiện tại:{" "}
+              <strong>
+                {nextAppointment.scheduled_start
+                  ? `${formatAppointmentDate(nextAppointment.scheduled_start)} – ${formatShortTime(nextAppointment.scheduled_start)}`
+                  : "Chưa xác định"}
+              </strong>
+            </Typography.Text>
+          </div>
+        )}
+
+        <Form
+          form={rescheduleForm}
+          layout="vertical"
+          onFinish={handleRescheduleSubmit}
+        >
+          <Form.Item
+            label="Ngày hẹn mới"
+            name="newDate"
+            rules={[{ required: true, message: "Vui lòng chọn ngày hẹn mới" }]}
+          >
+            <input
+              type="date"
+              min={todayStr}
+              style={{
+                width: "100%",
+                height: 40,
+                borderRadius: 8,
+                border: "1px solid #d9d9d9",
+                padding: "4px 12px",
+                fontSize: 14,
+                outline: "none",
+                cursor: "pointer",
+                background: "var(--color-surface)",
+                color: "var(--color-text)"
+              }}
+              onChange={(e) => rescheduleForm.setFieldValue("newDate", e.target.value)}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Giờ hẹn mới"
+            name="newTime"
+            rules={[{ required: true, message: "Vui lòng chọn giờ hẹn mới" }]}
+          >
+            <input
+              type="time"
+              style={{
+                width: "100%",
+                height: 40,
+                borderRadius: 8,
+                border: "1px solid #d9d9d9",
+                padding: "4px 12px",
+                fontSize: 14,
+                outline: "none",
+                cursor: "pointer",
+                background: "var(--color-surface)",
+                color: "var(--color-text)"
+              }}
+              onChange={(e) => rescheduleForm.setFieldValue("newTime", e.target.value)}
+            />
+          </Form.Item>
+
+          <Form.Item label="Lý do đổi lịch (không bắt buộc)" name="reason">
+            <Input.TextArea
+              rows={3}
+              placeholder="Ví dụ: Tôi muốn đổi sang khung giờ thuận tiện hơn..."
+              style={{ borderRadius: 8 }}
+            />
+          </Form.Item>
+
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: 12, marginTop: 8 }}>
+            <Button
+              onClick={() => { setRescheduleOpen(false); rescheduleForm.resetFields(); }}
+              style={{ borderRadius: 8 }}
+            >
+              Hủy
+            </Button>
+            <Button
+              type="primary"
+              htmlType="submit"
+              className="login-button-gold"
+              loading={rescheduleMutation.isPending}
+              style={{ borderRadius: 8 }}
+            >
+              Xác nhận đổi lịch
+            </Button>
+          </div>
+        </Form>
+      </Modal>
     </div>
   );
 };
