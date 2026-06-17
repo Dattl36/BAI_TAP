@@ -1,8 +1,16 @@
-import { CalendarOutlined, TrophyOutlined, GiftOutlined, RightOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
-import { Button, Card, Col, Row, Typography, Space, Progress, Modal, Form, Input, App } from "antd";
+import {
+  CalendarOutlined,
+  GiftOutlined,
+  RightOutlined,
+  ExclamationCircleOutlined,
+  ArrowRightOutlined,
+  StarOutlined,
+  LeftOutlined,
+} from "@ant-design/icons";
+import { Button, Card, Col, Row, Typography, Modal, Form, Input, App, Tag } from "antd";
 import { Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 import { useCustomerHomeData } from "../../hooks/queries/useCustomerHomeData";
 import { useMe } from "../../hooks/useMe";
@@ -12,24 +20,63 @@ import { normalizePaginatedResponse } from "../../utils/apiResponse";
 import { PageLoading } from "../../components/common/PageLoading";
 import { ErrorState } from "../../components/common/ErrorState";
 
-const getServiceImage = (name: string) => {
+// ─── Service image helper ─────────────────────────────────────────────────
+const SERVICE_IMAGES = [
+  "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=600&auto=format&fit=crop&q=80",
+  "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=600&auto=format&fit=crop&q=80",
+  "https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=600&auto=format&fit=crop&q=80",
+  "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=600&auto=format&fit=crop&q=80",
+];
+const getServiceImage = (name: string, idx: number) => {
   const n = name.toLowerCase();
-  if (n.includes("cut") || n.includes("style")) {
-    return "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=500&auto=format&fit=crop&q=60";
-  }
-  if (n.includes("wash") || n.includes("shampoo") || n.includes("treatment")) {
-    return "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=500&auto=format&fit=crop&q=60";
-  }
-  if (n.includes("nail") || n.includes("manicure") || n.includes("pedicure")) {
-    return "https://images.unsplash.com/photo-1604654894610-df63bc536371?w=500&auto=format&fit=crop&q=60";
-  }
-  return "https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=500&auto=format&fit=crop&q=60";
+  if (n.includes("cut") || n.includes("style") || n.includes("cắt")) return SERVICE_IMAGES[0];
+  if (n.includes("wash") || n.includes("treatment") || n.includes("dưỡng")) return SERVICE_IMAGES[1];
+  if (n.includes("spa") || n.includes("relax") || n.includes("thư giãn")) return SERVICE_IMAGES[2];
+  return SERVICE_IMAGES[idx % SERVICE_IMAGES.length];
 };
+
+// ─── Date helpers ─────────────────────────────────────────────────────────
+const fmtDate = (s: string) => {
+  const d = new Date(s);
+  if (isNaN(d.getTime())) return "Chưa xác định";
+  return d.toLocaleDateString("vi-VN", { weekday: "long", day: "2-digit", month: "long", year: "numeric" });
+};
+const fmtTime = (s: string) => {
+  const d = new Date(s);
+  if (isNaN(d.getTime())) return "TBD";
+  return d.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" });
+};
+const fmtShortDate = (s: string) => {
+  const d = new Date(s);
+  if (isNaN(d.getTime())) return "";
+  return d.toLocaleDateString("vi-VN", { day: "2-digit", month: "short" });
+};
+const fmtDiscount = (type: string, value: number | string) => {
+  const v = Number(value);
+  return type === "percent" ? `${v % 1 === 0 ? v.toFixed(0) : v}% OFF` : `${v.toLocaleString("vi-VN")}đ OFF`;
+};
+const fmtExpiry = (s?: string | null) => {
+  if (!s) return "Không hết hạn";
+  const d = new Date(s);
+  return isNaN(d.getTime()) ? "Không hết hạn" : d.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric" });
+};
+const mapStatus = (status: string) => {
+  const m: Record<string, string> = {
+    requested: "Chờ xác nhận", confirmed: "Đã xác nhận",
+    arrived: "Đã đến", in_service: "Đang phục vụ",
+  };
+  return m[status] ?? status;
+};
+
+// ─── HERO BACKGROUND ──────────────────────────────────────────────────────
+const HERO_BG = "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=1600&auto=format&fit=crop&q=80";
 
 export const CustomerHomePage = () => {
   const { data: user } = useMe();
   const { message } = App.useApp();
   const queryClient = useQueryClient();
+  const scrollRef = useRef<HTMLDivElement>(null);
+
   const {
     isLoading: isHomeLoading,
     isError: isHomeError,
@@ -38,29 +85,27 @@ export const CustomerHomePage = () => {
     activeVouchers,
     currentPoints,
     loyaltyTier,
-    tierProgress,
-    pointsAway,
-    nextTierPoints,
     refetch,
   } = useCustomerHomeData();
 
-  // --- Reschedule Modal State ---
+  // Services query
+  const { data: servicesData, isLoading: servicesLoading } = useQuery({
+    queryKey: ["services", "list"],
+    queryFn: () => servicesApi.list(),
+  });
+  const servicesList = normalizePaginatedResponse(servicesData || []).results;
+
+  // Reschedule modal
   const [rescheduleOpen, setRescheduleOpen] = useState(false);
   const [rescheduleForm] = Form.useForm();
+  const todayStr = new Date().toISOString().split("T")[0];
 
-  // Reschedule mutation
   const rescheduleMutation = useMutation({
-    mutationFn: ({ id, newDate, newTime, reason }: { id: number; newDate: string; newTime: string; reason?: string }) => {
-      const [year, month, day] = newDate.split("-");
-      const dateTimeStr = `${year}-${month}-${day}T${newTime}:00`;
-      const scheduledStart = new Date(dateTimeStr).toISOString();
-      // Estimate end = start + service duration (default 60 min)
+    mutationFn: ({ id, newDate, newTime }: { id: number; newDate: string; newTime: string }) => {
+      const scheduledStart = new Date(`${newDate}T${newTime}:00`).toISOString();
       const durationMin = nextAppointment?.service_details?.duration || 60;
-      const endDate = new Date(new Date(dateTimeStr).getTime() + durationMin * 60 * 1000);
-      return appointmentsApi.reschedule(id, {
-        scheduled_start: scheduledStart,
-        scheduled_end: endDate.toISOString(),
-      });
+      const end = new Date(new Date(`${newDate}T${newTime}:00`).getTime() + durationMin * 60_000);
+      return appointmentsApi.reschedule(id, { scheduled_start: scheduledStart, scheduled_end: end.toISOString() });
     },
     onSuccess: () => {
       void message.success("Đổi lịch hẹn thành công!");
@@ -69,12 +114,9 @@ export const CustomerHomePage = () => {
       refetch();
       void queryClient.invalidateQueries({ queryKey: ["appointments"] });
     },
-    onError: () => {
-      void message.error("Không thể đổi lịch hẹn. Vui lòng thử lại.");
-    },
+    onError: () => void message.error("Không thể đổi lịch hẹn. Vui lòng thử lại."),
   });
 
-  // Cancel mutation
   const cancelMutation = useMutation({
     mutationFn: (id: number) => appointmentsApi.cancel(id, "Khách hàng tự hủy qua cổng thông tin"),
     onSuccess: () => {
@@ -82,15 +124,8 @@ export const CustomerHomePage = () => {
       refetch();
       void queryClient.invalidateQueries({ queryKey: ["appointments"] });
     },
-    onError: () => {
-      void message.error("Không thể hủy lịch hẹn. Vui lòng thử lại.");
-    },
+    onError: () => void message.error("Không thể hủy lịch hẹn. Vui lòng thử lại."),
   });
-
-  const handleRescheduleSubmit = (values: { newDate: string; newTime: string; reason?: string }) => {
-    if (!nextAppointment) return;
-    rescheduleMutation.mutate({ id: Number(nextAppointment.id), ...values });
-  };
 
   const handleCancelConfirm = () => {
     if (!nextAppointment) return;
@@ -105,353 +140,622 @@ export const CustomerHomePage = () => {
     });
   };
 
-  // Min date = today
-  const todayStr = new Date().toISOString().split("T")[0];
-
-  // Fetch recommended services
-  const { data: servicesData, isLoading: servicesLoading, isError: isServicesError, error: servicesError } = useQuery({
-    queryKey: ["services", "list"],
-    queryFn: () => servicesApi.list(),
-  });
-
-  const isLoading = isHomeLoading || servicesLoading;
-  const isError = isHomeError || isServicesError;
-  const error = homeError || servicesError;
-
-  if (isLoading) {
-    return <PageLoading />;
-  }
-
-  if (isError) {
-    return <ErrorState message={error} onRetry={refetch} />;
-  }
-
-  const welcomeName = user?.first_name 
-    ? `${user.first_name} ${user.last_name || ""}` 
-    : (user?.username || "Khách hàng");
-
-  const servicesList = normalizePaginatedResponse(servicesData || []).results.slice(0, 3);
-
-  // Dynamic formatting helpers
-  const mapStatusToVietnamese = (status: string) => {
-    const s = status.toLowerCase();
-    if (s === "pending" || s === "requested") return "CHỜ XÁC NHẬN";
-    if (s === "confirmed") return "ĐÃ XÁC NHẬN";
-    if (s === "completed") return "ĐÃ HOÀN THÀNH";
-    if (s === "cancelled") return "ĐÃ HỦY";
-    if (s === "no_show") return "KHÔNG ĐẾN";
-    return status.toUpperCase();
+  // Carousel scroll
+  const scrollServices = (dir: "left" | "right") => {
+    if (!scrollRef.current) return;
+    scrollRef.current.scrollBy({ left: dir === "left" ? -320 : 320, behavior: "smooth" });
   };
 
-  const formatAppointmentDate = (dateStr: string) => {
-    const d = new Date(dateStr);
-    if (isNaN(d.getTime())) return "Chưa xác định";
-    const weekdays = [
-      "Chủ Nhật",
-      "Thứ Hai",
-      "Thứ Ba",
-      "Thứ Tư",
-      "Thứ Năm",
-      "Thứ Sáu",
-      "Thứ Bảy"
-    ];
-    const weekday = weekdays[d.getDay()];
-    const day = String(d.getDate()).padStart(2, "0");
-    const month = String(d.getMonth() + 1).padStart(2, "0");
-    const year = d.getFullYear();
-    return `${weekday}, ${day}/${month}/${year}`;
-  };
+  if (isHomeLoading || servicesLoading) return <PageLoading />;
+  if (isHomeError) return <ErrorState message={homeError} onRetry={refetch} />;
 
-  const formatShortTime = (dateStr: string) => {
-    const d = new Date(dateStr);
-    if (isNaN(d.getTime())) return "TBD";
-    return d.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" });
-  };
-
-  const formatDiscountLabel = (discountType: string, discountValue: number | string) => {
-    const val = Number(discountValue);
-    if (discountType === "percent") {
-      const formattedVal = val % 1 === 0 ? val.toFixed(0) : val.toString();
-      return `Giảm ${formattedVal}%`;
-    } else {
-      return `Giảm ${val.toLocaleString("vi-VN")} VNĐ`;
-    }
-  };
-
-  const formatMinInvoice = (minInvoice: number | string | null | undefined) => {
-    const val = Number(minInvoice || 0);
-    return `Hóa đơn tối thiểu: ${val.toLocaleString("vi-VN")} VNĐ`;
-  };
-
-  const formatExpirationDate = (dateStr: string | null | undefined) => {
-    if (!dateStr) return "HSD: Vô thời hạn";
-    const d = new Date(dateStr);
-    if (isNaN(d.getTime())) return "HSD: Vô thời hạn";
-    const day = String(d.getDate()).padStart(2, "0");
-    const month = String(d.getMonth() + 1).padStart(2, "0");
-    const year = d.getFullYear();
-    return `HSD: ${day}/${month}/${year}`;
-  };
+  const displayName = user?.first_name
+    ? `${user.first_name}${user.last_name ? " " + user.last_name : ""}`
+    : (user?.username || "Quý khách");
 
   return (
-    <div style={{ animation: "fadeIn 0.5s ease" }}>
-      {/* Welcome & Reward Panel */}
-      <Card 
-        bordered={false} 
-        style={{ 
-          background: "linear-gradient(135deg, #1f1d1a 0%, #141412 100%)",
-          color: "#ffffff",
-          borderRadius: 20,
-          marginBottom: 32,
-          padding: 8
-        }}
-      >
-        <Row align="middle" gutter={[24, 24]}>
-          <Col xs={24} md={16}>
-            <Typography.Title level={2} style={{ margin: 0, color: "#faf7f2", fontFamily: "'Playfair Display', serif", fontWeight: 400 }}>
-              Chào mừng quay lại, {welcomeName}
-            </Typography.Title>
-            <Typography.Paragraph style={{ marginTop: 8, color: "#a3a19c", fontSize: 14 }}>
-              Không gian chăm sóc sắc đẹp của bạn đã sẵn sàng. Đặt lịch hẹn mới hoặc theo dõi quyền lợi thành viên của bạn.
-            </Typography.Paragraph>
+    <div style={{ minHeight: "100vh", background: "#faf7f2" }}>
+
+      {/* ══════════════════════════════════════════════════════
+          HERO SECTION
+      ══════════════════════════════════════════════════════ */}
+      <div style={{
+        position: "relative",
+        height: 440,
+        overflow: "hidden",
+        borderRadius: "0 0 32px 32px",
+        marginBottom: 40,
+      }}>
+        {/* BG Image */}
+        <img
+          src={HERO_BG}
+          alt="Salon"
+          style={{
+            position: "absolute", inset: 0,
+            width: "100%", height: "100%",
+            objectFit: "cover",
+            filter: "brightness(0.52)",
+          }}
+        />
+
+        {/* Gradient overlay */}
+        <div style={{
+          position: "absolute", inset: 0,
+          background: "linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(10,8,5,0.75) 100%)",
+        }} />
+
+        {/* Content */}
+        <div style={{
+          position: "relative", zIndex: 1,
+          height: "100%",
+          display: "flex", flexDirection: "column",
+          justifyContent: "flex-end",
+          padding: "0 40px 48px",
+          maxWidth: 760,
+        }}>
+          <p style={{
+            margin: "0 0 10px",
+            fontSize: 11, fontWeight: 700, letterSpacing: "0.2em",
+            color: "#c9a96e", textTransform: "uppercase",
+          }}>
+            THE ART OF REFINEMENT
+          </p>
+          <h1 style={{
+            margin: "0 0 18px",
+            fontFamily: "'Playfair Display', serif",
+            fontWeight: 400, fontSize: "clamp(28px, 4vw, 44px)",
+            lineHeight: 1.18,
+            color: "#faf7f2",
+          }}>
+            Chào mừng trở lại,<br />
+            <span style={{ color: "#c9a96e" }}>{displayName}</span>
+          </h1>
+          <p style={{
+            margin: "0 0 24px",
+            color: "rgba(255,255,255,0.7)", fontSize: 14, lineHeight: 1.7,
+          }}>
+            Không gian chăm sóc sắc đẹp của bạn đã sẵn sàng. Đặt lịch hoặc khám phá các dịch vụ cao cấp của chúng tôi.
+          </p>
+          <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
             <Link to="/customer/book">
-              <Button type="primary" size="large" className="login-button-gold" icon={<CalendarOutlined />}>
-                Đặt lịch hẹn
+              <Button
+                size="large"
+                style={{
+                  background: "#c9a96e",
+                  borderColor: "#c9a96e",
+                  color: "#fff",
+                  fontWeight: 700,
+                  borderRadius: 10,
+                  letterSpacing: "0.04em",
+                  height: 46,
+                  paddingInline: 28,
+                  boxShadow: "0 4px 20px rgba(201,169,110,0.4)",
+                }}
+              >
+                Khám phá dịch vụ
               </Button>
             </Link>
-          </Col>
-          
-          <Col xs={24} md={8} style={{ borderLeft: "1px solid #33312e", paddingLeft: 32 }}>
-            <Space direction="vertical" size={4}>
-              <span style={{ fontSize: 13, color: "var(--color-primary)", fontWeight: 500, letterSpacing: "0.05em" }}>
-                HẠNG THÀNH VIÊN CỦA BẠN
-              </span>
-              <Typography.Title level={3} style={{ margin: 0, color: "#ffffff", fontFamily: "'Outfit', sans-serif" }}>
-                {loyaltyTier}
-              </Typography.Title>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 8 }}>
-                <TrophyOutlined style={{ color: "var(--color-primary)", fontSize: 20 }} />
-                <Typography.Text style={{ color: "#ffffff", fontWeight: 600, fontSize: 16 }}>
-                  {currentPoints} Điểm
-                </Typography.Text>
-              </div>
-              <Progress percent={tierProgress} size="small" strokeColor="#bca374" trailColor="#33312e" style={{ marginTop: 8 }} />
-              {pointsAway > 0 ? (
-                <Typography.Text style={{ color: "#a3a19c", fontSize: 11 }}>
-                  Còn {pointsAway} điểm để lên hạng tiếp theo
-                </Typography.Text>
-              ) : (
-                <Typography.Text style={{ color: "#a3a19c", fontSize: 11 }}>
-                  Đã đạt hạng VIP tối đa
-                </Typography.Text>
-              )}
-            </Space>
-          </Col>
-        </Row>
-      </Card>
-
-      {/* Main Grid */}
-      <Row gutter={[32, 32]}>
-        {/* Next Appointment Card */}
-        <Col xs={24} lg={15}>
-          <Typography.Title level={4} style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 600, marginBottom: 16 }}>
-            Lịch hẹn sắp tới của bạn
-          </Typography.Title>
-          {nextAppointment ? (
-            <Card bordered={false} hoverable={false} style={{ borderRadius: 16, border: "1px solid var(--app-border)" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 16 }}>
-                <Space direction="vertical" size={8}>
-                  <span style={{ 
-                    background: "var(--color-accent)", 
-                    color: "var(--color-primary-dark)", 
-                    padding: "4px 12px", 
-                    borderRadius: 20, 
-                    fontSize: 11, 
-                    fontWeight: 600 
-                  }}>
-                    LỊCH HẸN {mapStatusToVietnamese(nextAppointment.status)} #{nextAppointment.id}
-                  </span>
-                  
-                  <Typography.Title level={4} style={{ margin: "8px 0 4px", fontFamily: "'Outfit', sans-serif", fontWeight: 600 }}>
-                    {nextAppointment.service_details?.name || "Phục hồi tóc tổng quát"}
-                  </Typography.Title>
-                  
-                  <Typography.Text style={{ color: "var(--color-muted)", fontSize: 14 }}>
-                    Nhân viên phụ trách: <strong style={{ color: "var(--color-text)" }}>{nextAppointment.employee_details?.full_name || "Stylist được phân công"}</strong>
-                  </Typography.Text>
-                </Space>
-
-                <div style={{ 
-                  background: "var(--color-bg)", 
-                  padding: "16px 24px", 
-                  borderRadius: 12, 
-                  textAlign: "center",
-                  border: "1px solid var(--app-border)"
-                }}>
-                  <Typography.Text style={{ color: "var(--color-primary-dark)", fontWeight: 600, display: "block" }}>
-                    {nextAppointment.scheduled_start ? formatAppointmentDate(nextAppointment.scheduled_start) : "Chưa xác định"}
-                  </Typography.Text>
-                  <Typography.Title level={3} style={{ margin: "4px 0 0", fontFamily: "'Outfit', sans-serif" }}>
-                    {nextAppointment.scheduled_start ? formatShortTime(nextAppointment.scheduled_start) : "TBD"}
-                  </Typography.Title>
-                  <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-                    Thời lượng: {nextAppointment.service_details?.duration || 60} phút
-                  </Typography.Text>
-                </div>
-              </div>
-
-              <div style={{ display: "flex", justifyContent: "flex-end", gap: 12, marginTop: 24, borderTop: "1px solid var(--app-border)", paddingTop: 16 }}>
-                {/* Hủy lịch */}
-                <Button
-                  danger
-                  style={{ borderRadius: 8 }}
-                  loading={cancelMutation.isPending}
-                  onClick={handleCancelConfirm}
-                >
-                  Hủy lịch hẹn
-                </Button>
-                {/* Đổi lịch */}
-                <Button
-                  type="default"
-                  style={{ borderRadius: 8 }}
-                  onClick={() => setRescheduleOpen(true)}
-                >
-                  Đổi lịch hẹn
-                </Button>
-                <Link to={`/customer/appointments/${nextAppointment.id}`}>
-                  <Button type="primary" className="login-button-gold" style={{ borderRadius: 8 }}>
-                    Xem chi tiết lịch hẹn
-                  </Button>
-                </Link>
-              </div>
-            </Card>
-          ) : (
-            <Card bordered={false} style={{ textAlign: "center", padding: "40px 0", borderRadius: 16, border: "1px solid var(--app-border)" }}>
-              <CalendarOutlined style={{ fontSize: 40, color: "var(--color-muted)", marginBottom: 16 }} />
-              <Typography.Paragraph type="secondary">
-                Bạn chưa có lịch hẹn nào. Sẵn sàng cho buổi chăm sóc bản thân chứ?
-              </Typography.Paragraph>
-              <Link to="/customer/book">
-                <Button type="primary" className="login-button-gold">Đặt lịch ngay</Button>
-              </Link>
-            </Card>
-          )}
-        </Col>
-
-        {/* Vouchers & Promos */}
-        <Col xs={24} lg={9}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-            <Typography.Title level={4} style={{ margin: 0, fontFamily: "'Outfit', sans-serif", fontWeight: 600 }}>
-              Ví mã giảm giá của bạn
-            </Typography.Title>
-            <Link to="/customer/vouchers" style={{ color: "var(--color-primary)", fontWeight: 500, fontSize: 13 }}>
-              Xem tất cả <RightOutlined style={{ fontSize: 10 }} />
+            <Link to="/customer/appointments">
+              <Button
+                size="large"
+                style={{
+                  background: "rgba(255,255,255,0.12)",
+                  borderColor: "rgba(255,255,255,0.35)",
+                  color: "#fff",
+                  fontWeight: 600,
+                  borderRadius: 10,
+                  height: 46,
+                  paddingInline: 24,
+                  backdropFilter: "blur(8px)",
+                }}
+              >
+                Lịch hẹn của tôi <ArrowRightOutlined style={{ fontSize: 12 }} />
+              </Button>
             </Link>
           </div>
+        </div>
+      </div>
 
-          <Space direction="vertical" size={16} style={{ width: "100%" }}>
-            {activeVouchers.length > 0 ? (
-              activeVouchers.slice(0, 3).map((v) => (
-                <Card 
-                  key={v.id} 
-                  bordered={false} 
-                  style={{ 
-                    background: "var(--color-surface)", 
-                    border: "1px dashed var(--color-primary)",
-                    borderRadius: 12
-                  }}
-                >
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <div>
-                      <Typography.Title level={4} style={{ margin: 0, color: "var(--color-primary-dark)", fontFamily: "'Outfit', sans-serif" }}>
-                        {formatDiscountLabel(v.discount_type, v.discount_value)}
-                      </Typography.Title>
-                      <Typography.Text style={{ fontWeight: 500, display: "block", fontSize: 13, marginTop: 4 }}>
-                        {formatMinInvoice(v.min_invoice)}
-                      </Typography.Text>
-                      <Typography.Text type="secondary" style={{ fontSize: 11 }}>
-                        {formatExpirationDate(v.expires_at)}
-                      </Typography.Text>
-                    </div>
+      {/* ══════════════════════════════════════════════════════
+          THREE INFO CARDS
+      ══════════════════════════════════════════════════════ */}
+      <div style={{ padding: "0 24px", maxWidth: 1200, margin: "0 auto 48px" }}>
+        <Row gutter={[20, 20]}>
 
-                    <div style={{ 
-                      background: "var(--color-accent)", 
-                      padding: "6px 12px", 
-                      borderRadius: 6, 
-                      fontFamily: "monospace", 
-                      fontWeight: 700, 
-                      color: "var(--color-primary-dark)",
-                      fontSize: 13,
-                      border: "1px solid var(--app-border)"
-                    }}>
-                      {v.code}
-                    </div>
+          {/* Card 1: Upcoming Appointment */}
+          <Col xs={24} md={8}>
+            <Card
+              bordered={false}
+              style={{
+                borderRadius: 20,
+                border: "1px solid #ede8df",
+                boxShadow: "0 4px 24px rgba(0,0,0,0.05)",
+                height: "100%",
+                minHeight: 180,
+              }}
+              bodyStyle={{ padding: 24 }}
+            >
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <div style={{
+                    width: 36, height: 36, borderRadius: 10,
+                    background: "#f8f4ee",
+                    display: "grid", placeItems: "center",
+                    color: "#c9a96e", fontSize: 16,
+                  }}>
+                    <CalendarOutlined />
                   </div>
-                </Card>
-              ))
-            ) : (
-              <Card bordered={false} style={{ textAlign: "center", padding: "20px 0", borderRadius: 12, border: "1px dashed var(--color-primary)" }}>
-                <GiftOutlined style={{ fontSize: 24, color: "var(--color-muted)", marginBottom: 8 }} />
-                <Typography.Text type="secondary" style={{ display: "block", fontSize: 12 }}>
-                  Bạn chưa có mã giảm giá nào.
-                </Typography.Text>
-              </Card>
-            )}
-          </Space>
-        </Col>
-      </Row>
-
-      {/* Recommended Services Section */}
-      <div style={{ marginTop: 40 }}>
-        <Typography.Title level={4} style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 600, marginBottom: 20 }}>
-          Dịch vụ gợi ý cho bạn
-        </Typography.Title>
-        <Row gutter={[24, 24]}>
-          {servicesList.map((service) => (
-            <Col xs={24} md={8} key={service.id}>
-              <Card
-                hoverable
-                cover={
-                  <img
-                    alt={service.name}
-                    src={getServiceImage(service.name)}
-                    style={{ height: 180, objectFit: "cover", borderTopLeftRadius: 16, borderTopRightRadius: 16 }}
-                  />
-                }
-                bodyStyle={{ padding: 20 }}
-                style={{ borderRadius: 16 }}
-              >
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
-                  <span style={{ fontSize: 11, background: "var(--color-accent)", color: "var(--color-primary-dark)", padding: "2px 8px", borderRadius: 12, fontWeight: 600, textTransform: "uppercase" }}>
-                    {service.category || "Chăm sóc tóc"}
+                  <span style={{ fontSize: 12, color: "#9ca3af", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                    Sắp tới
                   </span>
-                  <Typography.Text type="secondary" style={{ fontSize: 13 }}>
-                    {service.duration_minutes} phút
-                  </Typography.Text>
                 </div>
-                <Typography.Title level={5} style={{ margin: "4px 0 8px", fontWeight: 600, fontFamily: "'Outfit', sans-serif" }}>
-                  {service.name}
-                </Typography.Title>
-                <Typography.Paragraph type="secondary" style={{ fontSize: 13, height: 40, overflow: "hidden", marginBottom: 16 }}>
-                  {service.description || "Hãy trải nghiệm dịch vụ chăm sóc tóc cao cấp được thiết kế riêng cho phong cách của bạn."}
-                </Typography.Paragraph>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid var(--app-border)", paddingTop: 12 }}>
-                  <span style={{ fontSize: 16, fontWeight: 700, color: "var(--color-primary-dark)" }}>
-                    {Number(service.base_price).toLocaleString("vi-VN")} VNĐ
-                  </span>
+                {nextAppointment && (
+                  <Tag style={{
+                    background: "#fef9ee", border: "1px solid #f0d98a",
+                    color: "#92700a", borderRadius: 20, fontWeight: 600, fontSize: 10,
+                  }}>
+                    {mapStatus(nextAppointment.status)}
+                  </Tag>
+                )}
+              </div>
+
+              {nextAppointment ? (
+                <>
+                  <Typography.Title level={4} style={{
+                    margin: "0 0 6px",
+                    fontFamily: "'Outfit', sans-serif",
+                    fontWeight: 700, fontSize: 17, color: "#1f2937",
+                  }}>
+                    Lịch hẹn sắp tới
+                  </Typography.Title>
+                  <Typography.Text style={{ fontSize: 13, color: "#6b7280", display: "block", marginBottom: 4 }}>
+                    {nextAppointment.service_details?.name || "Dịch vụ chăm sóc"}
+                  </Typography.Text>
+                  <Typography.Text style={{ fontSize: 13, color: "#6b7280", display: "block", marginBottom: 14 }}>
+                    {nextAppointment.scheduled_start
+                      ? `${fmtShortDate(nextAppointment.scheduled_start)} • ${fmtTime(nextAppointment.scheduled_start)}`
+                      : "Chưa xác định"}
+                    {nextAppointment.employee_details?.full_name && (
+                      <span style={{ color: "#c9a96e" }}> · {nextAppointment.employee_details.full_name}</span>
+                    )}
+                  </Typography.Text>
+                  <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                    <Button
+                      size="small"
+                      onClick={() => setRescheduleOpen(true)}
+                      style={{ borderRadius: 8, fontSize: 12, borderColor: "#c9a96e", color: "#c9a96e" }}
+                    >
+                      Đổi lịch
+                    </Button>
+                    <Button
+                      size="small"
+                      danger
+                      onClick={handleCancelConfirm}
+                      loading={cancelMutation.isPending}
+                      style={{ borderRadius: 8, fontSize: 12 }}
+                    >
+                      Hủy
+                    </Button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <Typography.Title level={4} style={{
+                    margin: "0 0 6px",
+                    fontFamily: "'Outfit', sans-serif",
+                    fontWeight: 700, fontSize: 17, color: "#1f2937",
+                  }}>
+                    Lịch hẹn sắp tới
+                  </Typography.Title>
+                  <Typography.Text style={{ fontSize: 13, color: "#9ca3af", display: "block", marginBottom: 14 }}>
+                    Chưa có lịch hẹn nào
+                  </Typography.Text>
                   <Link to="/customer/book">
-                    <Button type="primary" size="small" className="login-button-gold" style={{ borderRadius: 6 }}>
-                      Đặt ngay
+                    <Button
+                      size="small"
+                      style={{
+                        borderRadius: 8, fontSize: 12,
+                        background: "#c9a96e", borderColor: "#c9a96e", color: "#fff",
+                      }}
+                    >
+                      Đặt lịch ngay
                     </Button>
                   </Link>
+                </>
+              )}
+            </Card>
+          </Col>
+
+          {/* Card 2: Membership — DARK */}
+          <Col xs={24} md={8}>
+            <Card
+              bordered={false}
+              style={{
+                borderRadius: 20,
+                background: "linear-gradient(145deg, #1a1714 0%, #111009 100%)",
+                border: "none",
+                boxShadow: "0 8px 32px rgba(0,0,0,0.25)",
+                height: "100%",
+                minHeight: 180,
+                position: "relative",
+                overflow: "hidden",
+              }}
+              bodyStyle={{ padding: 24 }}
+            >
+              {/* decorative circle */}
+              <div style={{
+                position: "absolute", top: -30, right: -30,
+                width: 120, height: 120, borderRadius: "50%",
+                background: "radial-gradient(circle, rgba(201,169,110,0.18) 0%, transparent 70%)",
+              }} />
+
+              <div style={{ position: "relative", zIndex: 1 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <StarOutlined style={{ color: "#c9a96e", fontSize: 18 }} />
+                    <span style={{ fontSize: 12, color: "rgba(255,255,255,0.45)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                      Hạng thành viên
+                    </span>
+                  </div>
+                  <span style={{
+                    background: "linear-gradient(135deg, #c9a96e, #a0742a)",
+                    color: "#fff", fontSize: 9, fontWeight: 800,
+                    padding: "3px 10px", borderRadius: 20, letterSpacing: "0.1em",
+                    textTransform: "uppercase",
+                  }}>
+                    ELITE TIER
+                  </span>
                 </div>
-              </Card>
-            </Col>
-          ))}
+
+                <Typography.Title level={3} style={{
+                  margin: "0 0 6px",
+                  fontFamily: "'Playfair Display', serif",
+                  fontWeight: 400, color: "#faf7f2",
+                }}>
+                  {loyaltyTier || "Bronze"}
+                </Typography.Title>
+                <Typography.Text style={{ fontSize: 13, color: "rgba(255,255,255,0.5)", display: "block", marginBottom: 14 }}>
+                  Truy cập dịch vụ cao cấp với quyền lợi độc quyền
+                </Typography.Text>
+
+                <div style={{
+                  display: "flex", justifyContent: "space-between", alignItems: "center",
+                  borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: 14,
+                }}>
+                  <div>
+                    <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 2 }}>Điểm tích lũy</div>
+                    <div style={{ fontSize: 20, fontWeight: 800, color: "#c9a96e", fontFamily: "'Outfit', sans-serif" }}>
+                      {currentPoints} <span style={{ fontSize: 12, fontWeight: 500, color: "rgba(255,255,255,0.5)" }}>điểm</span>
+                    </div>
+                  </div>
+                  <Link to="/customer/rewards">
+                    <div style={{
+                      display: "flex", alignItems: "center", gap: 4,
+                      color: "#c9a96e", fontSize: 12, fontWeight: 600, cursor: "pointer",
+                    }}>
+                      Trạng thái: Hoạt động <RightOutlined style={{ fontSize: 10 }} />
+                    </div>
+                  </Link>
+                </div>
+              </div>
+            </Card>
+          </Col>
+
+          {/* Card 3: Voucher Wallet */}
+          <Col xs={24} md={8}>
+            <Card
+              bordered={false}
+              style={{
+                borderRadius: 20,
+                border: "1px solid #ede8df",
+                boxShadow: "0 4px 24px rgba(0,0,0,0.05)",
+                height: "100%",
+                minHeight: 180,
+              }}
+              bodyStyle={{ padding: 24 }}
+            >
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <div style={{
+                    width: 36, height: 36, borderRadius: 10,
+                    background: "#f8f4ee",
+                    display: "grid", placeItems: "center",
+                    color: "#c9a96e", fontSize: 16,
+                  }}>
+                    <GiftOutlined />
+                  </div>
+                  <span style={{ fontSize: 12, color: "#9ca3af", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                    {activeVouchers.length} Mã có sẵn
+                  </span>
+                </div>
+                <Link to="/customer/vouchers" style={{ color: "#c9a96e", fontSize: 12, fontWeight: 600 }}>
+                  Xem tất cả <RightOutlined style={{ fontSize: 9 }} />
+                </Link>
+              </div>
+
+              <Typography.Title level={4} style={{
+                margin: "0 0 6px",
+                fontFamily: "'Outfit', sans-serif",
+                fontWeight: 700, fontSize: 17, color: "#1f2937",
+              }}>
+                Ví mã giảm giá
+              </Typography.Title>
+              <Typography.Text style={{ fontSize: 13, color: "#6b7280", display: "block", marginBottom: 14 }}>
+                Quy đổi điểm thưởng để nâng cấp trải nghiệm
+              </Typography.Text>
+
+              {activeVouchers.length > 0 ? (
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                  {activeVouchers.slice(0, 2).map((v) => (
+                    <div key={v.id} style={{
+                      background: "linear-gradient(135deg, #fdf6e3, #fef9ee)",
+                      border: "1px dashed #c9a96e",
+                      borderRadius: 10,
+                      padding: "8px 12px",
+                      minWidth: 100,
+                    }}>
+                      <div style={{ fontFamily: "monospace", fontWeight: 800, fontSize: 13, color: "#7d5a1e", letterSpacing: "0.05em" }}>
+                        {v.code}
+                      </div>
+                      <div style={{ fontSize: 11, color: "#c9a96e", fontWeight: 700, marginTop: 2 }}>
+                        {fmtDiscount(v.discount_type, v.discount_value)}
+                      </div>
+                      <div style={{ fontSize: 10, color: "#9ca3af", marginTop: 1 }}>
+                        HSD: {fmtExpiry(v.expires_at)}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <Typography.Text type="secondary" style={{ fontSize: 13 }}>
+                  Chưa có mã giảm giá nào.
+                </Typography.Text>
+              )}
+            </Card>
+          </Col>
         </Row>
       </div>
 
-      {/* =================== MODAL ĐỔI LỊCH HẸN =================== */}
+      {/* ══════════════════════════════════════════════════════
+          RECOMMENDED SERVICES
+      ══════════════════════════════════════════════════════ */}
+      <div style={{ padding: "0 24px 60px", maxWidth: 1200, margin: "0 auto" }}>
+        {/* Section header */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 28 }}>
+          <div>
+            <p style={{
+              margin: "0 0 6px",
+              fontSize: 11, fontWeight: 700, letterSpacing: "0.18em",
+              color: "#c9a96e", textTransform: "uppercase",
+            }}>
+              CURATED SELECTION
+            </p>
+            <Typography.Title level={2} style={{
+              margin: 0,
+              fontFamily: "'Playfair Display', serif",
+              fontWeight: 400, fontSize: "clamp(22px, 3vw, 34px)",
+              color: "#1f2937",
+            }}>
+              Dịch vụ nổi bật
+            </Typography.Title>
+          </div>
+          <div style={{ display: "flex", gap: 8 }}>
+            <button
+              onClick={() => scrollServices("left")}
+              style={{
+                width: 36, height: 36, borderRadius: "50%",
+                border: "1px solid #e5e0d8",
+                background: "#fff",
+                cursor: "pointer",
+                display: "grid", placeItems: "center",
+                fontSize: 13, color: "#6b7280",
+                transition: "all 0.2s",
+              }}
+            >
+              <LeftOutlined />
+            </button>
+            <button
+              onClick={() => scrollServices("right")}
+              style={{
+                width: 36, height: 36, borderRadius: "50%",
+                border: "1px solid #e5e0d8",
+                background: "#fff",
+                cursor: "pointer",
+                display: "grid", placeItems: "center",
+                fontSize: 13, color: "#6b7280",
+                transition: "all 0.2s",
+              }}
+            >
+              <RightOutlined />
+            </button>
+          </div>
+        </div>
+
+        {/* Scrollable row */}
+        <div
+          ref={scrollRef}
+          style={{
+            display: "flex",
+            gap: 20,
+            overflowX: "auto",
+            scrollSnapType: "x mandatory",
+            paddingBottom: 12,
+            scrollbarWidth: "none",
+          }}
+        >
+          {servicesList.length === 0 ? (
+            <div style={{ textAlign: "center", width: "100%", padding: "40px 0", color: "#9ca3af" }}>
+              Chưa có dịch vụ nào.
+            </div>
+          ) : (
+            servicesList.map((service, idx) => (
+              <div
+                key={service.id}
+                style={{
+                  flex: "0 0 280px",
+                  scrollSnapAlign: "start",
+                  borderRadius: 20,
+                  overflow: "hidden",
+                  border: "1px solid #ede8df",
+                  background: "#fff",
+                  boxShadow: "0 4px 20px rgba(0,0,0,0.06)",
+                  transition: "transform 0.25s, box-shadow 0.25s",
+                  cursor: "pointer",
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLElement).style.transform = "translateY(-4px)";
+                  (e.currentTarget as HTMLElement).style.boxShadow = "0 12px 36px rgba(0,0,0,0.12)";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLElement).style.transform = "translateY(0)";
+                  (e.currentTarget as HTMLElement).style.boxShadow = "0 4px 20px rgba(0,0,0,0.06)";
+                }}
+              >
+                {/* Image */}
+                <div style={{ position: "relative", height: 200, overflow: "hidden" }}>
+                  <img
+                    src={getServiceImage(service.name, idx)}
+                    alt={service.name}
+                    style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.4s" }}
+                  />
+                  <div style={{
+                    position: "absolute", bottom: 12, left: 12,
+                    background: "rgba(0,0,0,0.5)", backdropFilter: "blur(6px)",
+                    padding: "3px 10px", borderRadius: 20,
+                    fontSize: 10, fontWeight: 700, color: "#fff",
+                    textTransform: "uppercase", letterSpacing: "0.08em",
+                  }}>
+                    {service.category || "Chăm sóc tóc"}
+                  </div>
+                </div>
+
+                {/* Body */}
+                <div style={{ padding: "16px 20px 20px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
+                    <Typography.Text style={{ fontSize: 12, color: "#9ca3af" }}>
+                      {service.duration_minutes ?? 60} phút
+                    </Typography.Text>
+                  </div>
+                  <Typography.Title level={5} style={{
+                    margin: "0 0 6px",
+                    fontWeight: 700, fontFamily: "'Outfit', sans-serif",
+                    fontSize: 16, color: "#1f2937",
+                  }}>
+                    {service.name}
+                  </Typography.Title>
+                  <Typography.Paragraph
+                    type="secondary"
+                    ellipsis={{ rows: 2 }}
+                    style={{ fontSize: 12, marginBottom: 16 }}
+                  >
+                    {service.description || "Trải nghiệm dịch vụ chăm sóc cao cấp được thiết kế riêng cho bạn."}
+                  </Typography.Paragraph>
+
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <span style={{ fontSize: 17, fontWeight: 800, color: "#1f2937", fontFamily: "'Outfit', sans-serif" }}>
+                      {Number(service.base_price).toLocaleString("vi-VN")}đ
+                    </span>
+                    <Link to="/customer/book">
+                      <Button
+                        size="small"
+                        style={{
+                          background: "#c9a96e", borderColor: "#c9a96e", color: "#fff",
+                          borderRadius: 8, fontWeight: 600, fontSize: 12, height: 32,
+                        }}
+                      >
+                        Đặt ngay
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+
+      {/* ══════════════════════════════════════════════════════
+          FOOTER
+      ══════════════════════════════════════════════════════ */}
+      <footer style={{
+        background: "#faf7f2",
+        borderTop: "1px solid #ede8df",
+        padding: "36px 24px",
+      }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+          <Row gutter={[32, 32]}>
+            <Col xs={24} md={7}>
+              <div style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 16, letterSpacing: "0.12em", color: "#1f2937", marginBottom: 8 }}>
+                ELITE SALON
+              </div>
+              <Typography.Text type="secondary" style={{ fontSize: 12, lineHeight: 1.8 }}>
+                Không gian chăm sóc sắc đẹp cao cấp dành cho phong cách hiện đại.
+              </Typography.Text>
+            </Col>
+            <Col xs={12} md={5}>
+              <div style={{ fontWeight: 700, fontSize: 11, letterSpacing: "0.1em", color: "#9ca3af", textTransform: "uppercase", marginBottom: 12 }}>
+                KẾT NỐI
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {["Nghề nghiệp", "Liên hệ"].map((l) => (
+                  <span key={l} style={{ fontSize: 13, color: "#6b7280", cursor: "pointer" }}>{l}</span>
+                ))}
+              </div>
+            </Col>
+            <Col xs={12} md={5}>
+              <div style={{ fontWeight: 700, fontSize: 11, letterSpacing: "0.1em", color: "#9ca3af", textTransform: "uppercase", marginBottom: 12 }}>
+                PHÁP LÝ
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {["Chính sách bảo mật", "Điều khoản dịch vụ"].map((l) => (
+                  <span key={l} style={{ fontSize: 13, color: "#6b7280", cursor: "pointer" }}>{l}</span>
+                ))}
+              </div>
+            </Col>
+            <Col xs={24} md={7}>
+              <div style={{ fontWeight: 700, fontSize: 11, letterSpacing: "0.1em", color: "#9ca3af", textTransform: "uppercase", marginBottom: 12 }}>
+                BẢN TIN
+              </div>
+              <Typography.Text style={{ fontSize: 12, color: "#6b7280", display: "block", marginBottom: 10 }}>
+                Đăng ký để nhận ưu đãi độc quyền.
+              </Typography.Text>
+              <div style={{ display: "flex", gap: 0, border: "1px solid #e5e0d8", borderRadius: 10, overflow: "hidden" }}>
+                <input
+                  type="email"
+                  placeholder="Email của bạn"
+                  style={{
+                    flex: 1, border: "none", outline: "none",
+                    padding: "10px 14px", fontSize: 13,
+                    background: "#fff", color: "#1f2937",
+                  }}
+                />
+                <button style={{
+                  background: "#c9a96e", border: "none", color: "#fff",
+                  padding: "10px 16px", cursor: "pointer", fontSize: 14,
+                }}>
+                  <ArrowRightOutlined />
+                </button>
+              </div>
+            </Col>
+          </Row>
+          <div style={{
+            marginTop: 32,
+            paddingTop: 20,
+            borderTop: "1px solid #ede8df",
+            textAlign: "center",
+            fontSize: 11,
+            color: "#9ca3af",
+            letterSpacing: "0.06em",
+            textTransform: "uppercase",
+          }}>
+            © {new Date().getFullYear()} ELITE SALON. THE ART OF REFINEMENT.
+          </div>
+        </div>
+      </footer>
+
+      {/* ══════════════════════════════════════════════════════
+          RESCHEDULE MODAL (unchanged logic)
+      ══════════════════════════════════════════════════════ */}
       <Modal
         open={rescheduleOpen}
         title={
@@ -465,102 +769,66 @@ export const CustomerHomePage = () => {
         width={480}
         styles={{ body: { paddingTop: 8 } }}
       >
-        {/* Current appointment info */}
         {nextAppointment && (
           <div style={{
-            background: "var(--color-accent)",
-            borderRadius: 10,
-            padding: "12px 16px",
-            marginBottom: 20,
-            border: "1px solid var(--app-border)"
+            background: "#fdf6e3", borderRadius: 10,
+            padding: "12px 16px", marginBottom: 20,
+            border: "1px solid #f0d98a",
           }}>
             <Typography.Text style={{ fontWeight: 600, display: "block", marginBottom: 4 }}>
-              {nextAppointment.service_details?.name || "Phục hồi tóc tổng quát"}
+              {nextAppointment.service_details?.name || "Dịch vụ chăm sóc"}
             </Typography.Text>
             <Typography.Text type="secondary" style={{ fontSize: 13 }}>
               Lịch hiện tại:{" "}
               <strong>
                 {nextAppointment.scheduled_start
-                  ? `${formatAppointmentDate(nextAppointment.scheduled_start)} – ${formatShortTime(nextAppointment.scheduled_start)}`
+                  ? `${fmtDate(nextAppointment.scheduled_start)} – ${fmtTime(nextAppointment.scheduled_start)}`
                   : "Chưa xác định"}
               </strong>
             </Typography.Text>
           </div>
         )}
 
-        <Form
-          form={rescheduleForm}
-          layout="vertical"
-          onFinish={handleRescheduleSubmit}
-        >
-          <Form.Item
-            label="Ngày hẹn mới"
-            name="newDate"
-            rules={[{ required: true, message: "Vui lòng chọn ngày hẹn mới" }]}
-          >
+        <Form form={rescheduleForm} layout="vertical" onFinish={(v) => {
+          if (!nextAppointment) return;
+          rescheduleMutation.mutate({ id: Number(nextAppointment.id), ...v });
+        }}>
+          <Form.Item label="Ngày hẹn mới" name="newDate" rules={[{ required: true, message: "Vui lòng chọn ngày hẹn mới" }]}>
             <input
-              type="date"
-              min={todayStr}
+              type="date" min={todayStr}
               style={{
-                width: "100%",
-                height: 40,
-                borderRadius: 8,
-                border: "1px solid #d9d9d9",
-                padding: "4px 12px",
-                fontSize: 14,
-                outline: "none",
-                cursor: "pointer",
-                background: "var(--color-surface)",
-                color: "var(--color-text)"
+                width: "100%", height: 40, borderRadius: 8,
+                border: "1px solid #d9d9d9", padding: "4px 12px",
+                fontSize: 14, outline: "none", cursor: "pointer",
+                background: "#fff", color: "#1f2937",
               }}
               onChange={(e) => rescheduleForm.setFieldValue("newDate", e.target.value)}
             />
           </Form.Item>
-
-          <Form.Item
-            label="Giờ hẹn mới"
-            name="newTime"
-            rules={[{ required: true, message: "Vui lòng chọn giờ hẹn mới" }]}
-          >
+          <Form.Item label="Giờ hẹn mới" name="newTime" rules={[{ required: true, message: "Vui lòng chọn giờ hẹn mới" }]}>
             <input
               type="time"
               style={{
-                width: "100%",
-                height: 40,
-                borderRadius: 8,
-                border: "1px solid #d9d9d9",
-                padding: "4px 12px",
-                fontSize: 14,
-                outline: "none",
-                cursor: "pointer",
-                background: "var(--color-surface)",
-                color: "var(--color-text)"
+                width: "100%", height: 40, borderRadius: 8,
+                border: "1px solid #d9d9d9", padding: "4px 12px",
+                fontSize: 14, outline: "none", cursor: "pointer",
+                background: "#fff", color: "#1f2937",
               }}
               onChange={(e) => rescheduleForm.setFieldValue("newTime", e.target.value)}
             />
           </Form.Item>
-
           <Form.Item label="Lý do đổi lịch (không bắt buộc)" name="reason">
-            <Input.TextArea
-              rows={3}
-              placeholder="Ví dụ: Tôi muốn đổi sang khung giờ thuận tiện hơn..."
-              style={{ borderRadius: 8 }}
-            />
+            <Input.TextArea rows={3} placeholder="Ví dụ: Tôi muốn đổi sang khung giờ thuận tiện hơn..." style={{ borderRadius: 8 }} />
           </Form.Item>
-
           <div style={{ display: "flex", justifyContent: "flex-end", gap: 12, marginTop: 8 }}>
-            <Button
-              onClick={() => { setRescheduleOpen(false); rescheduleForm.resetFields(); }}
-              style={{ borderRadius: 8 }}
-            >
+            <Button onClick={() => { setRescheduleOpen(false); rescheduleForm.resetFields(); }} style={{ borderRadius: 8 }}>
               Hủy
             </Button>
             <Button
               type="primary"
               htmlType="submit"
-              className="login-button-gold"
               loading={rescheduleMutation.isPending}
-              style={{ borderRadius: 8 }}
+              style={{ borderRadius: 8, background: "#c9a96e", borderColor: "#c9a96e" }}
             >
               Xác nhận đổi lịch
             </Button>
