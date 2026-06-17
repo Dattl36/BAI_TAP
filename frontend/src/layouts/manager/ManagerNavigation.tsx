@@ -9,6 +9,7 @@ import {
   ScheduleOutlined,
   FileTextOutlined,
   SettingOutlined,
+  IdcardOutlined,
 } from "@ant-design/icons";
 import { Menu } from "antd";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -25,6 +26,7 @@ export const ManagerNavigation = () => {
     { key: "/manager/appointments", icon: <CalendarOutlined />, label: "Lịch hẹn của Salon" },
     { key: "/manager/vouchers", icon: <GiftOutlined />, label: "Mã giảm giá & Khuyến mãi" },
     { key: "/manager/customers", icon: <TeamOutlined />, label: "Khách hàng" },
+    { key: "/manager/employees", icon: <IdcardOutlined />, label: "Quản lý nhân viên" },
     { key: "/manager/notifications", icon: <BellOutlined />, label: "Thông báo" },
     { key: "/manager/accounts", icon: <UserOutlined />, label: "Kiểm soát truy cập" },
     { key: "/manager/settings", icon: <SettingOutlined />, label: "Cài đặt" },

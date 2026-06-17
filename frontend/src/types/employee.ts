@@ -3,7 +3,7 @@ import type { BaseEntity, EntityId } from "./common";
 export interface Employee extends BaseEntity {
   user?: EntityId;
   employee_code?: string;
-  role_type: "receptionist" | "staff" | "manager";
+  role_type: "receptionist" | "staff" | "manager" | "stylist" | "customer" | string;
   full_name: string;
   phone?: string;
   specialties?: string;
