@@ -29,7 +29,7 @@ class LoginSerializer(serializers.Serializer):
     def validate(self, attrs):
         user = authenticate(username=attrs["username"], password=attrs["password"])
         if not user:
-            raise serializers.ValidationError("Invalid username or password.")
+            raise serializers.ValidationError("Tên đăng nhập hoặc mật khẩu không chính xác.")
         attrs["user"] = user
         return attrs
 

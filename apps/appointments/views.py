@@ -26,7 +26,7 @@ class AppointmentViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         appointment = create_appointment(request.user, **serializer.validated_data)
-        return success(self.get_serializer(appointment).data, "Appointment created", 201)
+        return success(self.get_serializer(appointment).data, "Đã tạo lịch hẹn", 201)
 
     def update(self, request, *args, **kwargs):
         from rest_framework.exceptions import MethodNotAllowed
@@ -70,7 +70,7 @@ class AppointmentViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=["get"])
     def availability(self, request):
-        return success({"message": "Use employee availability and appointment conflict endpoints to inspect slots."})
+        return success({"message": "Vui lòng kiểm tra lịch làm việc của nhân viên và các khung giờ bị trùng để xem thời gian trống."})
 
     from rest_framework.permissions import AllowAny
     @action(detail=False, methods=["get"], permission_classes=[AllowAny])

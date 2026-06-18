@@ -26,7 +26,7 @@ class Migration(migrations.Migration):
                 ('deleted_at', models.DateTimeField(blank=True, null=True)),
                 ('amount', models.DecimalField(decimal_places=2, max_digits=12)),
                 ('method', models.CharField(max_length=64)),
-                ('status', models.CharField(choices=[('attempted', 'Attempted'), ('pending', 'Pending'), ('successful', 'Successful'), ('failed', 'Failed'), ('cancelled', 'Cancelled'), ('refunded', 'Refunded'), ('adjusted', 'Adjusted')], default='attempted', max_length=32)),
+                ('status', models.CharField(choices=[('attempted', 'Attempted'), ('pending', 'Pending'), ('successful', 'Successful'), ('failed', 'Failed'), ('cancelled', 'Đã hủy'), ('refunded', 'Refunded'), ('adjusted', 'Adjusted')], default='attempted', max_length=32)),
                 ('reference_code', models.CharField(blank=True, max_length=120)),
                 ('failure_reason', models.TextField(blank=True)),
                 ('processed_at', models.DateTimeField(blank=True, null=True)),

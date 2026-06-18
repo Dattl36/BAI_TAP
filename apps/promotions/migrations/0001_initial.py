@@ -71,7 +71,7 @@ class Migration(migrations.Migration):
                 ('min_invoice', models.DecimalField(decimal_places=2, default=0, max_digits=12)),
                 ('starts_at', models.DateTimeField()),
                 ('expires_at', models.DateTimeField()),
-                ('status', models.CharField(choices=[('active', 'Active'), ('redeemed', 'Redeemed'), ('expired', 'Expired'), ('cancelled', 'Cancelled')], default='active', max_length=32)),
+                ('status', models.CharField(choices=[('active', 'Active'), ('redeemed', 'Redeemed'), ('expired', 'Expired'), ('cancelled', 'Đã hủy')], default='active', max_length=32)),
                 ('usage_limit', models.PositiveIntegerField(default=1)),
                 ('used_count', models.PositiveIntegerField(default=0)),
                 ('customer', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='vouchers', to='customers.customerprofile')),

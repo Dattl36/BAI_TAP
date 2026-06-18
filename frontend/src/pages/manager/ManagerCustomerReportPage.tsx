@@ -31,11 +31,11 @@ export const ManagerCustomerReportPage = () => {
   ];
 
   return (
-    <Card title="VIP Client Registrations & Loyalty Statement Logs" bordered={false} style={{ borderRadius: 16, animation: "fadeIn 0.5s ease" }}>
+    <Card title="Đăng ký khách VIP và lịch sử điểm thân thiết" bordered={false} style={{ borderRadius: 16, animation: "fadeIn 0.5s ease" }}>
       {customerCount > 0 ? (
         <Table dataSource={customerGrowth} columns={columns} rowKey="month" pagination={false} size="middle" />
       ) : (
-        <EmptyState description="No customers registered in database." />
+        <EmptyState description="Chưa có khách hàng nào trong cơ sở dữ liệu." />
       )}
     </Card>
   );

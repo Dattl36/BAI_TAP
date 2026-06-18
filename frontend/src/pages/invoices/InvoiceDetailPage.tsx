@@ -1,3 +1,3 @@
 import { PlaceholderPage } from "../../components/common/PlaceholderPage";
 
-export const InvoiceDetailPage = () => <PlaceholderPage title="Invoice Detail" />;
+export const InvoiceDetailPage = () => <PlaceholderPage title="Chi tiết hóa đơn" />;

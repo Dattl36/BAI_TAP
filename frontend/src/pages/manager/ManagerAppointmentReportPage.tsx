@@ -23,17 +23,17 @@ export const ManagerAppointmentReportPage = () => {
 
   return (
     <div style={{ animation: "fadeIn 0.5s ease" }}>
-      <Card title="Daily Booking Traffic" bordered={false} style={{ marginBottom: 24, height: 420 }}>
+      <Card title="Lưu lượng đặt lịch hằng ngày" bordered={false} style={{ marginBottom: 24, height: 420 }}>
         <div style={{ height: 320 }}>
           <AppointmentBarChart data={appointmentReport.dailySeries} />
         </div>
       </Card>
 
-      <Card title="Daily Sessions Registry" bordered={false}>
+      <Card title="Sổ phiên phục vụ hằng ngày" bordered={false}>
         {appointmentReport.dailySeries.length > 0 ? (
           <Table dataSource={appointmentReport.dailySeries} columns={columns} rowKey="label" pagination={false} size="middle" />
         ) : (
-          <EmptyState description="No appointment records found." />
+          <EmptyState description="Chưa có dữ liệu lịch hẹn." />
         )}
       </Card>
     </div>

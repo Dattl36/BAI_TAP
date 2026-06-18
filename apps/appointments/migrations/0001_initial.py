@@ -25,7 +25,7 @@ class Migration(migrations.Migration):
                 ('deleted_at', models.DateTimeField(blank=True, null=True)),
                 ('scheduled_start', models.DateTimeField()),
                 ('scheduled_end', models.DateTimeField()),
-                ('status', models.CharField(choices=[('requested', 'Requested'), ('confirmed', 'Confirmed'), ('arrived', 'Arrived'), ('in_service', 'In Service'), ('completed', 'Completed'), ('invoiced', 'Invoiced'), ('closed', 'Closed'), ('cancelled', 'Cancelled'), ('no_show', 'No Show')], default='requested', max_length=32)),
+                ('status', models.CharField(choices=[('requested', 'Chờ xác nhận'), ('confirmed', 'Đã xác nhận'), ('arrived', 'Đã đến'), ('in_service', 'Đang phục vụ'), ('completed', 'Hoàn tất'), ('invoiced', 'Đã xuất hóa đơn'), ('closed', 'Closed'), ('cancelled', 'Đã hủy'), ('no_show', 'Không đến')], default='requested', max_length=32)),
                 ('source', models.CharField(choices=[('customer', 'Customer'), ('receptionist', 'Receptionist')], default='customer', max_length=32)),
                 ('cancellation_reason', models.TextField(blank=True)),
                 ('no_show_reason', models.TextField(blank=True)),

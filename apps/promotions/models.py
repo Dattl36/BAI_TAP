@@ -19,7 +19,7 @@ class Promotion(SoftDeleteModel):
 
 
 class Voucher(SoftDeleteModel):
-    STATUSES = (("active", "Active"), ("redeemed", "Redeemed"), ("expired", "Expired"), ("cancelled", "Cancelled"))
+    STATUSES = (("active", "Active"), ("redeemed", "Redeemed"), ("expired", "Expired"), ("cancelled", "Đã hủy"))
     DISCOUNT_TYPES = (("percent", "Percent"), ("amount", "Amount"))
 
     code = models.CharField(max_length=64, unique=True)

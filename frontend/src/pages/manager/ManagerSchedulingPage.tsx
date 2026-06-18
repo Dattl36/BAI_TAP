@@ -83,7 +83,7 @@ export const ManagerSchedulingPage = () => {
   const createMutation = useMutation({
     mutationFn: (payload: Partial<StaffAvailability>) => employeesApi.createAvailability(payload),
     onSuccess: () => {
-      message.success("Shift assigned successfully!");
+      message.success("Đã phân ca thành công.");
       queryClient.invalidateQueries({ queryKey: ["availability"] });
       setIsModalOpen(false);
     },
@@ -96,7 +96,7 @@ export const ManagerSchedulingPage = () => {
     mutationFn: ({ id, payload }: { id: string | number; payload: Partial<StaffAvailability> }) =>
       employeesApi.updateAvailability(id, payload),
     onSuccess: () => {
-      message.success("Shift updated successfully!");
+      message.success("Đã cập nhật ca làm thành công.");
       queryClient.invalidateQueries({ queryKey: ["availability"] });
       setIsModalOpen(false);
     },
@@ -108,7 +108,7 @@ export const ManagerSchedulingPage = () => {
   const deleteMutation = useMutation({
     mutationFn: (id: string | number) => employeesApi.deleteAvailability(id),
     onSuccess: () => {
-      message.success("Shift cleared successfully!");
+      message.success("Đã xóa ca làm thành công.");
       queryClient.invalidateQueries({ queryKey: ["availability"] });
       setIsModalOpen(false);
     },
@@ -498,15 +498,15 @@ export const ManagerSchedulingPage = () => {
   return (
     <div>
       <PageHeader
-        title="Staff Scheduling"
-        description="Roster stylist shifts, assign days off, and lock availability with real-time customer booking validation."
+        title="Lịch làm việc nhân viên"
+        description="Sắp xếp ca làm nhà tạo mẫu, phân ngày nghỉ và khóa lịch rảnh với kiểm tra đặt lịch theo thời gian thực."
       />
 
       <Card bordered={false} style={{ borderRadius: 16, marginBottom: 24 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
           <Space>
             <Button icon={<LeftOutlined />} onClick={handlePrevWeek} />
-            <Button onClick={handleToday}>Today</Button>
+            <Button onClick={handleToday}>Hôm nay</Button>
             <Button icon={<RightOutlined />} onClick={handleNextWeek} />
             <Typography.Text strong style={{ fontSize: 15 }}>
               Week of {currentWeekStart.format("MMMM D, YYYY")} — {currentWeekStart.add(6, "day").format("MMMM D, YYYY")}
@@ -578,10 +578,10 @@ export const ManagerSchedulingPage = () => {
             </Button>
           ),
           <Button key="cancel" onClick={() => setIsModalOpen(false)}>
-            Cancel
+            Hủy
           </Button>,
           <Button key="submit" type="primary" className="login-button-gold" onClick={handleSaveShift}>
-            Save
+            Lưu
           </Button>,
         ]}
         width={500}
@@ -633,12 +633,12 @@ export const ManagerSchedulingPage = () => {
               {shiftValue === "custom" && (
                 <Row gutter={16}>
                   <Col span={12}>
-                    <Form.Item name="start_time" label="Start Time" rules={[{ required: true }]}>
+                    <Form.Item name="start_time" label="Giờ bắt đầu" rules={[{ required: true }]}>
                       <TimePicker format="HH:mm" style={{ width: "100%" }} />
                     </Form.Item>
                   </Col>
                   <Col span={12}>
-                    <Form.Item name="end_time" label="End Time" rules={[{ required: true }]}>
+                    <Form.Item name="end_time" label="Giờ kết thúc" rules={[{ required: true }]}>
                       <TimePicker format="HH:mm" style={{ width: "100%" }} />
                     </Form.Item>
                   </Col>
@@ -653,7 +653,7 @@ export const ManagerSchedulingPage = () => {
               </Form.Item>
 
               <Form.Item name="reason" label="Shift Notes / Reason for Day Off">
-                <Input placeholder="e.g. Weekly rotation, personal matter" />
+                <Input placeholder="Ví dụ: xoay ca hằng tuần, việc cá nhân" />
               </Form.Item>
             </Form>
           </div>

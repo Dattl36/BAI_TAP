@@ -149,9 +149,9 @@ export const normalizeServiceReport = (
   // Fallback if completely empty to keep UI beautifully styled
   if (serviceData.length === 0) {
     return [
-      { label: "Hair Cut & Styling", value: 0 },
-      { label: "Facial Care & Spa", value: 0 },
-      { label: "Manicure & Nails", value: 0 },
+      { label: "Cắt và tạo kiểu tóc", value: 0 },
+      { label: "Chăm sóc da mặt và spa", value: 0 },
+      { label: "Chăm sóc móng", value: 0 },
     ];
   }
 

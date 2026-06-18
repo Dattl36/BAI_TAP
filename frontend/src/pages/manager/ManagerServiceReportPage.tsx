@@ -23,17 +23,17 @@ export const ManagerServiceReportPage = () => {
 
   return (
     <div style={{ animation: "fadeIn 0.5s ease" }}>
-      <Card title="Popular Treatment Categories" bordered={false} style={{ marginBottom: 24, height: 420 }}>
+      <Card title="Nhóm liệu trình phổ biến" bordered={false} style={{ marginBottom: 24, height: 420 }}>
         <div style={{ height: 320 }}>
           <ServicePieChart data={serviceReport} />
         </div>
       </Card>
 
-      <Card title="Category Session Audits" bordered={false}>
+      <Card title="Kiểm tra phiên theo danh mục" bordered={false}>
         {serviceReport.length > 0 ? (
           <Table dataSource={serviceReport} columns={columns} rowKey="label" pagination={false} size="middle" />
         ) : (
-          <EmptyState description="No treatment categories logged." />
+          <EmptyState description="Chưa có dữ liệu nhóm liệu trình." />
         )}
       </Card>
     </div>

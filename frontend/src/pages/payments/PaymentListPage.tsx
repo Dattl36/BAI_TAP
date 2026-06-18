@@ -49,7 +49,7 @@ export const PaymentListPage = () => {
       render: (val) => <span style={{ fontWeight: 600, color: "#10b981" }}>{formatMoney(val)}</span> 
     },
     { 
-      title: "Payment Method", 
+      title: "Phương thức thanh toán", 
       dataIndex: "method", 
       render: (val?: string) => (
         <span style={{ textTransform: "capitalize", fontWeight: 500 }}>
@@ -81,7 +81,7 @@ export const PaymentListPage = () => {
         <Space size="middle">
           <Link to={`${ROUTES.payments}/${record.id}`}>
             <Button type="link" icon={<EyeOutlined />} size="small">
-              View
+              Xem
             </Button>
           </Link>
         </Space>
@@ -113,15 +113,15 @@ export const PaymentListPage = () => {
   return (
     <>
       <PageHeader
-        title="Payments & Transactions"
-        description="View transaction histories, payment methods, processing dates, and handle refunds."
+        title="Thanh toán và giao dịch"
+        description="Xem lịch sử giao dịch, phương thức thanh toán, ngày xử lý và thực hiện hoàn tiền."
       />
       
       <Card bordered={false}>
         {/* Table Filters Toolbar */}
         <div className="table-toolbar">
           <Input
-            placeholder="Search by transaction, invoice, reference or method..."
+            placeholder="Tìm theo giao dịch, hóa đơn, tham chiếu hoặc phương thức..."
             prefix={<SearchOutlined style={{ color: "var(--color-muted)" }} />}
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
@@ -131,7 +131,7 @@ export const PaymentListPage = () => {
           />
           
           <Select
-            placeholder="Filter by Payment Status"
+            placeholder="Lọc theo trạng thái thanh toán"
             value={statusFilter}
             onChange={setStatusFilter}
             style={{ width: 220, height: 38 }}
@@ -141,7 +141,7 @@ export const PaymentListPage = () => {
               { label: "Pending", value: "pending" },
               { label: "Successful", value: "successful" },
               { label: "Failed", value: "failed" },
-              { label: "Cancelled", value: "cancelled" },
+              { label: "Đã hủy", value: "cancelled" },
               { label: "Refunded", value: "refunded" },
               { label: "Adjusted", value: "adjusted" },
             ]}

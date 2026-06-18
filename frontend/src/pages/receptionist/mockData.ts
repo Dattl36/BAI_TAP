@@ -36,7 +36,7 @@ export interface MockService {
 }
 
 export const mockServices: MockService[] = [
-  { id: 1, name: "Luxury Hair Cut & Styling", price: 80, duration: 45, category: "Hair" },
+  { id: 1, name: "Luxury Cắt và tạo kiểu tóc", price: 80, duration: 45, category: "Hair" },
   { id: 2, name: "Balayage & Color Treatment", price: 180, duration: 120, category: "Hair" },
   { id: 3, name: "Deep Hydration Spa Facial", price: 120, duration: 60, category: "Spa" },
   { id: 4, name: "Aromatherapy Full Body Massage", price: 150, duration: 90, category: "Spa" },
@@ -70,7 +70,7 @@ export const mockTodayAppointments: Appointment[] = [
     status: "arrived",
     customer_details: { full_name: "Charlotte York", phone: "0901-222-333" },
     employee_details: { full_name: "Marcus Vance", specialties: "Therapist" },
-    service_details: { name: "Luxury Hair Cut & Styling", price: 80, duration: 45 },
+    service_details: { name: "Luxury Cắt và tạo kiểu tóc", price: 80, duration: 45 },
   },
   {
     id: 104, customer: 4, staff: 5,
@@ -102,7 +102,7 @@ export const mockTodayAppointments: Appointment[] = [
     status: "invoiced",
     customer_details: { full_name: "Monica Geller", phone: "0922-333-444" },
     employee_details: { full_name: "David Chen", specialties: "Barber" },
-    service_details: { name: "Luxury Hair Cut & Styling", price: 80, duration: 45 },
+    service_details: { name: "Luxury Cắt và tạo kiểu tóc", price: 80, duration: 45 },
   },
   {
     id: 108, customer: 8, staff: 3,

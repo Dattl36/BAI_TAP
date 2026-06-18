@@ -96,7 +96,7 @@ export const ReceptionistInvoiceDetailPage = () => {
         setExecutionId(matchedExec.id);
       }
     } catch (err) {
-      void message.error("Failed to load invoice details");
+      void message.error("Không thể tải chi tiết hóa đơn.");
     } finally {
       setLoading(false);
     }
@@ -112,7 +112,7 @@ export const ReceptionistInvoiceDetailPage = () => {
     try {
       const res = await invoicesApi.applyVoucher(id, voucherCode.trim());
       setInvoice(res);
-      void message.success("Voucher applied successfully!");
+      void message.success("Đã áp dụng mã ưu đãi thành công.");
       setVoucherCode("");
     } catch (err: any) {
       void message.error(err?.response?.data?.message || err?.message || "Invalid voucher code");
@@ -124,7 +124,7 @@ export const ReceptionistInvoiceDetailPage = () => {
   const handleApplyPoints = async () => {
     if (!id || !pointsToRedeem || pointsToRedeem <= 0) return;
     if (pointsToRedeem > loyaltyPoints) {
-      void message.error("Insufficient reward points balance");
+      void message.error("Số dư điểm thưởng không đủ.");
       return;
     }
     setActionLoading(true);
@@ -161,7 +161,7 @@ export const ReceptionistInvoiceDetailPage = () => {
       // 3. Refresh details
       await fetchInvoiceDetails();
 
-      void message.success("Checkout incidental added");
+      void message.success("Đã thêm phụ phí thanh toán.");
       setIsIncidentalOpen(false);
       incidentalForm.resetFields();
     } catch (err: any) {
@@ -191,7 +191,7 @@ export const ReceptionistInvoiceDetailPage = () => {
       // 3. Mark appointment status as closed
       await appointmentsApi.update(invoice.appointment, { status: "closed" });
 
-      void message.success("Payment processed and checkout completed!");
+      void message.success("Đã xử lý thanh toán và hoàn tất checkout.");
       navigate("/receptionist/today");
     } catch (err: any) {
       void message.error(err?.response?.data?.message || err?.message || "Failed to record payment");
@@ -210,7 +210,7 @@ export const ReceptionistInvoiceDetailPage = () => {
 
   if (!invoice) {
     return (
-      <Alert message="Invoice Not Found" description="The requested invoice was not found." type="error" showIcon />
+      <Alert message="Không tìm thấy hóa đơn" description="Không tìm thấy hóa đơn được yêu cầu." type="error" showIcon />
     );
   }
 
@@ -257,7 +257,7 @@ export const ReceptionistInvoiceDetailPage = () => {
 
             {/* Invoice Items Registry */}
             <Card 
-              title="Session Services & Products" 
+              title="Dịch vụ và sản phẩm trong phiên" 
               bordered={false} 
               style={{ borderRadius: 16 }}
               extra={
@@ -331,7 +331,7 @@ export const ReceptionistInvoiceDetailPage = () => {
                 >
                   <Space.Compact style={{ width: "100%" }}>
                     <Input 
-                      placeholder="Enter code (e.g. SPA50)" 
+                      placeholder="Nhập mã (ví dụ: SPA50)" 
                       value={voucherCode} 
                       onChange={(e) => setVoucherCode(e.target.value)}
                       style={{ height: 42 }}
@@ -345,7 +345,7 @@ export const ReceptionistInvoiceDetailPage = () => {
                       className="login-button-gold"
                       style={{ height: 42 }}
                     >
-                      Apply
+                      Áp dụng
                     </Button>
                   </Space.Compact>
                 </Card>
@@ -361,7 +361,7 @@ export const ReceptionistInvoiceDetailPage = () => {
                   </Typography.Paragraph>
                   <Space.Compact style={{ width: "100%" }}>
                     <InputNumber 
-                      placeholder="Points to redeem" 
+                      placeholder="Số điểm muốn sử dụng" 
                       value={pointsToRedeem} 
                       onChange={setPointsToRedeem}
                       min={1}
@@ -383,7 +383,7 @@ export const ReceptionistInvoiceDetailPage = () => {
                 </Card>
 
                 {/* Cash Register Checkout Box */}
-                <Card title="Record Checkout Payment" bordered={false} style={{ borderRadius: 16 }}>
+                <Card title="Ghi nhận thanh toán checkout" bordered={false} style={{ borderRadius: 16 }}>
                   <Form layout="vertical" disabled={actionLoading}>
                     <Form.Item label="Payment Method">
                       <Select
@@ -400,7 +400,7 @@ export const ReceptionistInvoiceDetailPage = () => {
                     
                     <Form.Item label="Reference Code (Optional)">
                       <Input
-                        placeholder="POS receipt or bank transaction Ref"
+                        placeholder="Mã biên nhận POS hoặc tham chiếu chuyển khoản"
                         value={referenceCode}
                         onChange={(e) => setReferenceCode(e.target.value)}
                         style={{ height: 42, borderRadius: 8 }}

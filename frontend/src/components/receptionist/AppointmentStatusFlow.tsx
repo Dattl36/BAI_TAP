@@ -2,10 +2,10 @@ import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
 import type { AppointmentStatus } from "../../types/appointment";
 
 const FLOW_STEPS: { key: AppointmentStatus; label: string }[] = [
-  { key: "requested", label: "Requested" },
-  { key: "confirmed", label: "Confirmed" },
+  { key: "requested", label: "Chờ xác nhận" },
+  { key: "confirmed", label: "Đã xác nhận" },
   { key: "arrived", label: "Checked-in" },
-  { key: "in_service", label: "In Service" },
+  { key: "in_service", label: "Đang phục vụ" },
   { key: "completed", label: "Awaiting Pay" },
   { key: "invoiced", label: "Paid" },
 ];

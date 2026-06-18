@@ -5,15 +5,15 @@ from apps.core.models import SoftDeleteModel, TimeStampedModel
 
 class Appointment(SoftDeleteModel):
     STATUSES = (
-        ("requested", "Requested"),
-        ("confirmed", "Confirmed"),
-        ("arrived", "Arrived"),
-        ("in_service", "In Service"),
-        ("completed", "Completed"),
-        ("invoiced", "Invoiced"),
+        ("requested", "Chờ xác nhận"),
+        ("confirmed", "Đã xác nhận"),
+        ("arrived", "Đã đến"),
+        ("in_service", "Đang phục vụ"),
+        ("completed", "Hoàn tất"),
+        ("invoiced", "Đã xuất hóa đơn"),
         ("closed", "Closed"),
-        ("cancelled", "Cancelled"),
-        ("no_show", "No Show"),
+        ("cancelled", "Đã hủy"),
+        ("no_show", "Không đến"),
     )
     SOURCES = (("customer", "Customer"), ("receptionist", "Receptionist"))
 

@@ -65,7 +65,7 @@ axiosClient.interceptors.response.use(
       try {
         const refreshToken = tokenService.getRefreshToken();
         if (!refreshToken) {
-          throw new Error("No refresh token available");
+          throw new Error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
         }
         
         const response = await axios.post(`${apiBaseUrl}/api/auth/token/refresh/`, { refresh: refreshToken });

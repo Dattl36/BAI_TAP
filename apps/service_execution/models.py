@@ -4,7 +4,7 @@ from apps.core.models import TimeStampedModel
 
 
 class ServiceExecution(TimeStampedModel):
-    STATUSES = (("pending", "Pending"), ("in_progress", "In Progress"), ("completed", "Completed"), ("cancelled", "Cancelled"))
+    STATUSES = (("pending", "Pending"), ("in_progress", "In Progress"), ("completed", "Hoàn tất"), ("cancelled", "Đã hủy"))
 
     appointment = models.OneToOneField("appointments.Appointment", on_delete=models.CASCADE, related_name="execution")
     staff = models.ForeignKey("employees.EmployeeProfile", on_delete=models.PROTECT, related_name="service_executions")

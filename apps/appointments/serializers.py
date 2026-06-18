@@ -40,7 +40,7 @@ class AppointmentSerializer(serializers.ModelSerializer):
         start = attrs.get("scheduled_start", getattr(self.instance, "scheduled_start", None))
         end = attrs.get("scheduled_end", getattr(self.instance, "scheduled_end", None))
         if start and end and end <= start:
-            raise serializers.ValidationError("scheduled_end must be after scheduled_start.")
+            raise serializers.ValidationError("Thời gian kết thúc phải sau thời gian bắt đầu.")
         return attrs
 
 

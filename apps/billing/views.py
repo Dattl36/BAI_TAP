@@ -20,7 +20,7 @@ class InvoiceViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["post"], url_path=r"from-appointment/(?P<appointment_id>[^/.]+)")
     def from_appointment(self, request, appointment_id=None):
         invoice = create_invoice_from_appointment(request.user, Appointment.objects.get(id=appointment_id))
-        return success(self.get_serializer(invoice).data, "Invoice created", 201)
+        return success(self.get_serializer(invoice).data, "Đã tạo hóa đơn", 201)
 
     @action(detail=True, methods=["post"], url_path="apply-voucher")
     def apply_voucher_action(self, request, pk=None):

@@ -31,7 +31,7 @@ def create_employee_user(actor, **data):
     User = get_user_model()
     role = data.get("role", Roles.STAFF)
     if role not in {Roles.RECEPTIONIST, Roles.STAFF, Roles.MANAGER}:
-        raise ValueError("Only employee roles can be created here.")
+        raise ValueError("Chỉ có thể tạo tài khoản nhân viên tại đây.")
     password = data.pop("password", "ChangeMe123!")
     user = User(**data)
     user.set_password(password)

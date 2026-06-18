@@ -81,13 +81,13 @@ export const ReceptionistCustomerDetailPage = () => {
       {customer && (
         <Card variant="borderless" style={{ borderRadius: 16, marginBottom: 24 }}>
           <Descriptions
-            title="Client Core Account Details"
+            title="Thông tin tài khoản khách hàng"
             bordered
             column={1}
             labelStyle={{ fontWeight: 600, width: 220 }}
             contentStyle={{ background: "#faf8f5" }}
           >
-            <Descriptions.Item label="Full Name">{customer.full_name || "—"}</Descriptions.Item>
+            <Descriptions.Item label="Họ và tên">{customer.full_name || "—"}</Descriptions.Item>
             <Descriptions.Item label="Phone Line">{customer.phone || "—"}</Descriptions.Item>
             <Descriptions.Item label="Email Account">{customer.email || "—"}</Descriptions.Item>
             <Descriptions.Item label="Account Status">
@@ -98,11 +98,11 @@ export const ReceptionistCustomerDetailPage = () => {
         </Card>
       )}
 
-      <Card title="Appointment History" variant="borderless" style={{ borderRadius: 16 }}>
+      <Card title="Lịch sử lịch hẹn" variant="borderless" style={{ borderRadius: 16 }}>
         {appointmentsQuery.isError ? (
           <ErrorState message={appointmentsQuery.error} onRetry={() => void appointmentsQuery.refetch()} />
         ) : bookingHistory.length === 0 && !appointmentsQuery.isLoading ? (
-          <EmptyState description="No appointment history found for this client." />
+          <EmptyState description="Chưa có lịch sử lịch hẹn cho khách hàng này." />
         ) : (
           <Table<Appointment>
             dataSource={bookingHistory}

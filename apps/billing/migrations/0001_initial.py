@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
                 ('updated_at', models.DateTimeField(auto_now=True)),
                 ('is_deleted', models.BooleanField(default=False)),
                 ('deleted_at', models.DateTimeField(blank=True, null=True)),
-                ('status', models.CharField(choices=[('draft', 'Draft'), ('issued', 'Issued'), ('partially_paid', 'Partially Paid'), ('paid', 'Paid'), ('adjusted', 'Adjusted'), ('cancelled', 'Cancelled')], default='draft', max_length=32)),
+                ('status', models.CharField(choices=[('draft', 'Draft'), ('issued', 'Issued'), ('partially_paid', 'Thanh toán một phần'), ('paid', 'Paid'), ('adjusted', 'Adjusted'), ('cancelled', 'Đã hủy')], default='draft', max_length=32)),
                 ('subtotal', models.DecimalField(decimal_places=2, default=0, max_digits=12)),
                 ('discount_total', models.DecimalField(decimal_places=2, default=0, max_digits=12)),
                 ('reward_discount', models.DecimalField(decimal_places=2, default=0, max_digits=12)),

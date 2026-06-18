@@ -102,7 +102,7 @@ export const AppointmentDetailModal = ({
           {canCheckin && (
             <Button icon={<CheckCircleOutlined />} onClick={() => { onCheckin?.(a.id); onClose(); }} loading={loading}
               style={{ borderColor: "var(--rcpt-success)", color: "var(--rcpt-success)" }}>
-              Check-in
+              Nhận khách
             </Button>
           )}
           {canAssign && (
@@ -113,7 +113,7 @@ export const AppointmentDetailModal = ({
           {canStart && (
             <Button icon={<PlayCircleOutlined />} onClick={() => { onStartService?.(a.id); onClose(); }} loading={loading}
               style={{ borderColor: "var(--rcpt-purple)", color: "var(--rcpt-purple)" }}>
-              Start Service
+              Bắt đầu dịch vụ
             </Button>
           )}
           {canEnd && (
@@ -130,7 +130,7 @@ export const AppointmentDetailModal = ({
           )}
           {canCancel && (
             <Button danger icon={<CloseCircleOutlined />} onClick={() => { onCancel?.(a.id); onClose(); }} loading={loading}>
-              Cancel
+              Hủy
             </Button>
           )}
         </Space>

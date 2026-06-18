@@ -5,18 +5,18 @@ import { PageHeader } from "../../components/common/PageHeader";
 
 export const ManagerReportsPage = () => {
   const folders = [
-    { title: "Revenue Streams Audit", desc: "Track salon billing invoices, voucher discounts, and loyalty deductions over time.", icon: <AreaChartOutlined />, path: "/manager/reports/revenue" },
-    { title: "Bookings Distribution", desc: "Monitor requested vs confirmed sessions, arrived check-ins, and cancellation trends.", icon: <CalendarOutlined />, path: "/manager/reports/appointments" },
-    { title: "Treatments & Catalog Rank", desc: "Identify popular haircut treatments, spas, and styling categories generating top revenues.", icon: <ScissorOutlined />, path: "/manager/reports/services" },
-    { title: "Client Acquisition Metrics", desc: "Auditing VIP customer registrations, loyalty point statement logs, and account growth.", icon: <TeamOutlined />, path: "/manager/reports/customers" },
-    { title: "Stylist Commission Ledger", desc: "Stylist session attendance tracker, rating scores, and therapist productivity metrics.", icon: <UserOutlined />, path: "/manager/reports/staff-performance" },
+    { title: "Kiểm toán dòng doanh thu", desc: "Theo dõi hóa đơn, ưu đãi voucher và các khoản khấu trừ điểm thân thiết theo thời gian.", icon: <AreaChartOutlined />, path: "/manager/reports/revenue" },
+    { title: "Phân bổ lịch đặt", desc: "Theo dõi lịch yêu cầu, lịch đã xác nhận, lượt nhận khách và xu hướng hủy lịch.", icon: <CalendarOutlined />, path: "/manager/reports/appointments" },
+    { title: "Xếp hạng liệu trình và danh mục", desc: "Xác định liệu trình cắt tóc, spa và nhóm tạo kiểu mang lại doanh thu cao nhất.", icon: <ScissorOutlined />, path: "/manager/reports/services" },
+    { title: "Chỉ số phát triển khách hàng", desc: "Theo dõi đăng ký khách VIP, lịch sử điểm thân thiết và tăng trưởng tài khoản.", icon: <TeamOutlined />, path: "/manager/reports/customers" },
+    { title: "Sổ hoa hồng nhà tạo mẫu", desc: "Theo dõi buổi phục vụ, điểm đánh giá và năng suất của nhà tạo mẫu.", icon: <UserOutlined />, path: "/manager/reports/staff-performance" },
   ];
 
   return (
     <div style={{ animation: "fadeIn 0.5s ease" }}>
       <PageHeader 
-        title="Executive Reports & Folders" 
-        description="Access granular business metrics, weekly revenue streams, and commissions summaries." 
+        title="Bộ báo cáo điều hành" 
+        description="Theo dõi chỉ số kinh doanh chi tiết, dòng doanh thu hằng tuần và tổng hợp hoa hồng." 
       />
 
       <Row gutter={[24, 24]}>
@@ -49,7 +49,7 @@ export const ManagerReportsPage = () => {
                   </Typography.Paragraph>
                   <Link to={f.path}>
                     <Button type="primary" className="login-button-gold" style={{ borderRadius: 8 }}>
-                      Access Ledger
+                      Mở sổ báo cáo
                     </Button>
                   </Link>
                 </div>

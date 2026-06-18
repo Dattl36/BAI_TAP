@@ -32,14 +32,14 @@ export const BookingSummary = ({
       <div className="summary-title">Booking Summary</div>
 
       <div className="summary-row">
-        <span className="row-label">Customer</span>
+        <span className="row-label">Khách hàng</span>
         <span className="row-value">{customerName || "—"}</span>
       </div>
 
       {services.length > 0 && (
         <>
           <div className="summary-row" style={{ fontWeight: 600, marginTop: 8 }}>
-            <span className="row-label">Services</span>
+            <span className="row-label">Dịch vụ</span>
           </div>
           {services.map((s, i) => (
             <div className="summary-row" key={i} style={{ paddingLeft: 8 }}>
@@ -51,7 +51,7 @@ export const BookingSummary = ({
       )}
 
       <div className="summary-row">
-        <span className="row-label">Stylist</span>
+        <span className="row-label">Nhà tạo mẫu</span>
         <span className="row-value">{staffName || "—"}</span>
       </div>
 

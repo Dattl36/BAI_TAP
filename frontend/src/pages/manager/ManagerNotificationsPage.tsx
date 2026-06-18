@@ -84,7 +84,7 @@ export const ManagerNotificationsPage = () => {
       }
 
       if (targets.length === 0) {
-        message.error("No active users found for the selected recipient group.");
+        message.error("Không tìm thấy người dùng đang hoạt động trong nhóm nhận đã chọn.");
         setSending(false);
         return;
       }
@@ -190,8 +190,8 @@ export const ManagerNotificationsPage = () => {
   return (
     <div>
       <PageHeader
-        title="Notifications"
-        description="Broadcast alerts, policy updates, and scheduling announcements to staff."
+        title="Thông báo"
+        description="Gửi thông báo, cập nhật chính sách và lịch làm việc đến nhân viên."
       />
 
       <Row gutter={[24, 24]}>
@@ -232,7 +232,7 @@ export const ManagerNotificationsPage = () => {
 
               {recipientType === "group" && (
                 <Form.Item name="group" label="Select Staff Role" rules={[{ required: true }]}>
-                  <Select placeholder="Choose role group">
+                  <Select placeholder="Chọn nhóm vai trò">
                     <Select.Option value="staff">Stylists / Salon Staff</Select.Option>
                     <Select.Option value="receptionist">Receptionists</Select.Option>
                   </Select>
@@ -242,7 +242,7 @@ export const ManagerNotificationsPage = () => {
               {recipientType === "specific" && (
                 <Form.Item name="specific_employee" label="Select Employee" rules={[{ required: true }]}>
                   <Select
-                    placeholder="Choose active employee"
+                    placeholder="Chọn nhân viên đang hoạt động"
                     showSearch
                     optionFilterProp="children"
                   >
@@ -273,7 +273,7 @@ export const ManagerNotificationsPage = () => {
                   { max: 100, message: "Title must be less than 100 characters" },
                 ]}
               >
-                <Input placeholder="e.g. Schedule Change Alert, Staff Policy Update" />
+                <Input placeholder="Ví dụ: thông báo đổi lịch, cập nhật chính sách nhân viên" />
               </Form.Item>
 
               <Form.Item
@@ -284,7 +284,7 @@ export const ManagerNotificationsPage = () => {
                   { min: 10, message: "Message must be at least 10 characters" },
                 ]}
               >
-                <Input.TextArea rows={4} placeholder="Type announcement message here..." />
+                <Input.TextArea rows={4} placeholder="Nhập nội dung thông báo tại đây..." />
               </Form.Item>
 
               <Form.Item style={{ margin: 0 }}>
@@ -305,10 +305,10 @@ export const ManagerNotificationsPage = () => {
 
         {/* Right Column: Sent Logs */}
         <Col xs={24} lg={14}>
-          <Card title="Broadcast Log" bordered={false}>
+          <Card title="Nhật ký gửi thông báo" bordered={false}>
             <div className="table-toolbar" style={{ marginBottom: 20 }}>
               <Input
-                placeholder="Search notification messages..."
+                placeholder="Tìm nội dung thông báo..."
                 prefix={<SearchOutlined style={{ color: "var(--color-muted)" }} />}
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}

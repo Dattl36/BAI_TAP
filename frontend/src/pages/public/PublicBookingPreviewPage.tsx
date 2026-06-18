@@ -208,7 +208,7 @@ export const PublicBookingPreviewPage = () => {
           items={[
             { title: "Dịch Vụ", icon: <ScissorOutlined /> },
             { title: "Thời Gian", icon: <CalendarOutlined /> },
-            { title: "Stylist", icon: <SmileOutlined /> },
+            { title: "Nhà tạo mẫu", icon: <SmileOutlined /> },
             { title: "Xác Nhận", icon: <CheckCircleOutlined /> },
           ]}
         />
