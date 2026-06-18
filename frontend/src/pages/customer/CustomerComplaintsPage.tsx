@@ -38,10 +38,12 @@ export const CustomerComplaintsPage = () => {
 
   const appointmentOptions = [
     { value: "none", label: "Khiếu nại chung (Không gắn với lịch hẹn cụ thể)" },
-    ...appointmentsList.map((app) => ({
-      value: String(app.id),
-      label: `#${app.id} - ${app.service_details?.name || "Lượt dịch vụ"} với ${app.employee_details?.full_name || "Chuyên gia"} vào ngày ${app.scheduled_start ? formatShortDate(app.scheduled_start) : ""}`
-    }))
+    ...appointmentsList
+      .filter((app) => ["completed", "invoiced", "closed"].includes(app.status))
+      .map((app) => ({
+        value: String(app.id),
+        label: `#${app.id} - ${app.service_details?.name || "Lượt dịch vụ"} với ${app.employee_details?.full_name || "Chuyên gia"} vào ngày ${app.scheduled_start ? formatShortDate(app.scheduled_start) : ""} (Đã hoàn thành)`
+      }))
   ];
 
   const categories = [

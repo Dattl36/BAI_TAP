@@ -14,6 +14,7 @@ class AppointmentSerializer(serializers.ModelSerializer):
     customer_details = serializers.SerializerMethodField()
     employee_details = serializers.SerializerMethodField()
     service_details = serializers.SerializerMethodField()
+    invoice_status = serializers.SerializerMethodField()
 
     class Meta:
         model = Appointment
@@ -31,6 +32,9 @@ class AppointmentSerializer(serializers.ModelSerializer):
     def get_service_details(self, obj):
         first_service = obj.appointment_services.first()
         return {"name": first_service.service.name} if first_service else None
+
+    def get_invoice_status(self, obj):
+        return getattr(obj.invoice, "status", None) if hasattr(obj, "invoice") else None
 
     def validate(self, attrs):
         start = attrs.get("scheduled_start", getattr(self.instance, "scheduled_start", None))

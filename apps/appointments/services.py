@@ -60,8 +60,8 @@ def create_appointment(actor, **data):
     notify_user(
         user=appointment.customer.user,
         category="appointment",
-        title="Appointment Confirmed",
-        message=f"Your appointment for {appointment.scheduled_start.strftime('%Y-%m-%d %H:%M')} has been booked.",
+        title="Xác nhận lịch hẹn",
+        message=f"Lịch hẹn của bạn vào lúc {appointment.scheduled_start.strftime('%d/%m/%Y %H:%M')} đã được đặt thành công.",
         related=appointment
     )
     return appointment
@@ -107,8 +107,8 @@ def transition_appointment(actor, appointment, new_status, reason=""):
         notify_user(
             user=appointment.customer.user,
             category="appointment",
-            title="Appointment Cancelled",
-            message="Your appointment has been cancelled.",
+            title="Hủy lịch hẹn",
+            message="Lịch hẹn của bạn đã bị hủy.",
             related=appointment
         )
     if new_status == "no_show":
@@ -138,8 +138,8 @@ def reschedule_appointment(actor, appointment, start, end, staff=None):
     notify_user(
         user=appointment.customer.user,
         category="appointment",
-        title="Appointment Rescheduled",
-        message=f"Your appointment has been rescheduled to {start.strftime('%Y-%m-%d %H:%M')}.",
+        title="Đổi lịch hẹn",
+        message=f"Lịch hẹn của bạn đã được dời sang lúc {start.strftime('%d/%m/%Y %H:%M')}.",
         related=appointment
     )
     return appointment

@@ -57,11 +57,17 @@ def transition_payment(actor, payment, new_status, reason=""):
         invoice.balance_due = invoice.total_due - invoice.paid_amount
         invoice.status = "paid" if invoice.balance_due <= 0 else "partially_paid"
         invoice.save()
+
+        # Auto-confirm appointment if fully paid
+        if invoice.status == "paid" and invoice.appointment and invoice.appointment.status == "requested":
+            from apps.appointments.services import transition_appointment
+            transition_appointment(actor, invoice.appointment, "confirmed", reason="Thanh toán thành công")
+
         notify_user(
             user=payment.customer.user,
             category="payment",
-            title="Payment Successful",
-            message=f"We have received your payment of {payment.amount:,.0f} VND. Thank you!",
+            title="Thanh toán thành công",
+            message=f"Chúng tôi đã nhận được khoản thanh toán {payment.amount:,.0f} VND từ bạn. Xin cảm ơn!",
             related=payment
         )
     record_event(actor, f"payment.{new_status}", payment)
