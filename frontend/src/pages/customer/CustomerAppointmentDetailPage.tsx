@@ -134,7 +134,7 @@ export const CustomerAppointmentDetailPage = () => {
 
   const isCancellable = ["requested", "confirmed"].includes(appointment.status);
   const isReschedulable = ["requested", "confirmed"].includes(appointment.status);
-  const isPayable = ["requested", "confirmed", "arrived", "in_service", "completed"].includes(appointment.status);
+  const isPayable = ["requested", "confirmed", "arrived", "in_service", "completed"].includes(appointment.status) && appointment.invoice_status !== "paid";
 
   return (
     <div style={{ maxWidth: 800, margin: "0 auto", animation: "fadeIn 0.5s ease" }}>

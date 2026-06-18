@@ -46,8 +46,8 @@ def create_invoice_from_appointment(actor, appointment):
     notify_user(
         user=invoice.customer.user,
         category="billing",
-        title="Invoice Generated",
-        message=f"An invoice of {invoice.total_due:,.0f} VND has been generated for your appointment.",
+        title="Hóa đơn mới",
+        message=f"Hóa đơn trị giá {invoice.total_due:,.0f} VND đã được tạo cho lịch hẹn của bạn.",
         related=invoice
     )
     return invoice
