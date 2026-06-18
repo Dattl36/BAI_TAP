@@ -5,7 +5,7 @@ from apps.employees.views import EmployeeViewSet, StaffAvailabilityViewSet
 
 
 router = DefaultRouter()
-router.register("", EmployeeViewSet, basename="employees")
 router.register("availability-blocks", StaffAvailabilityViewSet, basename="availability-blocks")
+router.register("", EmployeeViewSet, basename="employees")
 
 urlpatterns = [path("", include(router.urls))]

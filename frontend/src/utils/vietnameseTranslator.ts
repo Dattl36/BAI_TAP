@@ -211,11 +211,17 @@ const translateNode = (node: Node) => {
     const originalText = node.nodeValue || "";
     const trimmed = originalText.trim();
     if (trimmed && dictionary[trimmed]) {
-      node.nodeValue = originalText.replace(trimmed, dictionary[trimmed]);
+      const newText = originalText.replace(trimmed, dictionary[trimmed]);
+      if (node.nodeValue !== newText) {
+        node.nodeValue = newText;
+      }
     } else {
       for (const [en, vi] of Object.entries(dictionary)) {
         if (trimmed === en) {
-          node.nodeValue = originalText.replace(en, vi);
+          const newText = originalText.replace(en, vi);
+          if (node.nodeValue !== newText) {
+            node.nodeValue = newText;
+          }
           break;
         }
       }
