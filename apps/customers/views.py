@@ -28,3 +28,41 @@ class CustomerViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["get"])
     def history(self, request, pk=None):
         return success(customer_history(self.get_object()))
+
+    @action(detail=True, methods=["post"])
+    def topup(self, request, pk=None):
+        customer = self.get_object()
+        amount = request.data.get("amount")
+        if not amount:
+            from apps.core.exceptions import BusinessError
+            raise BusinessError("Số tiền nạp không hợp lệ")
+        
+        from decimal import Decimal
+        from django.db import transaction
+        from apps.payments.models import WalletTransaction
+        
+        with transaction.atomic():
+            amount_decimal = Decimal(amount)
+            customer.wallet_balance += amount_decimal
+            customer.save(update_fields=["wallet_balance"])
+            
+            tx = WalletTransaction.objects.create(
+                customer=customer,
+                amount=amount_decimal,
+                transaction_type="top_up",
+                description="Khách hàng nạp tiền vào ví"
+            )
+            return success({"wallet_balance": customer.wallet_balance, "transaction_id": tx.id})
+
+    @action(detail=True, methods=["get"])
+    def wallet_transactions(self, request, pk=None):
+        customer = self.get_object()
+        transactions = customer.wallet_transactions.all().order_by("-created_at")
+        data = [{
+            "id": tx.id,
+            "amount": tx.amount,
+            "transaction_type": tx.transaction_type,
+            "description": tx.description,
+            "created_at": tx.created_at
+        } for tx in transactions]
+        return success(data)

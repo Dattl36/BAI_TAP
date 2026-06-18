@@ -38,16 +38,36 @@ def transition_payment(actor, payment, new_status, reason=""):
     payment.save()
     PaymentStatusHistory.objects.create(payment=payment, old_status=old_status, new_status=new_status, changed_by=actor, reason=reason)
     if new_status == "successful":
+        if payment.method == "wallet":
+            from apps.payments.models import WalletTransaction
+            customer = payment.customer
+            if customer.wallet_balance < payment.amount:
+                raise BusinessError("Số dư ví không đủ để thanh toán", ErrorCodes.PAYMENT_STATE_ERROR)
+            customer.wallet_balance -= payment.amount
+            customer.save(update_fields=["wallet_balance"])
+            WalletTransaction.objects.create(
+                customer=customer,
+                amount=payment.amount,
+                transaction_type="payment",
+                description=f"Thanh toán hóa đơn #{payment.invoice.id}"
+            )
+
         invoice = payment.invoice
         invoice.paid_amount += payment.amount
         invoice.balance_due = invoice.total_due - invoice.paid_amount
         invoice.status = "paid" if invoice.balance_due <= 0 else "partially_paid"
         invoice.save()
+
+        # Auto-confirm appointment if fully paid
+        if invoice.status == "paid" and invoice.appointment and invoice.appointment.status == "requested":
+            from apps.appointments.services import transition_appointment
+            transition_appointment(actor, invoice.appointment, "confirmed", reason="Thanh toán thành công")
+
         notify_user(
             user=payment.customer.user,
             category="payment",
-            title="Payment Successful",
-            message=f"We have received your payment of {payment.amount:,.0f} VND. Thank you!",
+            title="Thanh toán thành công",
+            message=f"Chúng tôi đã nhận được khoản thanh toán {payment.amount:,.0f} VND từ bạn. Xin cảm ơn!",
             related=payment
         )
     record_event(actor, f"payment.{new_status}", payment)

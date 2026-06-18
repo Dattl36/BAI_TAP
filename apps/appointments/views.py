@@ -71,3 +71,21 @@ class AppointmentViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["get"])
     def availability(self, request):
         return success({"message": "Use employee availability and appointment conflict endpoints to inspect slots."})
+
+    from rest_framework.permissions import AllowAny
+    @action(detail=False, methods=["get"], permission_classes=[AllowAny])
+    def busy_staff(self, request):
+        start = request.query_params.get("start")
+        end = request.query_params.get("end")
+        if not start or not end:
+            return success({"busy_staff_ids": []})
+            
+        from apps.appointments.models import Appointment
+        ACTIVE_STATUSES = ["requested", "confirmed", "arrived", "in_service"]
+        qs = Appointment.objects.filter(
+            status__in=ACTIVE_STATUSES,
+            scheduled_start__lt=end,
+            scheduled_end__gt=start,
+        ).values_list("staff_id", flat=True)
+        
+        return success({"busy_staff_ids": list(set(qs))})

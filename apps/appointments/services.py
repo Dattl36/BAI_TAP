@@ -38,15 +38,30 @@ def ensure_future_schedule(actor, start):
 
 @transaction.atomic
 def create_appointment(actor, **data):
+    services_ids = data.pop("services", [])
     ensure_future_schedule(actor, data["scheduled_start"])
     ensure_no_conflict(actor, data["staff"], data["scheduled_start"], data["scheduled_end"])
     appointment = Appointment.objects.create(**data)
+    
+    if services_ids:
+        from apps.services.models import Service
+        from apps.appointments.models import AppointmentService
+        for service_id in services_ids:
+            service = Service.objects.get(id=service_id)
+            AppointmentService.objects.create(
+                appointment=appointment,
+                service=service,
+                price_at_booking=service.base_price,
+                duration_at_booking=service.duration_minutes,
+                quantity=1
+            )
+            
     record_event(actor, "appointment.create", appointment)
     notify_user(
         user=appointment.customer.user,
         category="appointment",
-        title="Appointment Confirmed",
-        message=f"Your appointment for {appointment.scheduled_start.strftime('%Y-%m-%d %H:%M')} has been booked.",
+        title="Xác nhận lịch hẹn",
+        message=f"Lịch hẹn của bạn vào lúc {appointment.scheduled_start.strftime('%d/%m/%Y %H:%M')} đã được đặt thành công.",
         related=appointment
     )
     return appointment
@@ -69,11 +84,31 @@ def transition_appointment(actor, appointment, new_status, reason=""):
     appointment.status = new_status
     if new_status == "cancelled":
         appointment.cancellation_reason = reason
+        
+        # Tự động hoàn tiền vào ví nếu hóa đơn đã thanh toán một phần hoặc toàn bộ
+        if hasattr(appointment, 'invoice') and appointment.invoice.paid_amount > 0:
+            from apps.payments.models import WalletTransaction
+            customer = appointment.customer
+            refund_amount = appointment.invoice.paid_amount
+            customer.wallet_balance += refund_amount
+            customer.save(update_fields=["wallet_balance"])
+            
+            WalletTransaction.objects.create(
+                customer=customer,
+                amount=refund_amount,
+                transaction_type="refund",
+                description=f"Hoàn tiền do hủy lịch hẹn #{appointment.id}"
+            )
+            
+            # Cập nhật hóa đơn
+            appointment.invoice.status = "cancelled"
+            appointment.invoice.save(update_fields=["status"])
+        
         notify_user(
             user=appointment.customer.user,
             category="appointment",
-            title="Appointment Cancelled",
-            message="Your appointment has been cancelled.",
+            title="Hủy lịch hẹn",
+            message="Lịch hẹn của bạn đã bị hủy.",
             related=appointment
         )
     if new_status == "no_show":
@@ -103,8 +138,8 @@ def reschedule_appointment(actor, appointment, start, end, staff=None):
     notify_user(
         user=appointment.customer.user,
         category="appointment",
-        title="Appointment Rescheduled",
-        message=f"Your appointment has been rescheduled to {start.strftime('%Y-%m-%d %H:%M')}.",
+        title="Đổi lịch hẹn",
+        message=f"Lịch hẹn của bạn đã được dời sang lúc {start.strftime('%d/%m/%Y %H:%M')}.",
         related=appointment
     )
     return appointment
