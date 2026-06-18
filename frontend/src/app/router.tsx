@@ -42,6 +42,7 @@ import { CustomerFeedbackPage } from "../pages/customer/CustomerFeedbackPage";
 import { CustomerComplaintsPage } from "../pages/customer/CustomerComplaintsPage";
 import { CustomerNotificationsPage } from "../pages/customer/CustomerNotificationsPage";
 import { CustomerProfilePage } from "../pages/customer/CustomerProfilePage";
+import { CustomerPaymentPage } from "../pages/customer/CustomerPaymentPage";
 
 // Receptionist Pages
 import { ReceptionistHomePage } from "../pages/receptionist/ReceptionistHomePage";
@@ -136,6 +137,7 @@ export const router = createBrowserRouter([
           { path: "appointments", element: <CustomerAppointmentsPage /> },
           { path: "appointments/:id", element: <CustomerAppointmentDetailPage /> },
           { path: "invoices", element: <CustomerInvoicesPage /> },
+          { path: "payment/:id", element: <CustomerPaymentPage /> },
           { path: "rewards", element: <CustomerRewardsPage /> },
           { path: "vouchers", element: <CustomerVouchersPage /> },
           { path: "feedback", element: <CustomerFeedbackPage /> },
