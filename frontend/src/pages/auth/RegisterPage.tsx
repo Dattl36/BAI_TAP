@@ -1,7 +1,8 @@
 import { LockOutlined, MailOutlined, UserOutlined } from "@ant-design/icons";
 import { useMutation } from "@tanstack/react-query";
-import { Button, Card, Form, Input, Typography, message } from "antd";
+import { Button, Card, Form, Input, Typography, message, Modal } from "antd";
 import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 import { authApi } from "../../api/auth.api";
 import { ROUTES } from "../../constants/routes";
@@ -12,18 +13,60 @@ export const RegisterPage = () => {
   const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage();
 
-  const mutation = useMutation({
+  const [isOtpModalVisible, setIsOtpModalVisible] = useState(false);
+  const [registeredEmail, setRegisteredEmail] = useState("");
+  const [otpCode, setOtpCode] = useState("");
+
+  const registerMutation = useMutation({
     mutationFn: authApi.register,
-    onSuccess: () => {
-      void messageApi.success("Account created successfully. You can login now.");
-      setTimeout(() => {
-        navigate(ROUTES.login);
-      }, 1200);
+    onSuccess: (_, variables) => {
+      void messageApi.success("Đăng ký thành công! Vui lòng kiểm tra email để lấy mã xác minh.");
+      setRegisteredEmail(variables.email || "");
+      setIsOtpModalVisible(true);
     },
     onError: (error) => {
       void messageApi.error(getErrorMessage(error));
     },
   });
+
+  const verifyOtpMutation = useMutation({
+    mutationFn: authApi.verifyEmail,
+    onSuccess: (data) => {
+      void messageApi.success("Xác minh tài khoản thành công!");
+      localStorage.setItem("accessToken", data.access);
+      localStorage.setItem("refreshToken", data.refresh);
+      setIsOtpModalVisible(false);
+      setTimeout(() => {
+        navigate("/customer");
+      }, 1000);
+    },
+    onError: (error) => {
+      void messageApi.error(getErrorMessage(error));
+    },
+  });
+
+  const resendOtpMutation = useMutation({
+    mutationFn: authApi.resendOtp,
+    onSuccess: () => {
+      void messageApi.success("Đã gửi lại mã OTP vào email của bạn.");
+    },
+    onError: (error) => {
+      void messageApi.error(getErrorMessage(error));
+    },
+  });
+
+  const handleVerifyOtp = () => {
+    if (!otpCode || otpCode.length < 6) {
+      void messageApi.error("Vui lòng nhập đủ 6 số mã OTP");
+      return;
+    }
+    verifyOtpMutation.mutate({ email: registeredEmail, otp: otpCode });
+  };
+
+  const handleResendOtp = () => {
+    if (!registeredEmail) return;
+    resendOtpMutation.mutate({ email: registeredEmail });
+  };
 
   return (
     <div className="login-split-container">
@@ -67,7 +110,7 @@ export const RegisterPage = () => {
 
           <Form<RegisterPayload>
             layout="vertical"
-            onFinish={(values) => mutation.mutate(values)}
+            onFinish={(values) => registerMutation.mutate(values)}
             requiredMark={false}
           >
             <Form.Item
@@ -119,7 +162,7 @@ export const RegisterPage = () => {
               block
               type="primary"
               htmlType="submit"
-              loading={mutation.isPending}
+              loading={registerMutation.isPending}
               className="login-button-gold"
               style={{ marginTop: 12, height: 44, borderRadius: 14 }}
             >
@@ -135,6 +178,46 @@ export const RegisterPage = () => {
           </Typography.Paragraph>
         </Card>
       </div>
+
+      <Modal
+        title={<div style={{ textAlign: "center", fontSize: 20 }}>Xác minh địa chỉ Email</div>}
+        open={isOtpModalVisible}
+        onOk={handleVerifyOtp}
+        onCancel={() => setIsOtpModalVisible(false)}
+        okText="Xác nhận mã OTP"
+        cancelText="Để sau"
+        confirmLoading={verifyOtpMutation.isPending}
+        centered
+        maskClosable={false}
+        okButtonProps={{ className: "login-button-gold", style: { height: 40, borderRadius: 8 } }}
+      >
+        <div style={{ textAlign: "center", margin: "24px 0" }}>
+          <Typography.Paragraph type="secondary" style={{ marginBottom: 24 }}>
+            Chúng tôi đã gửi một mã xác minh gồm 6 chữ số đến email <br/>
+            <strong style={{ color: "var(--color-text)" }}>{registeredEmail}</strong>
+          </Typography.Paragraph>
+          
+          <Input.OTP 
+            length={6} 
+            value={otpCode}
+            onChange={(val) => setOtpCode(val)}
+            size="large"
+            style={{ marginBottom: 24 }}
+          />
+
+          <Typography.Paragraph type="secondary" style={{ fontSize: 13 }}>
+            Không nhận được mã?{" "}
+            <Button 
+              type="link" 
+              onClick={handleResendOtp}
+              loading={resendOtpMutation.isPending}
+              style={{ padding: 0, fontWeight: 600, color: "var(--color-primary-dark)" }}
+            >
+              Gửi lại OTP
+            </Button>
+          </Typography.Paragraph>
+        </div>
+      </Modal>
     </div>
   );
 };

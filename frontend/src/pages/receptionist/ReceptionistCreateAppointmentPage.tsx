@@ -130,12 +130,7 @@ export const ReceptionistCreateAppointmentPage = () => {
         scheduled_start: startStr,
         scheduled_end: endStr,
         source: "receptionist",
-        appointment_services: [
-          {
-            service: serviceId,
-            quantity: 1,
-          },
-        ],
+        services: [serviceId],
       });
 
       void message.success("Salon appointment reserved successfully!");

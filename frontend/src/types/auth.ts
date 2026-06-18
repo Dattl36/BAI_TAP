@@ -9,6 +9,7 @@ export interface User extends BaseEntity {
   full_name?: string;
   phone?: string;
   customer_profile_id?: number | string;
+  customer_profile?: any;
   role: Role;
   account_status?: string;
   is_active?: boolean;

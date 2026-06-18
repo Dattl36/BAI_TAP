@@ -114,7 +114,10 @@ export const CustomerHomePage = () => {
       refetch();
       void queryClient.invalidateQueries({ queryKey: ["appointments"] });
     },
-    onError: () => void message.error("Không thể đổi lịch hẹn. Vui lòng thử lại."),
+    onError: (err: any) => {
+      const errMsg = err.response?.data?.error?.message || err.response?.data?.detail || err.response?.data?.message || err.message || "Không thể đổi lịch hẹn. Vui lòng thử lại.";
+      void message.error(errMsg);
+    },
   });
 
   const cancelMutation = useMutation({
@@ -124,7 +127,10 @@ export const CustomerHomePage = () => {
       refetch();
       void queryClient.invalidateQueries({ queryKey: ["appointments"] });
     },
-    onError: () => void message.error("Không thể hủy lịch hẹn. Vui lòng thử lại."),
+    onError: (err: any) => {
+      const errMsg = err.response?.data?.error?.message || err.response?.data?.detail || err.response?.data?.message || err.message || "Không thể hủy lịch hẹn. Vui lòng thử lại.";
+      void message.error(errMsg);
+    },
   });
 
   const handleCancelConfirm = () => {

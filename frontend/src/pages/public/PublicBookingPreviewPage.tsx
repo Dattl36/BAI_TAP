@@ -7,6 +7,7 @@ import dayjs from "dayjs";
 
 import { publicApi } from "../../api/public.api";
 import { appointmentsApi } from "../../api/appointments.api";
+import { invoicesApi } from "../../api/invoices.api";
 import { useAuth } from "../../hooks/useAuth";
 import { useMe } from "../../hooks/useMe";
 import { getListItems } from "../../utils/apiResponse";
@@ -109,10 +110,14 @@ export const PublicBookingPreviewPage = () => {
 
   // Mutation đặt lịch sau khi đã đăng nhập
   const bookingMutation = useMutation({
-    mutationFn: (payload: any) => appointmentsApi.create(payload),
-    onSuccess: () => {
-      void message.success("Đặt lịch thành công! Đang chuyển đến trang lịch hẹn...");
-      navigate("/customer/appointments");
+    mutationFn: async (payload: any) => {
+      const appointment = await appointmentsApi.create(payload);
+      const invoice = await invoicesApi.createFromAppointment(appointment.id);
+      return { appointment, invoice };
+    },
+    onSuccess: (data) => {
+      void message.success("Đặt lịch thành công! Vui lòng thanh toán để hoàn tất.");
+      navigate(`/customer/payment/${data.invoice.id}`);
     },
     onError: (err: any) => {
       const errMsg = err.response?.data?.message || err.message || "Không thể đặt lịch. Vui lòng thử lại.";
@@ -152,18 +157,30 @@ export const PublicBookingPreviewPage = () => {
       scheduled_start: startDateTime.toISOString(),
       scheduled_end: endDateTime.toISOString(),
       source: "customer" as const,
-      services: [
-        {
-          service: Number(bookingData.service),
-          quantity: 1,
-        },
-      ],
+      services: [Number(bookingData.service)],
     };
 
     bookingMutation.mutate(payload);
   };
 
   const isDataLoading = servicesLoading || stylistsLoading;
+
+  // Fetch busy staff logic
+  const duration = selectedServiceObj ? selectedServiceObj.duration_minutes : 45;
+  const startDateTimeStr = (bookingData.date && bookingData.time) 
+    ? new Date(`${bookingData.date}T${bookingData.time}:00`).toISOString() 
+    : "";
+  const endDateTimeStr = startDateTimeStr 
+    ? new Date(new Date(startDateTimeStr).getTime() + duration * 60 * 1000).toISOString() 
+    : "";
+
+  const { data: busyStaffData } = useQuery({
+    queryKey: ["busyStaff", startDateTimeStr, endDateTimeStr],
+    queryFn: () => appointmentsApi.getBusyStaff(startDateTimeStr, endDateTimeStr),
+    enabled: Boolean(startDateTimeStr && endDateTimeStr),
+  });
+
+  const busyStaffIds = busyStaffData?.busy_staff_ids || [];
 
   if (isDataLoading) {
     return (
@@ -190,8 +207,8 @@ export const PublicBookingPreviewPage = () => {
           style={{ maxWidth: 800, margin: "0 auto 40px" }}
           items={[
             { title: "Dịch Vụ", icon: <ScissorOutlined /> },
-            { title: "Stylist", icon: <SmileOutlined /> },
             { title: "Thời Gian", icon: <CalendarOutlined /> },
+            { title: "Stylist", icon: <SmileOutlined /> },
             { title: "Xác Nhận", icon: <CheckCircleOutlined /> },
           ]}
         />
@@ -252,8 +269,8 @@ export const PublicBookingPreviewPage = () => {
             </Space>
           )}
 
-          {/* Step 1: Chọn Chuyên Viên Stylist */}
-          {currentStep === 1 && (
+          {/* Step 2: Chọn Chuyên Viên Stylist */}
+          {currentStep === 2 && (
             <Space direction="vertical" size={20} style={{ width: "100%" }}>
               <Typography.Text strong style={{ fontSize: 16, fontFamily: "'Outfit', sans-serif" }}>
                 Chọn Chuyên Viên Stylist Phù Hợp
@@ -261,17 +278,20 @@ export const PublicBookingPreviewPage = () => {
               <Row gutter={[20, 20]}>
                 {stylistsList.map((stylist) => {
                   const isSelected = String(stylist.id) === bookingData.stylist;
+                  const isBusy = busyStaffIds.includes(Number(stylist.id));
                   return (
                     <Col xs={24} sm={12} md={8} key={stylist.id}>
                       <Card
-                        hoverable
+                        hoverable={!isBusy}
                         style={{
                           borderRadius: 12,
                           border: isSelected ? "2px solid var(--color-primary)" : "1px solid var(--app-border)",
                           boxShadow: isSelected ? "0 4px 15px rgba(188, 163, 116, 0.15)" : "none",
                           textAlign: "center",
+                          opacity: isBusy ? 0.5 : 1,
+                          cursor: isBusy ? "not-allowed" : "pointer",
                         }}
-                        onClick={() => setBookingData({ ...bookingData, stylist: String(stylist.id) })}
+                        onClick={() => !isBusy && setBookingData({ ...bookingData, stylist: String(stylist.id) })}
                         cover={
                           <div style={{ display: "flex", justifyContent: "center", paddingTop: 16 }}>
                             <Avatar
@@ -289,8 +309,8 @@ export const PublicBookingPreviewPage = () => {
                           {stylist.specialties || "Stylist Chuyên Nghiệp"}
                         </Typography.Text>
                         <div style={{ display: "flex", justifyContent: "center", borderTop: "1px solid var(--app-border)", paddingTop: 10 }}>
-                          <span style={{ fontSize: 12, color: isSelected ? "var(--color-primary-dark)" : "var(--color-muted)", fontWeight: 600 }}>
-                            {isSelected ? "Đã Chọn Stylist" : "Chọn Stylist"}
+                          <span style={{ fontSize: 12, color: isBusy ? "var(--color-danger)" : (isSelected ? "var(--color-primary-dark)" : "var(--color-muted)"), fontWeight: 600 }}>
+                            {isBusy ? "Kín Lịch" : (isSelected ? "Đã Chọn Stylist" : "Chọn Stylist")}
                           </span>
                         </div>
                       </Card>
@@ -301,8 +321,8 @@ export const PublicBookingPreviewPage = () => {
             </Space>
           )}
 
-          {/* Step 2: Chọn Ngày & Giờ */}
-          {currentStep === 2 && (
+          {/* Step 1: Chọn Ngày & Giờ */}
+          {currentStep === 1 && (
             <Space direction="vertical" size={24} style={{ width: "100%" }}>
               <Typography.Text strong style={{ fontSize: 16, fontFamily: "'Outfit', sans-serif" }}>
                 Chọn Ngày Hẹn và Khung Giờ Đến
@@ -318,7 +338,7 @@ export const PublicBookingPreviewPage = () => {
                       style={{ width: "100%", height: 44, borderRadius: 8 }}
                       value={bookingData.date ? dayjs(bookingData.date) : null}
                       disabledDate={(current) => current && current < dayjs().startOf("day")}
-                      onChange={(date, dateStr) => setBookingData({ ...bookingData, date: String(dateStr) })}
+                      onChange={(date, dateStr) => setBookingData({ ...bookingData, date: String(dateStr), time: "", stylist: "" })}
                     />
                   </Card>
                 </Col>
@@ -343,7 +363,7 @@ export const PublicBookingPreviewPage = () => {
                               color: isSelected ? "#ffffff" : "var(--color-text)",
                               fontWeight: isSelected ? 600 : 400,
                             }}
-                            onClick={() => setBookingData({ ...bookingData, time: slot })}
+                            onClick={() => setBookingData({ ...bookingData, time: slot, stylist: "" })}
                           >
                             {slot}
                           </Button>
@@ -478,8 +498,8 @@ export const PublicBookingPreviewPage = () => {
               className="login-button-gold"
               disabled={
                 (currentStep === 0 && !bookingData.service) ||
-                (currentStep === 1 && !bookingData.stylist) ||
-                (currentStep === 2 && (!bookingData.date || !bookingData.time))
+                (currentStep === 1 && (!bookingData.date || !bookingData.time)) ||
+                (currentStep === 2 && !bookingData.stylist)
               }
               style={{ height: 40, width: 100 }}
             >
