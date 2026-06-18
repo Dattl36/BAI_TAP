@@ -38,9 +38,24 @@ def ensure_future_schedule(actor, start):
 
 @transaction.atomic
 def create_appointment(actor, **data):
+    services_ids = data.pop("services", [])
     ensure_future_schedule(actor, data["scheduled_start"])
     ensure_no_conflict(actor, data["staff"], data["scheduled_start"], data["scheduled_end"])
     appointment = Appointment.objects.create(**data)
+    
+    if services_ids:
+        from apps.services.models import Service
+        from apps.appointments.models import AppointmentService
+        for service_id in services_ids:
+            service = Service.objects.get(id=service_id)
+            AppointmentService.objects.create(
+                appointment=appointment,
+                service=service,
+                price_at_booking=service.base_price,
+                duration_at_booking=service.duration_minutes,
+                quantity=1
+            )
+            
     record_event(actor, "appointment.create", appointment)
     notify_user(
         user=appointment.customer.user,

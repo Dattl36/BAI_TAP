@@ -44,8 +44,13 @@ const TIME_SLOTS = [
 export const CustomerBookingPage = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(0);
-  const [bookingData, setBookingData] = useState({
-    service: "",
+  const [bookingData, setBookingData] = useState<{
+    services: string[];
+    stylist: string;
+    date: string;
+    time: string;
+  }>({
+    services: [],
     stylist: "",
     date: "",
     time: "",
@@ -75,7 +80,7 @@ export const CustomerBookingPage = () => {
   // Filter stylists (role_type === "staff")
   const stylistsList = employeesList.filter((emp) => emp.role_type === "staff");
 
-  const selectedServiceObj = servicesList.find((s) => String(s.id) === bookingData.service);
+  const selectedServicesObjs = servicesList.filter((s) => bookingData.services.includes(String(s.id)));
   const selectedStylistObj = stylistsList.find((st) => String(st.id) === bookingData.stylist);
 
   // Mutation for creating the booking
@@ -86,13 +91,13 @@ export const CustomerBookingPage = () => {
       navigate("/customer/appointments");
     },
     onError: (err: any) => {
-      const errMsg = err.response?.data?.message || err.message || "Không thể đặt lịch hẹn. Vui lòng thử lại.";
+      const errMsg = err.response?.data?.error?.message || err.response?.data?.detail || err.response?.data?.message || err.message || "Không thể đặt lịch hẹn. Vui lòng thử lại.";
       void message.error(errMsg);
     },
   });
 
   const handleConfirm = () => {
-    if (!bookingData.service || !bookingData.stylist || !bookingData.date || !bookingData.time) {
+    if (bookingData.services.length === 0 || !bookingData.stylist || !bookingData.date || !bookingData.time) {
       void message.error("Vui lòng hoàn thành tất cả các bước đặt lịch.");
       return;
     }
@@ -105,7 +110,7 @@ export const CustomerBookingPage = () => {
     }
 
     // Add service duration to get end time
-    const duration = selectedServiceObj ? selectedServiceObj.duration_minutes : 45;
+    const duration = selectedServicesObjs.reduce((acc, s) => acc + (s.duration_minutes || 45), 0);
     const endDateTime = new Date(startDateTime.getTime() + duration * 60 * 1000);
 
     const payload = {
@@ -114,12 +119,7 @@ export const CustomerBookingPage = () => {
       scheduled_start: startDateTime.toISOString(),
       scheduled_end: endDateTime.toISOString(),
       source: "customer" as const,
-      services: [
-        {
-          service: Number(bookingData.service),
-          quantity: 1,
-        },
-      ],
+      services: bookingData.services.map(Number),
     };
 
     bookingMutation.mutate(payload);
@@ -151,8 +151,8 @@ export const CustomerBookingPage = () => {
         style={{ maxWidth: 800, margin: "0 auto 40px" }}
         items={[
           { title: "Chọn dịch vụ", icon: <ScissorOutlined /> },
-          { title: "Chọn thợ", icon: <SmileOutlined /> },
           { title: "Khung giờ", icon: <CalendarOutlined /> },
+          { title: "Chọn thợ", icon: <SmileOutlined /> },
           { title: "Xác nhận", icon: <CheckCircleOutlined /> },
         ]}
       />
@@ -166,7 +166,16 @@ export const CustomerBookingPage = () => {
             </Typography.Text>
             <Row gutter={[20, 20]}>
               {servicesList.map((service) => {
-                const isSelected = String(service.id) === bookingData.service;
+                const isSelected = bookingData.services.includes(String(service.id));
+                const toggleService = () => {
+                  setBookingData((prev) => {
+                    const idStr = String(service.id);
+                    if (prev.services.includes(idStr)) {
+                      return { ...prev, services: prev.services.filter((id) => id !== idStr) };
+                    }
+                    return { ...prev, services: [...prev.services, idStr] };
+                  });
+                };
                 return (
                   <Col xs={24} md={8} key={service.id}>
                     <Card
@@ -186,7 +195,7 @@ export const CustomerBookingPage = () => {
                         boxShadow: isSelected ? "0 4px 15px rgba(188, 163, 116, 0.15)" : "none",
                         transition: "all 0.2s ease"
                       }}
-                      onClick={() => setBookingData({ ...bookingData, service: String(service.id) })}
+                      onClick={toggleService}
                     >
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
                         <span style={{ fontSize: 10, background: "var(--color-accent)", color: "var(--color-primary-dark)", padding: "2px 6px", borderRadius: 10, fontWeight: 600, textTransform: "uppercase" }}>
@@ -216,8 +225,8 @@ export const CustomerBookingPage = () => {
           </Space>
         )}
 
-        {/* Step 1: Stylist Selection */}
-        {currentStep === 1 && (
+        {/* Step 2: Stylist Selection */}
+        {currentStep === 2 && (
           <Space direction="vertical" size={20} style={{ width: "100%" }}>
             <Typography.Text strong style={{ fontSize: 16, fontFamily: "'Outfit', sans-serif" }}>
               Chọn thợ làm mẫu tóc chuyên gia
@@ -266,8 +275,8 @@ export const CustomerBookingPage = () => {
           </Space>
         )}
 
-        {/* Step 2: Date & Time slot grid */}
-        {currentStep === 2 && (
+        {/* Step 1: Date & Time slot grid */}
+        {currentStep === 1 && (
           <Space direction="vertical" size={24} style={{ width: "100%" }}>
             <Typography.Text strong style={{ fontSize: 16, fontFamily: "'Outfit', sans-serif" }}>
               Chọn ngày hẹn và khung giờ đến
@@ -345,26 +354,28 @@ export const CustomerBookingPage = () => {
                 <Typography.Text type="secondary" style={{ fontSize: 11, letterSpacing: "0.05em", display: "block", marginBottom: 8 }}>
                   DỊCH VỤ ĐÃ CHỌN
                 </Typography.Text>
-                {selectedServiceObj && (
-                  <div style={{ display: "flex", gap: 16 }}>
-                    <img
-                      src={getServiceImage(selectedServiceObj.name)}
-                      alt={selectedServiceObj.name}
-                      style={{ width: 80, height: 80, objectFit: "cover", borderRadius: 8, border: "1px solid var(--app-border)" }}
-                    />
-                    <div>
-                      <Typography.Title level={5} style={{ margin: "0 0 4px", fontWeight: 600 }}>
-                        {selectedServiceObj.name}
-                      </Typography.Title>
-                      <Typography.Text type="secondary" style={{ fontSize: 12, display: "block" }}>
-                        Danh mục: {selectedServiceObj.category || "Chăm sóc tóc"}
-                      </Typography.Text>
-                      <Typography.Text type="secondary" style={{ fontSize: 12, display: "block" }}>
-                        Thời lượng: {selectedServiceObj.duration_minutes} phút
-                      </Typography.Text>
+                <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                  {selectedServicesObjs.map((srv) => (
+                    <div key={srv.id} style={{ display: "flex", gap: 16 }}>
+                      <img
+                        src={getServiceImage(srv.name)}
+                        alt={srv.name}
+                        style={{ width: 80, height: 80, objectFit: "cover", borderRadius: 8, border: "1px solid var(--app-border)" }}
+                      />
+                      <div>
+                        <Typography.Title level={5} style={{ margin: "0 0 4px", fontWeight: 600 }}>
+                          {srv.name}
+                        </Typography.Title>
+                        <Typography.Text type="secondary" style={{ fontSize: 12, display: "block" }}>
+                          Danh mục: {srv.category || "Chăm sóc tóc"}
+                        </Typography.Text>
+                        <Typography.Text type="secondary" style={{ fontSize: 12, display: "block" }}>
+                          Thời lượng: {srv.duration_minutes} phút
+                        </Typography.Text>
+                      </div>
                     </div>
-                  </div>
-                )}
+                  ))}
+                </div>
               </Col>
               
               <Col xs={24} md={12} style={{ borderLeft: "1px solid var(--app-border)", paddingLeft: 24 }}>
@@ -420,7 +431,7 @@ export const CustomerBookingPage = () => {
                   TỔNG TIỀN
                 </Typography.Text>
                 <strong style={{ fontSize: 20, color: "var(--color-primary-dark)", fontFamily: "'Outfit', sans-serif" }}>
-                  {selectedServiceObj ? Number(selectedServiceObj.base_price).toLocaleString("vi-VN") : "0"} VNĐ
+                  {selectedServicesObjs.reduce((sum, srv) => sum + Number(srv.base_price), 0).toLocaleString("vi-VN")} VNĐ
                 </strong>
               </div>
             </div>
@@ -440,9 +451,9 @@ export const CustomerBookingPage = () => {
             onClick={next} 
             className="login-button-gold"
             disabled={
-              (currentStep === 0 && !bookingData.service) ||
-              (currentStep === 1 && !bookingData.stylist) ||
-              (currentStep === 2 && (!bookingData.date || !bookingData.time))
+              (currentStep === 0 && bookingData.services.length === 0) ||
+              (currentStep === 1 && (!bookingData.date || !bookingData.time)) ||
+              (currentStep === 2 && !bookingData.stylist)
             }
             style={{ height: 40, width: 100 }}
           >

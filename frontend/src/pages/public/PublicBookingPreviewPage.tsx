@@ -152,12 +152,7 @@ export const PublicBookingPreviewPage = () => {
       scheduled_start: startDateTime.toISOString(),
       scheduled_end: endDateTime.toISOString(),
       source: "customer" as const,
-      services: [
-        {
-          service: Number(bookingData.service),
-          quantity: 1,
-        },
-      ],
+      services: [Number(bookingData.service)],
     };
 
     bookingMutation.mutate(payload);
