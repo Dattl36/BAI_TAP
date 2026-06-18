@@ -37,7 +37,7 @@ export const RegisterPage = () => {
       localStorage.setItem("refreshToken", data.refresh);
       setIsOtpModalVisible(false);
       setTimeout(() => {
-        navigate(ROUTES.customerHome);
+        navigate("/customer");
       }, 1000);
     },
     onError: (error) => {
