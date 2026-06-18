@@ -32,3 +32,20 @@ class PaymentStatusHistory(TimeStampedModel):
     changed_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL)
     changed_at = models.DateTimeField(auto_now_add=True)
     reason = models.TextField(blank=True)
+
+
+class WalletTransaction(TimeStampedModel):
+    TRANSACTION_TYPES = (
+        ("top_up", "Top Up"),
+        ("payment", "Payment"),
+        ("refund", "Refund"),
+    )
+
+    customer = models.ForeignKey("customers.CustomerProfile", on_delete=models.PROTECT, related_name="wallet_transactions")
+    amount = models.DecimalField(max_digits=12, decimal_places=2)
+    transaction_type = models.CharField(max_length=32, choices=TRANSACTION_TYPES)
+    description = models.TextField(blank=True)
+
+    def __str__(self):
+        return f"{self.transaction_type} of {self.amount} for {self.customer}"
+

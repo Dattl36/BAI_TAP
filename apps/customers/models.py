@@ -17,6 +17,7 @@ class CustomerProfile(SoftDeleteModel):
     address = models.TextField(blank=True)
     preferences = models.TextField(blank=True)
     status = models.CharField(max_length=32, choices=STATUS_CHOICES, default="active")
+    wallet_balance = models.DecimalField(max_digits=12, decimal_places=2, default=0)
 
     def save(self, *args, **kwargs):
         if not self.code and self.pk:

@@ -18,4 +18,10 @@ export const customersApi = {
   history(id: EntityId) {
     return request<unknown>(axiosClient.get(`/api/customers/${id}/history/`));
   },
+  topup(id: EntityId, amount: number) {
+    return request<unknown>(axiosClient.post(`/api/customers/${id}/topup/`, { amount }));
+  },
+  walletTransactions(id: EntityId) {
+    return request<unknown>(axiosClient.get(`/api/customers/${id}/wallet_transactions/`));
+  },
 };

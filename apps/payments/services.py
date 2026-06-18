@@ -38,6 +38,20 @@ def transition_payment(actor, payment, new_status, reason=""):
     payment.save()
     PaymentStatusHistory.objects.create(payment=payment, old_status=old_status, new_status=new_status, changed_by=actor, reason=reason)
     if new_status == "successful":
+        if payment.method == "wallet":
+            from apps.payments.models import WalletTransaction
+            customer = payment.customer
+            if customer.wallet_balance < payment.amount:
+                raise BusinessError("Số dư ví không đủ để thanh toán", ErrorCodes.PAYMENT_STATE_ERROR)
+            customer.wallet_balance -= payment.amount
+            customer.save(update_fields=["wallet_balance"])
+            WalletTransaction.objects.create(
+                customer=customer,
+                amount=payment.amount,
+                transaction_type="payment",
+                description=f"Thanh toán hóa đơn #{payment.invoice.id}"
+            )
+
         invoice = payment.invoice
         invoice.paid_amount += payment.amount
         invoice.balance_due = invoice.total_due - invoice.paid_amount
