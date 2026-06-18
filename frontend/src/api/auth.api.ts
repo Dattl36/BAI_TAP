@@ -8,6 +8,12 @@ export const authApi = {
   register(payload: RegisterPayload) {
     return request<User>(axiosClient.post("/api/auth/register/", payload));
   },
+  verifyEmail(payload: { email: string; otp: string }) {
+    return request<LoginResponse>(axiosClient.post("/api/auth/verify-email/", payload));
+  },
+  resendOtp(payload: { email: string }) {
+    return request<{ message: string }>(axiosClient.post("/api/auth/resend-otp/", payload));
+  },
   logout() {
     return request<null>(axiosClient.post("/api/auth/logout/"));
   },
