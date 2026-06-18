@@ -30,5 +30,8 @@ export const appointmentsApi = {
   availability(params?: QueryParams) {
     return request<{ message: string }>(axiosClient.get("/api/appointments/availability/", { params }));
   },
+  getBusyStaff(start: string, end: string) {
+    return request<{ busy_staff_ids: number[] }>(axiosClient.get("/api/appointments/busy_staff/", { params: { start, end } }));
+  },
 };
 
