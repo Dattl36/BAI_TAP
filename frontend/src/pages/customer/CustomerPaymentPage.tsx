@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { ArrowLeftOutlined, GiftOutlined, CreditCardOutlined, CheckCircleFilled } from "@ant-design/icons";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import { useMe } from "../../hooks/useMe";
 
 import { invoicesApi } from "../../api/invoices.api";
 import { paymentsApi } from "../../api/payments.api";
@@ -13,7 +14,9 @@ export const CustomerPaymentPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { data: currentUser } = useMe();
   const [voucherCode, setVoucherCode] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("credit_card");
 
   const { data: invoice, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["invoices", "detail", id],
@@ -41,7 +44,7 @@ export const CustomerPaymentPage = () => {
       const payment = await paymentsApi.create({
         invoice: invoice.id,
         amount: invoice.total_due,
-        method: "credit_card",
+        method: paymentMethod,
       });
       return paymentsApi.markSuccess(payment.id);
     },
@@ -146,6 +149,49 @@ export const CustomerPaymentPage = () => {
                   Áp dụng
                 </Button>
               </Space.Compact>
+            </Card>
+
+            <Card size="small" title={<><CreditCardOutlined /> Chọn phương thức thanh toán</>} style={{ borderRadius: 12, marginTop: 16 }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                <div 
+                  onClick={() => setPaymentMethod("credit_card")}
+                  style={{ 
+                    padding: 16, 
+                    border: paymentMethod === "credit_card" ? "2px solid var(--color-primary)" : "1px solid #d9d9d9", 
+                    borderRadius: 8, 
+                    cursor: "pointer",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    background: paymentMethod === "credit_card" ? "#fffcf5" : "white"
+                  }}
+                >
+                  <Typography.Text strong>Thẻ Ngân Hàng / Chuyển khoản</Typography.Text>
+                  {paymentMethod === "credit_card" && <CheckCircleFilled style={{ color: "var(--color-primary)", fontSize: 18 }} />}
+                </div>
+
+                <div 
+                  onClick={() => setPaymentMethod("wallet")}
+                  style={{ 
+                    padding: 16, 
+                    border: paymentMethod === "wallet" ? "2px solid var(--color-primary)" : "1px solid #d9d9d9", 
+                    borderRadius: 8, 
+                    cursor: "pointer",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    background: paymentMethod === "wallet" ? "#fffcf5" : "white"
+                  }}
+                >
+                  <div>
+                    <Typography.Text strong style={{ display: "block" }}>Số dư Ví Salon</Typography.Text>
+                    <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                      Khả dụng: {Number(currentUser?.customer_profile?.wallet_balance || 0).toLocaleString("vi-VN")} VNĐ
+                    </Typography.Text>
+                  </div>
+                  {paymentMethod === "wallet" && <CheckCircleFilled style={{ color: "var(--color-primary)", fontSize: 18 }} />}
+                </div>
+              </div>
             </Card>
 
             <Button 

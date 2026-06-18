@@ -7,6 +7,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { servicesApi } from "../../api/services.api";
 import { employeesApi } from "../../api/employees.api";
 import { appointmentsApi } from "../../api/appointments.api";
+import { invoicesApi } from "../../api/invoices.api";
 import { useMe } from "../../hooks/useMe";
 import { normalizePaginatedResponse } from "../../utils/apiResponse";
 import { queryKeys } from "../../constants/queryKeys";
@@ -85,10 +86,14 @@ export const CustomerBookingPage = () => {
 
   // Mutation for creating the booking
   const bookingMutation = useMutation({
-    mutationFn: (payload: any) => appointmentsApi.create(payload),
-    onSuccess: () => {
-      void message.success("Đã gửi yêu cầu đặt lịch hẹn thành công!");
-      navigate("/customer/appointments");
+    mutationFn: async (payload: any) => {
+      const appointment = await appointmentsApi.create(payload);
+      const invoice = await invoicesApi.createFromAppointment(appointment.id);
+      return { appointment, invoice };
+    },
+    onSuccess: (data) => {
+      void message.success("Đã tạo lịch hẹn thành công! Vui lòng thanh toán để hoàn tất.");
+      navigate(`/customer/payment/${data.invoice.id}`);
     },
     onError: (err: any) => {
       const errMsg = err.response?.data?.error?.message || err.response?.data?.detail || err.response?.data?.message || err.message || "Không thể đặt lịch hẹn. Vui lòng thử lại.";

@@ -7,6 +7,7 @@ import dayjs from "dayjs";
 
 import { publicApi } from "../../api/public.api";
 import { appointmentsApi } from "../../api/appointments.api";
+import { invoicesApi } from "../../api/invoices.api";
 import { useAuth } from "../../hooks/useAuth";
 import { useMe } from "../../hooks/useMe";
 import { getListItems } from "../../utils/apiResponse";
@@ -109,10 +110,14 @@ export const PublicBookingPreviewPage = () => {
 
   // Mutation đặt lịch sau khi đã đăng nhập
   const bookingMutation = useMutation({
-    mutationFn: (payload: any) => appointmentsApi.create(payload),
-    onSuccess: () => {
-      void message.success("Đặt lịch thành công! Đang chuyển đến trang lịch hẹn...");
-      navigate("/customer/appointments");
+    mutationFn: async (payload: any) => {
+      const appointment = await appointmentsApi.create(payload);
+      const invoice = await invoicesApi.createFromAppointment(appointment.id);
+      return { appointment, invoice };
+    },
+    onSuccess: (data) => {
+      void message.success("Đặt lịch thành công! Vui lòng thanh toán để hoàn tất.");
+      navigate(`/customer/payment/${data.invoice.id}`);
     },
     onError: (err: any) => {
       const errMsg = err.response?.data?.message || err.message || "Không thể đặt lịch. Vui lòng thử lại.";

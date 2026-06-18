@@ -84,6 +84,26 @@ def transition_appointment(actor, appointment, new_status, reason=""):
     appointment.status = new_status
     if new_status == "cancelled":
         appointment.cancellation_reason = reason
+        
+        # Tự động hoàn tiền vào ví nếu hóa đơn đã thanh toán một phần hoặc toàn bộ
+        if hasattr(appointment, 'invoice') and appointment.invoice.paid_amount > 0:
+            from apps.payments.models import WalletTransaction
+            customer = appointment.customer
+            refund_amount = appointment.invoice.paid_amount
+            customer.wallet_balance += refund_amount
+            customer.save(update_fields=["wallet_balance"])
+            
+            WalletTransaction.objects.create(
+                customer=customer,
+                amount=refund_amount,
+                transaction_type="refund",
+                description=f"Hoàn tiền do hủy lịch hẹn #{appointment.id}"
+            )
+            
+            # Cập nhật hóa đơn
+            appointment.invoice.status = "cancelled"
+            appointment.invoice.save(update_fields=["status"])
+        
         notify_user(
             user=appointment.customer.user,
             category="appointment",
