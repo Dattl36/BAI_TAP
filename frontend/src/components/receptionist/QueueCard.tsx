@@ -59,11 +59,11 @@ export const QueueCard = ({
 
       <div className="queue-body">
         <div>
-          <div className="label">Customer</div>
+          <div className="label">Khách hàng</div>
           <div style={{ fontWeight: 600 }}>{customerName}</div>
         </div>
         <div>
-          <div className="label">Staff</div>
+          <div className="label">Nhân viên</div>
           <div>{staffName}</div>
         </div>
         {customerPhone && (
@@ -73,11 +73,11 @@ export const QueueCard = ({
           </div>
         )}
         <div>
-          <div className="label"><ClockCircleOutlined /> Time</div>
+          <div className="label"><ClockCircleOutlined /> Thời gian</div>
           <div>{arrivalTime}</div>
         </div>
         <div style={{ gridColumn: "1 / -1" }}>
-          <div className="label">Service</div>
+          <div className="label">Dịch vụ</div>
           <div>{serviceName}</div>
         </div>
       </div>
@@ -86,7 +86,7 @@ export const QueueCard = ({
         <Space size={4} wrap>
           {canCheckin && (
             <Button size="small" type="primary" ghost icon={<CheckCircleOutlined />} onClick={() => onCheckin?.(a.id)} loading={loading}>
-              Check-in
+              Nhận khách
             </Button>
           )}
           {canAssign && (
@@ -97,7 +97,7 @@ export const QueueCard = ({
           {canStart && (
             <Button size="small" type="primary" ghost icon={<PlayCircleOutlined />} onClick={() => onStartService?.(a.id)} loading={loading}
               style={{ borderColor: "var(--rcpt-purple)", color: "var(--rcpt-purple)" }}>
-              Start Service
+              Bắt đầu dịch vụ
             </Button>
           )}
           {canEnd && (
@@ -113,7 +113,7 @@ export const QueueCard = ({
           )}
           {canCancel && (
             <Button size="small" danger type="text" icon={<CloseCircleOutlined />} onClick={() => onCancel?.(a.id)} loading={loading}>
-              Cancel
+              Hủy
             </Button>
           )}
         </Space>

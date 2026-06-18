@@ -174,7 +174,7 @@ export const CustomerProfilePage = () => {
     },
   ];
 
-  const txData = Array.isArray(walletTransactions?.data) ? walletTransactions.data : [];
+  const txData = Array.isArray((walletTransactions as any)?.data) ? (walletTransactions as any).data : [];
 
   const walletTab = (
     <div style={{ animation: "fadeIn 0.5s ease" }}>
@@ -235,7 +235,7 @@ export const CustomerProfilePage = () => {
             style={{ width: "100%", height: 44, fontSize: 18 }} 
             placeholder="Ví dụ: 500000"
             formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-            parser={(value) => value!.replace(/\$\s?|(,*)/g, '')}
+            parser={(value) => value!.replace(/\$\s?|(,*)/g, '') as any}
             value={topupAmount}
             onChange={(val) => setTopupAmount(val as number)}
             min={10000}

@@ -10,7 +10,7 @@ class PaymentTransaction(SoftDeleteModel):
         ("pending", "Pending"),
         ("successful", "Successful"),
         ("failed", "Failed"),
-        ("cancelled", "Cancelled"),
+        ("cancelled", "Đã hủy"),
         ("refunded", "Refunded"),
         ("adjusted", "Adjusted"),
     )

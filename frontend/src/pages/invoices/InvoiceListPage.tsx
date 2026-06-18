@@ -39,7 +39,7 @@ export const InvoiceListPage = () => {
       render: (text) => <span style={{ fontWeight: 500 }}>Customer #{text}</span>
     },
     { 
-      title: "Appointment ID", 
+      title: "Mã lịch hẹn", 
       dataIndex: "appointment",
       render: (text) => <span>Appointment #{text}</span>
     },
@@ -68,7 +68,7 @@ export const InvoiceListPage = () => {
     { 
       title: "Issued Date", 
       dataIndex: "issued_at", 
-      render: (date) => date ? formatDateTime(date) : <span style={{ color: "var(--color-muted)" }}>Draft</span>
+      render: (date) => date ? formatDateTime(date) : <span style={{ color: "var(--color-muted)" }}>Bản nháp</span>
     },
     { 
       title: "Status", 
@@ -84,7 +84,7 @@ export const InvoiceListPage = () => {
         <Space size="middle">
           <Link to={`${ROUTES.invoices}/${record.id}`}>
             <Button type="link" icon={<EyeOutlined />} size="small">
-              Details
+              Chi tiết
             </Button>
           </Link>
         </Space>
@@ -112,15 +112,15 @@ export const InvoiceListPage = () => {
   return (
     <>
       <PageHeader
-        title="Invoices & Billing"
-        description="Monitor client payments, reward point adjustments, vouchers, and issue billing invoices."
+        title="Hóa đơn và thanh toán"
+        description="Theo dõi thanh toán của khách, điều chỉnh điểm thưởng, mã ưu đãi và phát hành hóa đơn."
       />
       
       <Card bordered={false}>
         {/* Table Filters Toolbar */}
         <div className="table-toolbar">
           <Input
-            placeholder="Search by invoice, customer or booking ID..."
+            placeholder="Tìm theo hóa đơn, khách hàng hoặc mã lịch hẹn..."
             prefix={<SearchOutlined style={{ color: "var(--color-muted)" }} />}
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
@@ -130,7 +130,7 @@ export const InvoiceListPage = () => {
           />
           
           <Select
-            placeholder="Filter by Invoice Status"
+            placeholder="Lọc theo trạng thái hóa đơn"
             value={statusFilter}
             onChange={setStatusFilter}
             style={{ width: 220, height: 38 }}
@@ -138,10 +138,10 @@ export const InvoiceListPage = () => {
             options={[
               { label: "Draft", value: "draft" },
               { label: "Issued", value: "issued" },
-              { label: "Partially Paid", value: "partially_paid" },
+              { label: "Thanh toán một phần", value: "partially_paid" },
               { label: "Paid", value: "paid" },
               { label: "Adjusted", value: "adjusted" },
-              { label: "Cancelled", value: "cancelled" },
+              { label: "Đã hủy", value: "cancelled" },
             ]}
           />
         </div>

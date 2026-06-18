@@ -176,8 +176,8 @@ export const ManagerHomePage = () => {
   });
 
   const formatStatusName = (status: string) => {
-    if (status === "in_service") return "In Service";
-    if (status === "no_show") return "No Show";
+    if (status === "in_service") return "Đang phục vụ";
+    if (status === "no_show") return "Không đến";
     return status.charAt(0).toUpperCase() + status.slice(1);
   };
 
@@ -356,7 +356,7 @@ export const ManagerHomePage = () => {
             <div className="kpi-card-content">
               <div>
                 <Typography.Text type="secondary" style={{ fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                  APPOINTMENTS TODAY
+                  LỊCH HẸN HÔM NAY
                 </Typography.Text>
                 <Typography.Title level={3} style={{ margin: "6px 0 2px", fontFamily: "'Outfit', sans-serif", fontWeight: 700 }}>
                   {todayAppointmentsCount}

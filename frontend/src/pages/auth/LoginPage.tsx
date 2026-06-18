@@ -1,6 +1,7 @@
+import { useState } from "react";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { useMutation } from "@tanstack/react-query";
-import { Button, Card, Form, Input, Typography, message } from "antd";
+import { Button, Card, Form, Input, Typography } from "antd";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
 import { authApi } from "../../api/auth.api";
@@ -12,7 +13,7 @@ import { getErrorMessage } from "../../utils/error";
 export const LoginPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [messageApi, contextHolder] = message.useMessage();
+  const [loginError, setLoginError] = useState<string | null>(null);
 
   const mutation = useMutation({
     mutationFn: authApi.login,
@@ -23,13 +24,21 @@ export const LoginPage = () => {
     },
 
     onError: (error) => {
-      void messageApi.error(getErrorMessage(error));
+      const rawMsg = getErrorMessage(error);
+      if (
+        rawMsg.toLowerCase().includes("invalid username") || 
+        rawMsg.toLowerCase().includes("password") || 
+        rawMsg.toLowerCase().includes("non_field_errors")
+      ) {
+        setLoginError("Tên đăng nhập hoặc mật khẩu không chính xác. Vui lòng thử lại.");
+      } else {
+        setLoginError(rawMsg);
+      }
     },
   });
 
   return (
     <div className="login-split-container">
-      {contextHolder}
       
       {/* Left Column: Branding and Slogan */}
       <div className="login-brand-panel" style={{
@@ -59,7 +68,35 @@ export const LoginPage = () => {
             </Typography.Paragraph>
           </div>
 
-          <Form<LoginCredentials> layout="vertical" onFinish={(values) => mutation.mutate(values)}>
+          <Form<LoginCredentials> 
+            layout="vertical" 
+            onFinish={(values) => {
+              setLoginError(null);
+              mutation.mutate(values);
+            }}
+          >
+            {loginError && (
+              <div 
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10,
+                  padding: "12px 16px",
+                  backgroundColor: "#FFF5F5",
+                  border: "1px solid #FED7D7",
+                  borderRadius: 8,
+                  color: "#C53030",
+                  fontSize: 13,
+                  fontWeight: 500,
+                  marginBottom: 20,
+                  animation: "fadeIn 0.3s ease"
+                }}
+              >
+                <span style={{ fontSize: 16, display: "flex", alignItems: "center", userSelect: "none" }}>⚠️</span>
+                <span style={{ flex: 1, lineHeight: "1.4" }}>{loginError}</span>
+              </div>
+            )}
+
             <Form.Item 
               name="username" 
               label={<span style={{ fontWeight: 600, fontSize: 13, color: "var(--color-text)" }}>Tên đăng nhập</span>}

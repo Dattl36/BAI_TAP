@@ -45,7 +45,7 @@ export const AppointmentListPage = () => {
     { title: "Start Date & Time", dataIndex: "scheduled_start", render: (value) => formatDateTime(value) },
     { title: "End Date & Time", dataIndex: "scheduled_end", render: (value) => formatDateTime(value) },
     { 
-      title: "Booking Status", 
+      title: "Trạng thái lịch hẹn", 
       dataIndex: "status", 
       render: (status?: string) => <StatusTag status={status} /> 
     },
@@ -58,7 +58,7 @@ export const AppointmentListPage = () => {
         <Space size="middle">
           <Link to={`${ROUTES.appointments}/${record.id}`}>
             <Button type="link" icon={<EyeOutlined />} size="small">
-              View
+              Xem
             </Button>
           </Link>
         </Space>
@@ -87,8 +87,8 @@ export const AppointmentListPage = () => {
   return (
     <>
       <PageHeader
-        title="Appointments Workspace"
-        description="Monitor, check-in, and manage guest bookings and salon service workflows."
+        title="Không gian quản lý lịch hẹn"
+        description="Theo dõi, nhận khách và quản lý lịch đặt cùng quy trình dịch vụ salon."
         actions={
           <Link to={`${ROUTES.appointments}/create`}>
             <Button type="primary" icon={<PlusOutlined />} className="login-button-gold">
@@ -102,7 +102,7 @@ export const AppointmentListPage = () => {
         {/* Table Filters Toolbar */}
         <div className="table-toolbar">
           <Input
-            placeholder="Search by customer, staff or booking ID..."
+            placeholder="Tìm theo khách hàng, nhân viên hoặc mã lịch hẹn..."
             prefix={<SearchOutlined style={{ color: "var(--color-muted)" }} />}
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
@@ -112,18 +112,18 @@ export const AppointmentListPage = () => {
           />
           
           <Select
-            placeholder="Filter by Booking Status"
+            placeholder="Lọc theo trạng thái lịch hẹn"
             value={statusFilter}
             onChange={setStatusFilter}
             style={{ width: 220, height: 38 }}
             allowClear
             options={[
-              { label: "Requested", value: "requested" },
-              { label: "Confirmed", value: "confirmed" },
-              { label: "Arrived", value: "arrived" },
-              { label: "In Service", value: "in_service" },
-              { label: "Completed", value: "completed" },
-              { label: "Cancelled", value: "cancelled" },
+              { label: "Chờ xác nhận", value: "requested" },
+              { label: "Đã xác nhận", value: "confirmed" },
+              { label: "Đã đến", value: "arrived" },
+              { label: "Đang phục vụ", value: "in_service" },
+              { label: "Hoàn tất", value: "completed" },
+              { label: "Đã hủy", value: "cancelled" },
             ]}
           />
         </div>

@@ -40,7 +40,7 @@ class AuthViewSet(viewsets.GenericViewSet):
             fail_silently=False,
         )
         
-        return success({"message": "OTP sent to email", "email": user.email}, "Registered", status.HTTP_201_CREATED)
+        return success({"message": "Mã OTP đã được gửi tới email", "email": user.email}, "Registered", status.HTTP_201_CREATED)
 
     @action(detail=False, methods=["post"], url_path="verify-email")
     def verify_email(self, request):
@@ -107,7 +107,7 @@ class AuthViewSet(viewsets.GenericViewSet):
 
     @action(detail=False, methods=["post"])
     def logout(self, request):
-        return success(message="Logged out")
+        return success(message="Đã đăng xuất")
 
     @action(detail=False, methods=["get", "patch"])
     def me(self, request):
@@ -115,7 +115,7 @@ class AuthViewSet(viewsets.GenericViewSet):
             serializer = UserSerializer(request.user, data=request.data, partial=True)
             serializer.is_valid(raise_exception=True)
             serializer.save()
-            return success(serializer.data, "Profile updated")
+            return success(serializer.data, "Hồ sơ đã được cập nhật")
         return success(UserSerializer(request.user).data)
 
 
@@ -128,4 +128,4 @@ class AccountViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.Upda
     def deactivate(self, request, pk=None):
         user = self.get_object()
         deactivate_user(request.user, user)
-        return success(UserSerializer(user).data, "Account deactivated")
+        return success(UserSerializer(user).data, "Tài khoản đã được vô hiệu hóa")

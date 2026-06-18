@@ -77,7 +77,7 @@ export const ManagerVouchersPage = () => {
   const createMutation = useMutation({
     mutationFn: (payload: Partial<Voucher>) => vouchersApi.create(payload),
     onSuccess: () => {
-      message.success("Voucher created successfully!");
+      message.success("Đã tạo mã ưu đãi thành công.");
       queryClient.invalidateQueries({ queryKey: ["vouchers"] });
       setIsModalOpen(false);
       form.resetFields();
@@ -91,7 +91,7 @@ export const ManagerVouchersPage = () => {
     mutationFn: ({ id, payload }: { id: number; payload: Partial<Voucher> }) =>
       vouchersApi.update(id, payload),
     onSuccess: () => {
-      message.success("Voucher updated successfully!");
+      message.success("Đã cập nhật mã ưu đãi thành công.");
       queryClient.invalidateQueries({ queryKey: ["vouchers"] });
       setIsModalOpen(false);
       form.resetFields();
@@ -186,7 +186,7 @@ export const ManagerVouchersPage = () => {
   // Columns definition
   const columns: ColumnsType<Voucher> = [
     {
-      title: "Voucher Code",
+      title: "Mã ưu đãi",
       dataIndex: "code",
       key: "code",
       render: (text) => (
@@ -298,8 +298,8 @@ export const ManagerVouchersPage = () => {
   return (
     <div>
       <PageHeader
-        title="Voucher & Promotions"
-        description="Configure promotional codes, loyalty discounts, and track redemption trends across campaigns."
+        title="Mã ưu đãi và khuyến mãi"
+        description="Cấu hình mã khuyến mãi, ưu đãi thân thiết và theo dõi xu hướng sử dụng theo chiến dịch."
         actions={
           <Button
             type="primary"
@@ -315,7 +315,7 @@ export const ManagerVouchersPage = () => {
       <Card bordered={false} style={{ borderRadius: 16, animation: "fadeIn 0.5s ease" }}>
         <div className="table-toolbar" style={{ marginBottom: 24 }}>
           <Input
-            placeholder="Search by voucher code..."
+            placeholder="Tìm theo mã ưu đãi..."
             prefix={<SearchOutlined style={{ color: "var(--color-muted)" }} />}
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
@@ -325,7 +325,7 @@ export const ManagerVouchersPage = () => {
           />
 
           <Select
-            placeholder="Filter by Status"
+            placeholder="Lọc theo trạng thái"
             value={statusFilter}
             onChange={setStatusFilter}
             style={{ width: 200, height: 38 }}
@@ -334,7 +334,7 @@ export const ManagerVouchersPage = () => {
               { label: "Active", value: "active" },
               { label: "Redeemed", value: "redeemed" },
               { label: "Expired", value: "expired" },
-              { label: "Cancelled", value: "cancelled" },
+              { label: "Đã hủy", value: "cancelled" },
             ]}
           />
         </div>
@@ -362,7 +362,7 @@ export const ManagerVouchersPage = () => {
         open={isModalOpen}
         onOk={handleSaveVoucher}
         onCancel={() => setIsModalOpen(false)}
-        okText={editingVoucher ? "Save Changes" : "Create Voucher"}
+        okText={editingVoucher ? "Lưu thay đổi" : "Create Voucher"}
         okButtonProps={{ className: "login-button-gold" }}
         destroyOnClose
         width={560}
@@ -372,19 +372,19 @@ export const ManagerVouchersPage = () => {
             <Col span={12}>
               <Form.Item
                 name="code"
-                label="Voucher Code"
+                label="Mã ưu đãi"
                 rules={[
                   { required: true, message: "Please specify code" },
                   { pattern: /^[A-Z0-9_-]+$/, message: "Uppercase letters, numbers, hyphens or underscores only" },
                 ]}
               >
-                <Input placeholder="e.g. SUMMER50" style={{ textTransform: "uppercase" }} />
+                <Input placeholder="Ví dụ: SUMMER50" style={{ textTransform: "uppercase" }} />
               </Form.Item>
             </Col>
             <Col span={12}>
               <Form.Item name="customer" label="Assign to Specific Client (Optional)">
                 <Select
-                  placeholder="Select client"
+                  placeholder="Chọn khách hàng"
                   allowClear
                   showSearch
                   optionFilterProp="children"
@@ -443,8 +443,8 @@ export const ManagerVouchersPage = () => {
 
           <Form.Item name="status" label="Initial Status" rules={[{ required: true }]}>
             <Select>
-              <Select.Option value="active">Active</Select.Option>
-              <Select.Option value="cancelled">Cancelled</Select.Option>
+              <Select.Option value="active">Đang hoạt động</Select.Option>
+              <Select.Option value="cancelled">Đã hủy</Select.Option>
             </Select>
           </Form.Item>
         </Form>
@@ -452,7 +452,7 @@ export const ManagerVouchersPage = () => {
 
       {/* History Drawer */}
       <Drawer
-        title="Voucher Audit Log & History"
+        title="Lịch sử và nhật ký mã ưu đãi"
         placement="right"
         width={480}
         onClose={() => setDrawerOpen(false)}
@@ -460,7 +460,7 @@ export const ManagerVouchersPage = () => {
       >
         {selectedVoucher && (
           <div>
-            <Descriptions title="Campaign Overview" column={1} bordered size="small">
+            <Descriptions title="Tổng quan chiến dịch" column={1} bordered size="small">
               <Descriptions.Item label="Code">{selectedVoucher.code}</Descriptions.Item>
               <Descriptions.Item label="Discount">
                 {selectedVoucher.discount_type === "amount"

@@ -32,6 +32,7 @@ export interface Appointment extends BaseEntity {
   service_details?: { name?: string; duration?: number; price?: number } | null;
   employee_details?: { full_name?: string; specialties?: string } | null;
   customer_details?: { full_name?: string; email?: string; phone?: string } | null;
+  invoice_status?: string;
 }
 
 export interface AppointmentPayload {
@@ -44,6 +45,7 @@ export interface AppointmentPayload {
     service: EntityId;
     quantity?: number;
   }>;
+  services?: EntityId[];
 }
 
 export interface RescheduleAppointmentPayload {

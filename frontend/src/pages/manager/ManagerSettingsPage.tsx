@@ -48,7 +48,7 @@ export const ManagerSettingsPage = () => {
       form.setFieldsValue({
         salon_name: "Luxury Salon & Spa Spa",
         phone: "+84 987 654 321",
-        email: "contact@luxurysalon.com",
+        email: "lienhe@saloncaocap.vn",
         address: "123 Premium Way, District 1, HCMC",
         tax_rate: 10,
         opening_time: dayjs("2026-01-01T09:00:00"),
@@ -71,7 +71,7 @@ export const ManagerSettingsPage = () => {
     setTimeout(() => {
       localStorage.setItem("salon_system_config", JSON.stringify(payload));
       setLoading(false);
-      message.success("Salon settings saved successfully!");
+      message.success("Đã lưu cài đặt salon thành công.");
     }, 1000);
   };
 
@@ -89,7 +89,7 @@ export const ManagerSettingsPage = () => {
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item name="salon_name" label="Salon Name" rules={[{ required: true }]}>
-                <Input placeholder="Luxury Salon & Spa" />
+                <Input placeholder="Salon & Spa Cao cấp" />
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -102,7 +102,7 @@ export const ManagerSettingsPage = () => {
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item name="email" label="Contact Email" rules={[{ required: true, type: "email" }]}>
-                <Input placeholder="contact@luxurysalon.com" />
+                <Input placeholder="lienhe@saloncaocap.vn" />
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -207,8 +207,8 @@ export const ManagerSettingsPage = () => {
   return (
     <div>
       <PageHeader
-        title="Settings"
-        description="Configure general business specifications, working hours, and billing/loyalty parameters."
+        title="Cài đặt"
+        description="Cấu hình thông tin doanh nghiệp, giờ làm việc và tham số thanh toán/khách hàng thân thiết."
       />
 
       <Form form={form} layout="vertical" onFinish={handleSaveSettings}>

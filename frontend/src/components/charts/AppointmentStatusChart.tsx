@@ -13,11 +13,11 @@ const COLORS: Record<string, string> = {
   Requested: "#3b82f6", // Blue
   Confirmed: "#10b981", // Green
   Arrived: "#06b6d4",   // Cyan
-  "In Service": "#8b5cf6", // Purple
+  "Đang phục vụ": "#8b5cf6", // Purple
   Completed: "#bca374",  // Gold/yellow premium
   Invoiced: "#d4b26f",   // Soft Gold
   Cancelled: "#ef4444",  // Red
-  "No Show": "#f59e0b",  // Orange
+  "Không đến": "#f59e0b",  // Orange
 };
 
 export const AppointmentStatusChart = ({ data }: AppointmentStatusChartProps) => {
@@ -25,7 +25,7 @@ export const AppointmentStatusChart = ({ data }: AppointmentStatusChartProps) =>
   const activeData = data.filter((d) => d.value > 0);
 
   // Fallback data if everything is empty
-  const chartData = activeData.length > 0 ? activeData : [{ name: "No Bookings", value: 1 }];
+  const chartData = activeData.length > 0 ? activeData : [{ name: "Chưa có lịch hẹn", value: 1 }];
   const fallbackColors = ["#eae6df"];
 
   return (

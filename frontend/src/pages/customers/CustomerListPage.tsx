@@ -31,7 +31,7 @@ export const CustomerListPage = () => {
       render: (value?: string) => <span style={{ fontWeight: 600, color: "var(--color-primary-dark)" }}>{value || "-"}</span> 
     },
     { 
-      title: "Full Name", 
+      title: "Họ và tên", 
       dataIndex: "full_name",
       render: (text: string) => <span style={{ fontWeight: 500 }}>{text}</span>
     },
@@ -51,7 +51,7 @@ export const CustomerListPage = () => {
         <Space size="middle">
           <Link to={`${ROUTES.customers}/${record.id}`}>
             <Button type="link" icon={<EyeOutlined />} size="small">
-              View
+              Xem
             </Button>
           </Link>
         </Space>
@@ -74,8 +74,8 @@ export const CustomerListPage = () => {
   return (
     <>
       <PageHeader
-        title="Customers Registry"
-        description="View and manage verified salon customer accounts and history."
+        title="Danh bạ khách hàng"
+        description="Xem và quản lý tài khoản khách hàng đã xác thực cùng lịch sử sử dụng dịch vụ."
         actions={
           <Link to={`${ROUTES.customers}/create`}>
             <Button type="primary" icon={<PlusOutlined />} className="login-button-gold">
@@ -89,7 +89,7 @@ export const CustomerListPage = () => {
         {/* Table Filters Toolbar */}
         <div className="table-toolbar">
           <Input
-            placeholder="Search by name, phone or code..."
+            placeholder="Tìm theo tên, số điện thoại hoặc mã..."
             prefix={<SearchOutlined style={{ color: "var(--color-muted)" }} />}
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
@@ -99,7 +99,7 @@ export const CustomerListPage = () => {
           />
           
           <Select
-            placeholder="Filter by Status"
+            placeholder="Lọc theo trạng thái"
             value={statusFilter}
             onChange={setStatusFilter}
             style={{ width: 180, height: 38 }}

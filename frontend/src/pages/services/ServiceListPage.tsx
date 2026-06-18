@@ -60,7 +60,7 @@ export const ServiceListPage = () => {
         <Space size="middle">
           <Link to={`${ROUTES.services}/${record.id}`}>
             <Button type="link" icon={<EyeOutlined />} size="small">
-              View
+              Xem
             </Button>
           </Link>
         </Space>

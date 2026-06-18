@@ -21,7 +21,7 @@ export const RegisterPage = () => {
     mutationFn: authApi.register,
     onSuccess: (_, variables) => {
       void messageApi.success("Đăng ký thành công! Vui lòng kiểm tra email để lấy mã xác minh.");
-      setRegisteredEmail(variables.email);
+      setRegisteredEmail(variables.email || "");
       setIsOtpModalVisible(true);
     },
     onError: (error) => {
@@ -37,7 +37,7 @@ export const RegisterPage = () => {
       localStorage.setItem("refreshToken", data.refresh);
       setIsOtpModalVisible(false);
       setTimeout(() => {
-        navigate(ROUTES.customerHome);
+        navigate("/customer");
       }, 1000);
     },
     onError: (error) => {

@@ -10,11 +10,11 @@ def apply_voucher(actor, invoice, code):
     now = timezone.now()
     voucher = Voucher.objects.get(code=code)
     if voucher.status != "active" or voucher.starts_at > now or voucher.expires_at < now:
-        raise BusinessError("Voucher is not active.", ErrorCodes.VOUCHER_NOT_ELIGIBLE)
+        raise BusinessError("Mã ưu đãi hiện không còn hiệu lực.", ErrorCodes.VOUCHER_NOT_ELIGIBLE)
     if voucher.customer and voucher.customer != invoice.customer:
-        raise BusinessError("Voucher does not belong to this customer.", ErrorCodes.VOUCHER_NOT_ELIGIBLE)
+        raise BusinessError("Mã ưu đãi này không thuộc về khách hàng này.", ErrorCodes.VOUCHER_NOT_ELIGIBLE)
     if voucher.used_count >= voucher.usage_limit or invoice.subtotal < voucher.min_invoice:
-        raise BusinessError("Voucher is not eligible for this invoice.", ErrorCodes.VOUCHER_NOT_ELIGIBLE)
+        raise BusinessError("Mã ưu đãi không đủ điều kiện áp dụng cho hóa đơn này.", ErrorCodes.VOUCHER_NOT_ELIGIBLE)
     discount = voucher.discount_value
     if voucher.discount_type == "percent":
         discount = invoice.subtotal * voucher.discount_value / Decimal("100")

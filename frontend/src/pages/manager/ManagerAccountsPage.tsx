@@ -18,7 +18,7 @@ export const ManagerAccountsPage = () => {
   const columns: ColumnsType<Account> = [
     { title: "ID", dataIndex: "id", key: "id", render: (t) => <strong>#{t}</strong> },
     { title: "Username", dataIndex: "username", key: "username", render: (text: string) => <span style={{ fontWeight: 500 }}>{text}</span> },
-    { title: "Email Address", dataIndex: "email", key: "email" },
+    { title: "Địa chỉ email", dataIndex: "email", key: "email" },
     { 
       title: "System Role", 
       dataIndex: "role", 

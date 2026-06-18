@@ -13,7 +13,7 @@ export const ProfilePage = () => {
 
   return (
     <>
-      <PageHeader title="Profile" description="Current authenticated user." />
+      <PageHeader title="Hồ sơ" description="Thông tin tài khoản đang đăng nhập." />
       <Card>
         <Descriptions column={1} bordered>
           <Descriptions.Item label="Username">{user?.username}</Descriptions.Item>

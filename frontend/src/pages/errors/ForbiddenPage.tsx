@@ -7,7 +7,7 @@ export const ForbiddenPage = () => (
   <Result
     status="403"
     title="403"
-    subTitle="You do not have permission to access this page."
+    subTitle="Bạn không có quyền truy cập trang này."
     extra={
       <Button type="primary">
         <Link to={ROUTES.dashboard}>Back to dashboard</Link>

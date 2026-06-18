@@ -41,8 +41,8 @@ type EmployeeRow = Employee & {
 const ROLE_LABELS: Record<string, string> = {
   manager: "Quản lý",
   receptionist: "Lễ tân",
-  staff: "Stylist",
-  stylist: "Stylist",
+  staff: "Nhà tạo mẫu",
+  stylist: "Nhà tạo mẫu",
   employee: "Nhân viên",
 };
 
@@ -232,7 +232,7 @@ export const ManagerEmployeesPage = () => {
         </Col>
         <Col xs={12} sm={8} lg={5}>
           <Card bordered={false}>
-            <Statistic title="Stylist" value={stats.stylist} prefix={<ScissorOutlined />} />
+            <Statistic title="Nhà tạo mẫu" value={stats.stylist} prefix={<ScissorOutlined />} />
           </Card>
         </Col>
         <Col xs={12} sm={8} lg={5}>
@@ -280,7 +280,7 @@ export const ManagerEmployeesPage = () => {
                   { value: "all", label: "Tất cả vai trò" },
                   { value: "manager", label: "Quản lý" },
                   { value: "receptionist", label: "Lễ tân" },
-                  { value: "staff", label: "Stylist" },
+                  { value: "staff", label: "Nhà tạo mẫu" },
                   { value: "employee", label: "Nhân viên" },
                 ]}
               />

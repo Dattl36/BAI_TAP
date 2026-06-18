@@ -79,7 +79,7 @@ export const ManagerAppointmentsPage = () => {
     const updated = { ...internalNotes, [id]: note };
     setInternalNotes(updated);
     localStorage.setItem("manager_appointment_notes", JSON.stringify(updated));
-    message.success("Internal note saved!");
+    message.success("Đã lưu ghi chú nội bộ.");
   };
 
   // Queries
@@ -108,7 +108,7 @@ export const ManagerAppointmentsPage = () => {
     mutationFn: ({ id, payload }: { id: number; payload: { staff?: number; scheduled_start: string; scheduled_end: string } }) =>
       appointmentsApi.reschedule(id, payload),
     onSuccess: () => {
-      message.success("Appointment rescheduled successfully!");
+      message.success("Đã đổi lịch hẹn thành công.");
       queryClient.invalidateQueries({ queryKey: ["appointments"] });
       setIsRescheduleOpen(false);
     },
@@ -121,7 +121,7 @@ export const ManagerAppointmentsPage = () => {
     mutationFn: ({ id, staffId }: { id: number; staffId: number }) =>
       appointmentsApi.update(id, { staff: staffId }),
     onSuccess: () => {
-      message.success("Stylist reassigned successfully!");
+      message.success("Đã phân công lại nhà tạo mẫu.");
       queryClient.invalidateQueries({ queryKey: ["appointments"] });
     },
     onError: (err) => {
@@ -133,7 +133,7 @@ export const ManagerAppointmentsPage = () => {
     mutationFn: ({ id, reason }: { id: number; reason: string }) =>
       appointmentsApi.cancel(id, reason),
     onSuccess: () => {
-      message.success("Appointment cancelled successfully!");
+      message.success("Đã hủy lịch hẹn thành công.");
       queryClient.invalidateQueries({ queryKey: ["appointments"] });
       setIsCancelOpen(false);
     },
@@ -266,7 +266,7 @@ export const ManagerAppointmentsPage = () => {
       },
     },
     {
-      title: "Stylist",
+      title: "Nhà tạo mẫu",
       dataIndex: "staff",
       key: "staff",
       render: (staffId, record) => {
@@ -323,7 +323,7 @@ export const ManagerAppointmentsPage = () => {
       render: (_, record) => (
         <Space size="small">
           <Button type="link" size="small" onClick={() => handleOpenDetails(record)}>
-            Details
+            Chi tiết
           </Button>
           <Button
             type="text"
@@ -401,8 +401,8 @@ export const ManagerAppointmentsPage = () => {
   return (
     <div>
       <PageHeader
-        title="Salon Appointments"
-        description="Monitor booking sheets, reschedule sessions, reassign stylists, and document management logs."
+        title="Lịch hẹn salon"
+        description="Theo dõi danh sách đặt lịch, đổi lịch, phân công nhà tạo mẫu và ghi nhận nhật ký quản lý."
         actions={
           <Segmented
             options={[
@@ -426,7 +426,7 @@ export const ManagerAppointmentsPage = () => {
                 SEARCH BOOKINGS
               </Typography.Paragraph>
               <Input
-                placeholder="Search by customer name or booking code..."
+                placeholder="Tìm theo tên khách hàng hoặc mã lịch hẹn..."
                 prefix={<SearchOutlined style={{ color: "var(--color-muted)" }} />}
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
@@ -440,7 +440,7 @@ export const ManagerAppointmentsPage = () => {
                 STYLIST
               </Typography.Paragraph>
               <Select
-                placeholder="Choose Stylist"
+                placeholder="Chọn nhà tạo mẫu"
                 value={staffFilter}
                 onChange={setStaffFilter}
                 style={{ width: "100%", height: 38 }}
@@ -461,18 +461,18 @@ export const ManagerAppointmentsPage = () => {
                 STATUS
               </Typography.Paragraph>
               <Select
-                placeholder="Choose Status"
+                placeholder="Chọn trạng thái"
                 value={statusFilter}
                 onChange={setStatusFilter}
                 style={{ width: "100%", height: 38 }}
                 allowClear
               >
-                <Select.Option value="requested">Requested</Select.Option>
-                <Select.Option value="confirmed">Confirmed</Select.Option>
-                <Select.Option value="arrived">Arrived</Select.Option>
-                <Select.Option value="in_service">In Service</Select.Option>
-                <Select.Option value="completed">Completed</Select.Option>
-                <Select.Option value="cancelled">Cancelled</Select.Option>
+                <Select.Option value="requested">Chờ xác nhận</Select.Option>
+                <Select.Option value="confirmed">Đã xác nhận</Select.Option>
+                <Select.Option value="arrived">Đã đến</Select.Option>
+                <Select.Option value="in_service">Đang phục vụ</Select.Option>
+                <Select.Option value="completed">Hoàn tất</Select.Option>
+                <Select.Option value="cancelled">Đã hủy</Select.Option>
               </Select>
             </Col>
 
@@ -481,7 +481,7 @@ export const ManagerAppointmentsPage = () => {
                 BOOKING SOURCE
               </Typography.Paragraph>
               <Select
-                placeholder="Choose Source"
+                placeholder="Chọn nguồn đặt lịch"
                 value={sourceFilter}
                 onChange={setSourceFilter}
                 style={{ width: "100%", height: 38 }}
@@ -613,7 +613,7 @@ export const ManagerAppointmentsPage = () => {
               <Descriptions.Item label="Client Name">
                 <strong>{customers.find((c) => String(c.id) === String(selectedAppointment.customer))?.full_name || "Walk-in Guest"}</strong>
               </Descriptions.Item>
-              <Descriptions.Item label="Stylist">
+              <Descriptions.Item label="Nhà tạo mẫu">
                 {employees.find((e) => String(e.id) === String(selectedAppointment.staff))?.full_name || "Unassigned"}
               </Descriptions.Item>
               <Descriptions.Item label="Service Requested">
@@ -631,7 +631,7 @@ export const ManagerAppointmentsPage = () => {
                 </Tag>
               </Descriptions.Item>
               {selectedAppointment.cancellation_reason && (
-                <Descriptions.Item label="Cancellation Reason">
+                <Descriptions.Item label="Lý do hủy">
                   <span style={{ color: "red" }}>{selectedAppointment.cancellation_reason}</span>
                 </Descriptions.Item>
               )}
@@ -641,7 +641,7 @@ export const ManagerAppointmentsPage = () => {
 
             <Form form={notesForm} layout="vertical" onFinish={handleSaveNotes}>
               <Form.Item name="note" label="Internal Management Notes">
-                <Input.TextArea rows={3} placeholder="Add specific checklist, color formulas, or booking guidelines..." />
+                <Input.TextArea rows={3} placeholder="Thêm checklist, công thức màu hoặc hướng dẫn phục vụ cụ thể..." />
               </Form.Item>
               <Form.Item style={{ textAlign: "right", margin: 0 }}>
                 <Button type="primary" className="login-button-gold" onClick={handleSaveNotes}>
@@ -655,7 +655,7 @@ export const ManagerAppointmentsPage = () => {
 
       {/* Reschedule Modal */}
       <Modal
-        title="Reschedule Appointment"
+        title="Đổi lịch hẹn"
         open={isRescheduleOpen}
         onOk={handleSaveReschedule}
         onCancel={() => setIsRescheduleOpen(false)}
@@ -682,12 +682,12 @@ export const ManagerAppointmentsPage = () => {
 
           <Row gutter={16}>
             <Col span={12}>
-              <Form.Item name="start_time" label="Start Time" rules={[{ required: true }]}>
+              <Form.Item name="start_time" label="Giờ bắt đầu" rules={[{ required: true }]}>
                 <TimePicker format="HH:mm" style={{ width: "100%" }} />
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item name="end_time" label="End Time" rules={[{ required: true }]}>
+              <Form.Item name="end_time" label="Giờ kết thúc" rules={[{ required: true }]}>
                 <TimePicker format="HH:mm" style={{ width: "100%" }} />
               </Form.Item>
             </Col>
@@ -697,7 +697,7 @@ export const ManagerAppointmentsPage = () => {
 
       {/* Cancel Modal */}
       <Modal
-        title="Cancel Appointment"
+        title="Hủy lịch hẹn"
         open={isCancelOpen}
         onOk={handleSaveCancel}
         onCancel={() => setIsCancelOpen(false)}
@@ -711,7 +711,7 @@ export const ManagerAppointmentsPage = () => {
             label="Reason for Cancellation"
             rules={[{ required: true, message: "Please specify cancellation reason" }]}
           >
-            <Input.TextArea placeholder="e.g. Client requested via phone, stylist unavailable..." rows={3} />
+            <Input.TextArea placeholder="Ví dụ: khách yêu cầu qua điện thoại, nhà tạo mẫu không khả dụng..." rows={3} />
           </Form.Item>
         </Form>
       </Modal>

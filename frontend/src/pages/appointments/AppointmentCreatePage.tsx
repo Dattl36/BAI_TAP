@@ -1,3 +1,3 @@
 import { PlaceholderPage } from "../../components/common/PlaceholderPage";
 
-export const AppointmentCreatePage = () => <PlaceholderPage title="Create Appointment" />;
+export const AppointmentCreatePage = () => <PlaceholderPage title="Tạo lịch hẹn" />;

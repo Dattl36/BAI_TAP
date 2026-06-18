@@ -24,11 +24,11 @@ export const ManagerStaffPerformanceReportPage = () => {
   }
 
   return (
-    <Card title="Stylist Roster Commissions & Quality Metrics" bordered={false} style={{ borderRadius: 16, animation: "fadeIn 0.5s ease" }}>
+    <Card title="Hoa hồng nhà tạo mẫu và chỉ số chất lượng" bordered={false} style={{ borderRadius: 16, animation: "fadeIn 0.5s ease" }}>
       {staffPerformanceReport.length > 0 ? (
         <Table dataSource={staffPerformanceReport} columns={columns} rowKey="name" pagination={false} size="middle" />
       ) : (
-        <EmptyState description="No stylist activity recorded in SQLite database." />
+        <EmptyState description="Chưa có hoạt động nhà tạo mẫu nào trong cơ sở dữ liệu SQLite." />
       )}
     </Card>
   );

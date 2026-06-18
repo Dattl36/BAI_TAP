@@ -248,7 +248,7 @@ export const ReceptionistTodayAppointmentsPage = () => {
       render: (status) => <StatusTag status={status} />,
     },
     {
-      title: "Front Desk Operations",
+      title: "Vận hành quầy lễ tân",
       key: "actions",
       render: (_, record) => (
         <Space size="small">
@@ -258,7 +258,7 @@ export const ReceptionistTodayAppointmentsPage = () => {
             icon={<EyeOutlined />}
             onClick={() => showDetails(record)}
           >
-            Details
+            Chi tiết
           </Button>
 
           {record.status === "requested" && (
@@ -270,7 +270,7 @@ export const ReceptionistTodayAppointmentsPage = () => {
               disabled={isActing}
               onClick={() => confirmMutation.mutate(record.id)}
             >
-              Confirm
+              Xác nhận
             </Button>
           )}
 
@@ -283,7 +283,7 @@ export const ReceptionistTodayAppointmentsPage = () => {
               disabled={isActing}
               onClick={() => arriveMutation.mutate(record.id)}
             >
-              Check-in
+              Nhận khách
             </Button>
           )}
 
@@ -297,7 +297,7 @@ export const ReceptionistTodayAppointmentsPage = () => {
               disabled={isActing}
               onClick={() => handleCheckout(record.id)}
             >
-              Checkout Desk
+              Quầy thanh toán
             </Button>
           )}
 
@@ -314,7 +314,7 @@ export const ReceptionistTodayAppointmentsPage = () => {
                 disabled={isActing}
                 onClick={() => openCancelModal(record.id)}
               >
-                Cancel
+                Hủy
               </Button>
             )}
         </Space>
@@ -363,7 +363,7 @@ export const ReceptionistTodayAppointmentsPage = () => {
       {/* Search Bar Operations */}
       <div style={{ marginBottom: 20, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <Input
-          placeholder="Search customer name, phone, or appointment code..."
+          placeholder="Tìm theo tên khách, số điện thoại hoặc mã lịch hẹn..."
           prefix={<SearchOutlined style={{ color: "var(--color-muted)" }} />}
           value={searchText}
           onChange={(e) => setSearchText(e.target.value)}
@@ -373,7 +373,7 @@ export const ReceptionistTodayAppointmentsPage = () => {
         
         <Link to="/receptionist/appointments/create">
           <Button type="primary" className="login-button-gold" icon={<PlayCircleOutlined />} style={{ height: 40 }}>
-            Quick Walk-in Reserve
+            Đặt lịch nhanh cho khách vãng lai
           </Button>
         </Link>
       </div>
@@ -486,7 +486,7 @@ export const ReceptionistTodayAppointmentsPage = () => {
       <Modal
         title={
           <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 18 }}>
-            Reassign Salon Stylist
+            Phân công lại nhà tạo mẫu
           </div>
         }
         open={isReassignModalOpen}
@@ -497,10 +497,10 @@ export const ReceptionistTodayAppointmentsPage = () => {
       >
         <div style={{ padding: "8px 0" }}>
           <p style={{ color: "var(--color-muted)", fontSize: 13, marginBottom: 16 }}>
-            Select a new stylist to assign for this appointment. Existing date and hours will remain unchanged.
+            Chọn nhà tạo mẫu mới cho lịch hẹn này. Ngày và khung giờ hiện tại sẽ được giữ nguyên.
           </p>
           <Form layout="vertical">
-            <Form.Item label="Select Stylist" required>
+            <Form.Item label="Chọn nhà tạo mẫu" required>
               <Select
                 placeholder="Select a specialist"
                 value={selectedStylistId}
@@ -520,23 +520,23 @@ export const ReceptionistTodayAppointmentsPage = () => {
       <Modal
         title={
           <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 18, color: "#ef4444" }}>
-            Cancel Appointment
+            Hủy lịch hẹn
           </div>
         }
         open={isCancelModalOpen}
         onCancel={() => setIsCancelModalOpen(false)}
         onOk={handleCancelSubmit}
         confirmLoading={cancelMutation.isPending}
-        okText="Cancel Queue"
+        okText="Hủy khỏi hàng đợi"
         okButtonProps={{ danger: true }}
         destroyOnClose
       >
         <div style={{ padding: "8px 0" }}>
           <p style={{ color: "var(--color-muted)", fontSize: 13, marginBottom: 16 }}>
-            Are you sure you want to cancel this appointment? This action cannot be undone. Please specify a reason.
+            Bạn có chắc muốn hủy lịch hẹn này? Thao tác này không thể hoàn tác. Vui lòng nhập lý do hủy.
           </p>
           <Form layout="vertical">
-            <Form.Item label="Cancellation Reason" required>
+            <Form.Item label="Lý do hủy" required>
               <Input.TextArea
                 placeholder="Reason for cancellation (e.g. client requested, schedule conflict)"
                 value={cancellationReason}

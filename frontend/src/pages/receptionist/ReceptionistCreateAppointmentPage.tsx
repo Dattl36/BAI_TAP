@@ -41,7 +41,7 @@ export const ReceptionistCreateAppointmentPage = () => {
         const employeesRes = await employeesApi.list({ role_type: "staff", employment_status: "active" });
         setStylists(getListItems(employeesRes));
       } catch (err) {
-        void message.error("Failed to load salon catalog and stylist lists");
+        void message.error("Không thể tải danh mục salon và danh sách nhà tạo mẫu.");
       } finally {
         setLoading(false);
       }
@@ -133,7 +133,7 @@ export const ReceptionistCreateAppointmentPage = () => {
         services: [serviceId],
       });
 
-      void message.success("Salon appointment reserved successfully!");
+      void message.success("Đã đặt lịch salon thành công.");
       navigate("/receptionist/today");
     } catch (err: any) {
       const errorMsg = err?.response?.data?.message || err?.message || "An error occurred while reserving appointment";
@@ -174,7 +174,7 @@ export const ReceptionistCreateAppointmentPage = () => {
                 ]}
               >
                 <Input 
-                  placeholder="Enter guest phone (e.g. 0912345678)" 
+                  placeholder="Nhập số điện thoại khách (ví dụ: 0912345678)" 
                   prefix={<PhoneOutlined style={{ color: "var(--color-muted)" }} />}
                   onChange={handlePhoneChange}
                   style={{ height: 42, borderRadius: 8 }}
@@ -195,7 +195,7 @@ export const ReceptionistCreateAppointmentPage = () => {
               ) : (
                 <Alert 
                   message="New Client Registration" 
-                  description="No records matched. System will automatically register a new client profile."
+                  description="Không tìm thấy hồ sơ phù hợp. Hệ thống sẽ tự động tạo hồ sơ khách hàng mới."
                   type="warning" 
                   showIcon 
                 />
@@ -211,7 +211,7 @@ export const ReceptionistCreateAppointmentPage = () => {
                 rules={[{ required: true, message: "Please input guest name" }]}
               >
                 <Input 
-                  placeholder="Enter guest full name" 
+                  placeholder="Nhập họ tên khách" 
                   prefix={<UserOutlined style={{ color: "var(--color-muted)" }} />}
                   style={{ height: 42, borderRadius: 8 }}
                   disabled={!!existingCustomer}
@@ -238,7 +238,7 @@ export const ReceptionistCreateAppointmentPage = () => {
             <Col xs={24} md={12}>
               <Form.Item label="Service Requested" name="serviceId" rules={[{ required: true, message: "Please select a service" }]}>
                 <Select 
-                  placeholder="Select a premium service"
+                  placeholder="Chọn dịch vụ cao cấp"
                   options={services.map((s) => ({
                     value: s.id,
                     label: `${s.name} - $${Number(s.base_price).toFixed(2)} (${s.duration_minutes}m)`
@@ -251,7 +251,7 @@ export const ReceptionistCreateAppointmentPage = () => {
             <Col xs={24} md={12}>
               <Form.Item label="Assigned Stylist / Expert" name="stylistId" rules={[{ required: true, message: "Please select a therapist" }]}>
                 <Select 
-                  placeholder="Choose available expert"
+                  placeholder="Chọn chuyên gia khả dụng"
                   options={stylists.map((e) => ({
                     value: e.id,
                     label: `${e.full_name} (${e.specialties || "Specialist"})`
@@ -285,7 +285,7 @@ export const ReceptionistCreateAppointmentPage = () => {
           </Row>
 
           <Form.Item label="Appointment Notes" name="note">
-            <Input.TextArea placeholder="Any styling preferences or special requests..." rows={3} style={{ borderRadius: 8 }} />
+            <Input.TextArea placeholder="Nhập sở thích tạo kiểu hoặc yêu cầu đặc biệt..." rows={3} style={{ borderRadius: 8 }} />
           </Form.Item>
 
           <Button 

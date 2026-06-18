@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
                 ('started_at', models.DateTimeField(blank=True, null=True)),
                 ('completed_at', models.DateTimeField(blank=True, null=True)),
                 ('result_notes', models.TextField(blank=True)),
-                ('status', models.CharField(choices=[('pending', 'Pending'), ('in_progress', 'In Progress'), ('completed', 'Completed'), ('cancelled', 'Cancelled')], default='pending', max_length=32)),
+                ('status', models.CharField(choices=[('pending', 'Pending'), ('in_progress', 'In Progress'), ('completed', 'Hoàn tất'), ('cancelled', 'Đã hủy')], default='pending', max_length=32)),
                 ('appointment', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='execution', to='appointments.appointment')),
                 ('staff', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='service_executions', to='employees.employeeprofile')),
             ],

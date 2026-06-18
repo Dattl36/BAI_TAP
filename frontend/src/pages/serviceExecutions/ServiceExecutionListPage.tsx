@@ -1,3 +1,3 @@
 import { PlaceholderPage } from "../../components/common/PlaceholderPage";
 
-export const ServiceExecutionListPage = () => <PlaceholderPage title="Service Executions" />;
+export const ServiceExecutionListPage = () => <PlaceholderPage title="Thực hiện dịch vụ" />;

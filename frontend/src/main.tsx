@@ -10,10 +10,6 @@ import "./assets/styles/global.css";
 
 import { queryClient } from "./app/queryClient";
 import { router } from "./app/router";
-import { initVietnameseTranslation } from "./utils/vietnameseTranslator";
-
-// Initialize dynamic translation observer
-initVietnameseTranslation();
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

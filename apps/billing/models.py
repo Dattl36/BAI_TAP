@@ -7,10 +7,10 @@ class Invoice(SoftDeleteModel):
     STATUSES = (
         ("draft", "Draft"),
         ("issued", "Issued"),
-        ("partially_paid", "Partially Paid"),
+        ("partially_paid", "Thanh toán một phần"),
         ("paid", "Paid"),
         ("adjusted", "Adjusted"),
-        ("cancelled", "Cancelled"),
+        ("cancelled", "Đã hủy"),
     )
 
     customer = models.ForeignKey("customers.CustomerProfile", on_delete=models.PROTECT, related_name="invoices")

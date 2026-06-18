@@ -207,7 +207,7 @@ export const ManagerInvoicesPage = () => {
       render: (val) => <span style={{ fontWeight: 600 }}>{formatMoney(val)}</span>,
     },
     {
-      title: "Payment Method",
+      title: "Phương thức thanh toán",
       key: "method",
       render: (_, record) => {
         const successfulPayments = payments.filter((p) => String(p.invoice) === String(record.id) && p.status === "successful");
@@ -234,21 +234,21 @@ export const ManagerInvoicesPage = () => {
       key: "actions",
       render: (_, record) => (
         <Space size="middle">
-          <Tooltip title="View Details">
+          <Tooltip title="Xem chi tiết">
             <Button
               type="text"
               icon={<EyeOutlined />}
               onClick={() => handleViewDetails(record)}
             />
           </Tooltip>
-          <Tooltip title="Print Receipt">
+          <Tooltip title="In biên nhận">
             <Button
               type="text"
               icon={<PrinterOutlined style={{ color: "var(--color-primary-dark)" }} />}
               onClick={() => handlePrint(Number(record.id))}
             />
           </Tooltip>
-          <Tooltip title="Export PDF">
+          <Tooltip title="Xuất PDF">
             <Button
               type="text"
               icon={<DownloadOutlined style={{ color: "#3b82f6" }} />}
@@ -304,7 +304,7 @@ export const ManagerInvoicesPage = () => {
                 SEARCH INVOICE
               </Typography.Paragraph>
               <Input
-                placeholder="Invoice code or customer..."
+                placeholder="Mã hóa đơn hoặc khách hàng..."
                 prefix={<SearchOutlined style={{ color: "var(--color-muted)" }} />}
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
@@ -329,7 +329,7 @@ export const ManagerInvoicesPage = () => {
                 STYLIST
               </Typography.Paragraph>
               <Select
-                placeholder="Choose stylist"
+                placeholder="Chọn nhà tạo mẫu"
                 value={staffFilter}
                 onChange={setStaffFilter}
                 style={{ width: "100%", height: 38 }}
@@ -350,7 +350,7 @@ export const ManagerInvoicesPage = () => {
                 PAYMENT METHOD
               </Typography.Paragraph>
               <Select
-                placeholder="Choose method"
+                placeholder="Chọn phương thức"
                 value={methodFilter}
                 onChange={setMethodFilter}
                 style={{ width: "100%", height: 38 }}
@@ -358,7 +358,7 @@ export const ManagerInvoicesPage = () => {
                 options={[
                   { label: "Cash", value: "cash" },
                   { label: "Card", value: "card" },
-                  { label: "Bank Transfer", value: "bank" },
+                  { label: "Chuyển khoản", value: "bank" },
                 ]}
               />
             </Col>
@@ -368,7 +368,7 @@ export const ManagerInvoicesPage = () => {
                 STATUS
               </Typography.Paragraph>
               <Select
-                placeholder="Choose status"
+                placeholder="Chọn trạng thái"
                 value={statusFilter}
                 onChange={setStatusFilter}
                 style={{ width: "100%", height: 38 }}
@@ -378,7 +378,7 @@ export const ManagerInvoicesPage = () => {
                   { label: "Issued", value: "issued" },
                   { label: "Paid", value: "paid" },
                   { label: "Adjusted", value: "adjusted" },
-                  { label: "Cancelled", value: "cancelled" },
+                  { label: "Đã hủy", value: "cancelled" },
                 ]}
               />
             </Col>
@@ -444,7 +444,7 @@ export const ManagerInvoicesPage = () => {
             icon={<DownloadOutlined />}
             onClick={() => selectedInvoice && handleDownloadPDF(selectedInvoice.id)}
           >
-            Export PDF
+            Xuất PDF
           </Button>,
         ]}
         width={650}
@@ -453,7 +453,7 @@ export const ManagerInvoicesPage = () => {
           <div style={{ marginTop: 20 }}>
             <Row gutter={16}>
               <Col span={12}>
-                <Descriptions title="Billing Info" column={1} size="small">
+                <Descriptions title="Thông tin thanh toán" column={1} size="small">
                   <Descriptions.Item label="Client Name">
                     <strong>{getSelectedInvoiceCustomer()?.full_name || "Walk-in Guest"}</strong>
                   </Descriptions.Item>
@@ -466,9 +466,9 @@ export const ManagerInvoicesPage = () => {
                 </Descriptions>
               </Col>
               <Col span={12}>
-                <Descriptions title="Reference" column={1} size="small">
+                <Descriptions title="Tham chiếu" column={1} size="small">
                   <Descriptions.Item label="Booking ID">#B-{selectedInvoice.appointment}</Descriptions.Item>
-                  <Descriptions.Item label="Stylist">{getSelectedInvoiceStylist()}</Descriptions.Item>
+                  <Descriptions.Item label="Nhà tạo mẫu">{getSelectedInvoiceStylist()}</Descriptions.Item>
                   <Descriptions.Item label="Issued Date">{formatDateTime(selectedInvoice.created_at || selectedInvoice.issued_at)}</Descriptions.Item>
                 </Descriptions>
               </Col>

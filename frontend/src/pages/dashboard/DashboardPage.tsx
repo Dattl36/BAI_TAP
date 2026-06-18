@@ -24,11 +24,11 @@ const revenueData = [
 ];
 
 const serviceData = [
-  { label: "Hair Cut & Styling", value: 450 },
-  { label: "Facial Care & Spa", value: 320 },
-  { label: "Manicure & Nails", value: 240 },
-  { label: "Massage Therapy", value: 180 },
-  { label: "Hair Coloring", value: 290 },
+  { label: "Cắt và tạo kiểu tóc", value: 450 },
+  { label: "Chăm sóc da mặt và spa", value: 320 },
+  { label: "Chăm sóc móng", value: 240 },
+  { label: "Liệu trình massage", value: 180 },
+  { label: "Nhuộm tóc", value: 290 },
 ];
 
 const recentAppointments = [
@@ -41,7 +41,7 @@ const recentAppointments = [
 
 const appointmentColumns = [
   {
-    title: "Appointment ID",
+    title: "Mã lịch hẹn",
     dataIndex: "id",
     key: "id",
     render: (text: string) => <span style={{ fontWeight: 600, color: "var(--color-primary-dark)" }}>{text}</span>,
@@ -53,18 +53,18 @@ const appointmentColumns = [
     render: (text: string) => <span style={{ fontWeight: 500 }}>{text}</span>,
   },
   {
-    title: "Requested Service",
+    title: "Dịch vụ yêu cầu",
     dataIndex: "service",
     key: "service",
   },
   {
-    title: "Scheduled Time",
+    title: "Thời gian hẹn",
     dataIndex: "time",
     key: "time",
     render: (text: string) => <span style={{ color: "var(--color-muted)" }}>{text}</span>,
   },
   {
-    title: "Booking Status",
+    title: "Trạng thái lịch hẹn",
     dataIndex: "status",
     key: "status",
     render: (status: string) => <StatusTag status={status} />,
@@ -74,8 +74,8 @@ const appointmentColumns = [
 export const DashboardPage = () => (
   <>
     <PageHeader 
-      title="Salon Overview" 
-      description="Real-time operational insights, revenue stats, and guest bookings." 
+      title="Tổng quan salon" 
+      description="Theo dõi vận hành, doanh thu và lịch hẹn của khách theo thời gian thực." 
     />
     
     {/* KPI Row */}
@@ -84,13 +84,13 @@ export const DashboardPage = () => (
         <div className="kpi-card-content">
           <div>
             <Typography.Paragraph style={{ margin: 0, color: "var(--color-muted)", fontSize: 13, fontWeight: 500, textTransform: "uppercase" }}>
-              APPOINTMENTS TODAY
+              LỊCH HẸN HÔM NAY
             </Typography.Paragraph>
             <Typography.Title level={2} style={{ margin: "8px 0 4px", fontFamily: "'Outfit', sans-serif", fontWeight: 700 }}>
               18
             </Typography.Title>
             <span className="kpi-trend kpi-trend-up">
-              <ArrowUpOutlined /> +12.5% <span style={{ color: "var(--color-muted)", fontWeight: 400 }}>vs yesterday</span>
+              <ArrowUpOutlined /> +12.5% <span style={{ color: "var(--color-muted)", fontWeight: 400 }}>so với hôm qua</span>
             </span>
           </div>
           <div className="kpi-icon-wrapper">
@@ -103,13 +103,13 @@ export const DashboardPage = () => (
         <div className="kpi-card-content">
           <div>
             <Typography.Paragraph style={{ margin: 0, color: "var(--color-muted)", fontSize: 13, fontWeight: 500, textTransform: "uppercase" }}>
-              TODAY REVENUE
+              DOANH THU HÔM NAY
             </Typography.Paragraph>
             <Typography.Title level={2} style={{ margin: "8px 0 4px", fontFamily: "'Outfit', sans-serif", fontWeight: 700 }}>
               $12,480
             </Typography.Title>
             <span className="kpi-trend kpi-trend-up">
-              <ArrowUpOutlined /> +8.2% <span style={{ color: "var(--color-muted)", fontWeight: 400 }}>vs last week</span>
+              <ArrowUpOutlined /> +8.2% <span style={{ color: "var(--color-muted)", fontWeight: 400 }}>so với tuần trước</span>
             </span>
           </div>
           <div className="kpi-icon-wrapper">
@@ -122,13 +122,13 @@ export const DashboardPage = () => (
         <div className="kpi-card-content">
           <div>
             <Typography.Paragraph style={{ margin: 0, color: "var(--color-muted)", fontSize: 13, fontWeight: 500, textTransform: "uppercase" }}>
-              ACTIVE CUSTOMERS
+              KHÁCH HÀNG HOẠT ĐỘNG
             </Typography.Paragraph>
             <Typography.Title level={2} style={{ margin: "8px 0 4px", fontFamily: "'Outfit', sans-serif", fontWeight: 700 }}>
               326
             </Typography.Title>
             <span className="kpi-trend kpi-trend-up">
-              <ArrowUpOutlined /> +4.7% <span style={{ color: "var(--color-muted)", fontWeight: 400 }}>this month</span>
+              <ArrowUpOutlined /> +4.7% <span style={{ color: "var(--color-muted)", fontWeight: 400 }}>tháng này</span>
             </span>
           </div>
           <div className="kpi-icon-wrapper">
@@ -141,13 +141,13 @@ export const DashboardPage = () => (
         <div className="kpi-card-content">
           <div>
             <Typography.Paragraph style={{ margin: 0, color: "var(--color-muted)", fontSize: 13, fontWeight: 500, textTransform: "uppercase" }}>
-              STAFF ON DUTY
+              NHÂN VIÊN ĐANG LÀM
             </Typography.Paragraph>
             <Typography.Title level={2} style={{ margin: "8px 0 4px", fontFamily: "'Outfit', sans-serif", fontWeight: 700 }}>
               8
             </Typography.Title>
             <span className="kpi-trend" style={{ color: "var(--color-primary-dark)" }}>
-              100% <span style={{ color: "var(--color-muted)", fontWeight: 400 }}>attendance</span>
+              100% <span style={{ color: "var(--color-muted)", fontWeight: 400 }}>có mặt</span>
             </span>
           </div>
           <div className="kpi-icon-wrapper">
@@ -160,14 +160,14 @@ export const DashboardPage = () => (
     {/* Charts Row */}
     <Row gutter={[24, 24]} style={{ marginBottom: 32 }}>
       <Col xs={24} lg={16}>
-        <Card title="Weekly Revenue Stream" bordered={false} className="chart-card" style={{ height: 420 }}>
+        <Card title="Dòng doanh thu theo tuần" bordered={false} className="chart-card" style={{ height: 420 }}>
           <div style={{ height: 320 }}>
             <RevenueLineChart data={revenueData} />
           </div>
         </Card>
       </Col>
       <Col xs={24} lg={8}>
-        <Card title="Popular Services" bordered={false} className="chart-card" style={{ height: 420 }}>
+        <Card title="Dịch vụ được yêu thích" bordered={false} className="chart-card" style={{ height: 420 }}>
           <div style={{ height: 260 }}>
             <ServicePieChart data={serviceData} />
           </div>
@@ -184,7 +184,7 @@ export const DashboardPage = () => (
     </Row>
 
     {/* Recent Appointments & Activities */}
-    <Card title="Recent Bookings & Check-ins" bordered={false} style={{ marginBottom: 16 }}>
+    <Card title="Lịch đặt và lượt nhận khách gần đây" bordered={false} style={{ marginBottom: 16 }}>
       <Table
         columns={appointmentColumns}
         dataSource={recentAppointments}

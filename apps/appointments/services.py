@@ -26,13 +26,13 @@ def has_conflict(staff, start, end, exclude_id=None):
 
 def ensure_no_conflict(actor, staff, start, end, exclude_id=None):
     if has_conflict(staff, start, end, exclude_id):
-        record_rejection(actor, "appointment.conflict", "Staff is unavailable.", {"entity_type": "Appointment"})
-        raise BusinessError("Staff is unavailable for the selected time.", ErrorCodes.APPOINTMENT_CONFLICT, status_code=409)
+        record_rejection(actor, "appointment.conflict", "Nhân viên không khả dụng.", {"entity_type": "Appointment"})
+        raise BusinessError("Nhân viên không khả dụng trong khung giờ đã chọn.", ErrorCodes.APPOINTMENT_CONFLICT, status_code=409)
 
 
 def ensure_future_schedule(actor, start):
     if start < timezone.now():
-        record_rejection(actor, "appointment.past_schedule", "Cannot schedule in the past.", {"entity_type": "Appointment"})
+        record_rejection(actor, "appointment.past_schedule", "Không thể đặt lịch trong quá khứ.", {"entity_type": "Appointment"})
         raise BusinessError("Không thể đặt hoặc đổi lịch hẹn vào thời gian trong quá khứ.", ErrorCodes.VALIDATION_ERROR, status_code=400)
 
 
@@ -79,7 +79,7 @@ def transition_appointment(actor, appointment, new_status, reason=""):
     }
     if new_status not in allowed.get(appointment.status, set()):
         record_rejection(actor, "appointment.invalid_transition", f"{appointment.status}->{new_status}", {"entity_type": "Appointment"})
-        raise BusinessError("Appointment status transition is not allowed.", ErrorCodes.INVALID_STATUS_TRANSITION)
+        raise BusinessError("Không thể chuyển lịch hẹn sang trạng thái này.", ErrorCodes.INVALID_STATUS_TRANSITION)
     prior = {"status": appointment.status}
     appointment.status = new_status
     if new_status == "cancelled":

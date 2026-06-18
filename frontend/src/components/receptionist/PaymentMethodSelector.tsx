@@ -7,7 +7,7 @@ import {
 
 const METHODS = [
   { key: "cash", label: "Cash", icon: <DollarOutlined /> },
-  { key: "bank_transfer", label: "Bank Transfer", icon: <BankOutlined /> },
+  { key: "bank_transfer", label: "Chuyển khoản", icon: <BankOutlined /> },
   { key: "credit_card", label: "Credit Card", icon: <CreditCardOutlined /> },
   { key: "e_wallet", label: "E-Wallet", icon: <MobileOutlined /> },
 ];

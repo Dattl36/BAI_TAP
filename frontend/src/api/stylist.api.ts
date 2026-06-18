@@ -20,7 +20,7 @@ export const stylistApi = {
     if (items.length > 0) {
       return items[0];
     }
-    throw new Error("Stylist profile not found");
+    throw new Error("Không tìm thấy hồ sơ nhà tạo mẫu.");
   },
 
   /**
