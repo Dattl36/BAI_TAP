@@ -3,6 +3,7 @@ import { Button, Card, Col, DatePicker, Row, Steps, Typography, Space, message, 
 import { ScissorOutlined, CalendarOutlined, SmileOutlined, CheckCircleOutlined, ClockCircleOutlined, CheckOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import dayjs from "dayjs";
 
 import { servicesApi } from "../../api/services.api";
 import { employeesApi } from "../../api/employees.api";
@@ -132,6 +133,23 @@ export const CustomerBookingPage = () => {
 
   const isDataLoading = servicesLoading || employeesLoading;
 
+  // Calculate times for busy staff checking
+  const duration = selectedServicesObjs.reduce((acc, s) => acc + (s.duration_minutes || 45), 0);
+  const startDateTimeStr = (bookingData.date && bookingData.time) 
+    ? new Date(`${bookingData.date}T${bookingData.time}:00`).toISOString() 
+    : "";
+  const endDateTimeStr = startDateTimeStr 
+    ? new Date(new Date(startDateTimeStr).getTime() + duration * 60 * 1000).toISOString() 
+    : "";
+
+  const { data: busyStaffData } = useQuery({
+    queryKey: ["busyStaff", startDateTimeStr, endDateTimeStr],
+    queryFn: () => appointmentsApi.getBusyStaff(startDateTimeStr, endDateTimeStr),
+    enabled: Boolean(startDateTimeStr && endDateTimeStr),
+  });
+
+  const busyStaffIds = busyStaffData?.busy_staff_ids || [];
+
   if (isDataLoading) {
     return (
       <Card bordered={false} style={{ minHeight: 400, display: "flex", justifyContent: "center", alignItems: "center" }}>
@@ -239,10 +257,11 @@ export const CustomerBookingPage = () => {
             <Row gutter={[20, 20]}>
               {stylistsList.map((stylist) => {
                 const isSelected = String(stylist.id) === bookingData.stylist;
+                const isBusy = busyStaffIds.includes(Number(stylist.id));
                 return (
                   <Col xs={24} sm={12} md={8} key={stylist.id}>
                     <Card
-                      hoverable
+                      hoverable={!isBusy}
                       style={{
                         borderRadius: 12,
                         border: isSelected 
@@ -250,9 +269,11 @@ export const CustomerBookingPage = () => {
                           : "1px solid var(--app-border)",
                         boxShadow: isSelected ? "0 4px 15px rgba(188, 163, 116, 0.15)" : "none",
                         textAlign: "center",
-                        transition: "all 0.2s ease"
+                        transition: "all 0.2s ease",
+                        opacity: isBusy ? 0.5 : 1,
+                        cursor: isBusy ? "not-allowed" : "pointer",
                       }}
-                      onClick={() => setBookingData({ ...bookingData, stylist: String(stylist.id) })}
+                      onClick={() => !isBusy && setBookingData({ ...bookingData, stylist: String(stylist.id) })}
                       cover={
                         <Avatar 
                           src={getStylistImage(Number(stylist.id), stylist.full_name)} 
@@ -268,8 +289,8 @@ export const CustomerBookingPage = () => {
                         {stylist.specialties || "Chuyên gia tạo mẫu tóc"}
                       </Typography.Text>
                       <div style={{ display: "flex", justifyContent: "center", borderTop: "1px solid var(--app-border)", paddingTop: 10 }}>
-                        <span style={{ fontSize: 12, color: isSelected ? "var(--color-primary-dark)" : "var(--color-muted)", fontWeight: 600 }}>
-                          {isSelected ? "Đã chọn chuyên gia" : "Nhấn để chọn"}
+                        <span style={{ fontSize: 12, color: isBusy ? "var(--color-danger)" : (isSelected ? "var(--color-primary-dark)" : "var(--color-muted)"), fontWeight: 600 }}>
+                          {isBusy ? "Kín lịch" : (isSelected ? "Đã chọn chuyên gia" : "Nhấn để chọn")}
                         </span>
                       </div>
                     </Card>
@@ -295,7 +316,8 @@ export const CustomerBookingPage = () => {
                   <DatePicker 
                     placeholder="Chọn ngày thực hiện"
                     style={{ width: "100%", height: 44, borderRadius: 8 }}
-                    onChange={(date, dateStr) => setBookingData({ ...bookingData, date: String(dateStr) })}
+                    disabledDate={(current) => current && current < dayjs().startOf('day')}
+                    onChange={(date, dateStr) => setBookingData({ ...bookingData, date: String(dateStr), time: "", stylist: "" })}
                   />
                 </Card>
               </Col>
@@ -320,7 +342,7 @@ export const CustomerBookingPage = () => {
                             color: isSelected ? "#ffffff" : "var(--color-text)",
                             fontWeight: isSelected ? 600 : 400
                           }}
-                          onClick={() => setBookingData({ ...bookingData, time: slot })}
+                          onClick={() => setBookingData({ ...bookingData, time: slot, stylist: "" })}
                         >
                           {slot}
                         </Button>
