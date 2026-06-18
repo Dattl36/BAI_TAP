@@ -73,27 +73,9 @@ const getStatusLabel = (status?: string) => STATUS_LABELS[String(status ?? "acti
 const getRoleLabel = (role?: string) => ROLE_LABELS[String(role ?? "employee")] ?? String(role);
 
 const fetchEmployeesFromManagerApi = async () => {
-  try {
-    const staffResponse = await request<ListResponse<EmployeeRow>>(
-      axiosClient.get("/api/manager/staff/", {
-        params: { limit: 1000 },
-        timeout: 3000,
-        validateStatus: (status) => status < 500,
-      }),
-    );
-
-    if (getListItems(staffResponse).length > 0) {
-      return staffResponse;
-    }
-  } catch (staffError) {
-    console.error("Không thể tải danh sách nhân viên từ /api/manager/staff/", staffError);
-  }
-
   return request<ListResponse<EmployeeRow>>(
-    axiosClient.get("/api/manager/employees/", {
+    axiosClient.get("/api/employees/", {
       params: { limit: 1000 },
-      timeout: 3000,
-      validateStatus: (status) => status < 500,
     }),
   );
 };
