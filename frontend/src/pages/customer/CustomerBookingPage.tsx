@@ -38,10 +38,25 @@ const getStylistImage = (id: number, name: string) => {
   return "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=60";
 };
 
-const TIME_SLOTS = [
-  "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
-  "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30"
-];
+const OPENING_MINUTES = 9 * 60;
+const CLOSING_MINUTES = 22 * 60;
+const SLOT_INTERVAL_MINUTES = 30;
+
+const formatSlot = (minutes: number) => {
+  const h = Math.floor(minutes / 60).toString().padStart(2, "0");
+  const m = (minutes % 60).toString().padStart(2, "0");
+  return `${h}:${m}`;
+};
+
+const TIME_SLOTS = Array.from(
+  { length: Math.floor((CLOSING_MINUTES - OPENING_MINUTES) / SLOT_INTERVAL_MINUTES) + 1 },
+  (_, index) => formatSlot(OPENING_MINUTES + index * SLOT_INTERVAL_MINUTES),
+);
+
+const getSlotMinutes = (slot: string) => {
+  const [hour, minute] = slot.split(":").map(Number);
+  return hour * 60 + minute;
+};
 
 export const CustomerBookingPage = () => {
   const navigate = useNavigate();
@@ -115,6 +130,12 @@ export const CustomerBookingPage = () => {
       return;
     }
 
+    const validationMessage = getTimeSlotValidationMessage(bookingData.time);
+    if (validationMessage) {
+      void message.warning(validationMessage);
+      return;
+    }
+
     // Add service duration to get end time
     const duration = selectedServicesObjs.reduce((acc, s) => acc + (s.duration_minutes || 45), 0);
     const endDateTime = new Date(startDateTime.getTime() + duration * 60 * 1000);
@@ -135,6 +156,33 @@ export const CustomerBookingPage = () => {
 
   // Calculate times for busy staff checking
   const duration = selectedServicesObjs.reduce((acc, s) => acc + (s.duration_minutes || 45), 0);
+  const getTimeSlotValidationMessage = (slot: string) => {
+    if (!bookingData.date) return "Vui lòng chọn ngày trước khi chọn khung giờ.";
+    if (bookingData.services.length === 0) return "Vui lòng chọn dịch vụ trước để hệ thống tính thời lượng phù hợp.";
+
+    const start = dayjs(`${bookingData.date}T${slot}:00`);
+    if (!start.isValid()) return "Khung giờ không hợp lệ. Vui lòng chọn lại.";
+    if (start.isBefore(dayjs())) return "Khung giờ này đã qua. Vui lòng chọn khung giờ khác.";
+
+    const endMinutes = getSlotMinutes(slot) + duration;
+    if (endMinutes > CLOSING_MINUTES) {
+      return `Dịch vụ đã chọn kéo dài ${duration} phút nên khung ${slot} sẽ vượt quá 22:00. Vui lòng chọn giờ sớm hơn.`;
+    }
+
+    return "";
+  };
+
+  const handleSelectTimeSlot = (slot: string) => {
+    const validationMessage = getTimeSlotValidationMessage(slot);
+    if (validationMessage) {
+      void message.warning(validationMessage);
+      setBookingData((prev) => ({ ...prev, time: "", stylist: "" }));
+      return;
+    }
+
+    setBookingData({ ...bookingData, time: slot, stylist: "" });
+  };
+
   const startDateTimeStr = (bookingData.date && bookingData.time) 
     ? new Date(`${bookingData.date}T${bookingData.time}:00`).toISOString() 
     : "";
@@ -326,10 +374,15 @@ export const CustomerBookingPage = () => {
                 <Typography.Text type="secondary" style={{ display: "block", marginBottom: 12, fontSize: 12 }}>
                   CHỌN KHUNG GIỜ CÒN TRỐNG
                 </Typography.Text>
+                <Typography.Text type="secondary" style={{ display: "block", marginBottom: 12, fontSize: 12 }}>
+                  Salon nhận lịch từ 09:00 đến 22:00. Nếu khung giờ không đủ cho thời lượng dịch vụ, hệ thống sẽ báo ngay.
+                </Typography.Text>
                 {bookingData.date ? (
                   <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(80px, 1fr))", gap: 10 }}>
                     {TIME_SLOTS.map((slot) => {
                       const isSelected = slot === bookingData.time;
+                      const validationMessage = getTimeSlotValidationMessage(slot);
+                      const isInvalid = Boolean(validationMessage);
                       return (
                         <Button
                           key={slot}
@@ -337,12 +390,15 @@ export const CustomerBookingPage = () => {
                           style={{
                             borderRadius: 6,
                             height: 40,
-                            borderColor: isSelected ? "var(--color-primary)" : "var(--app-border)",
-                            background: isSelected ? "linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%)" : "#ffffff",
-                            color: isSelected ? "#ffffff" : "var(--color-text)",
+                            borderColor: isSelected ? "var(--color-primary)" : (isInvalid ? "#f3d3a0" : "var(--app-border)"),
+                            background: isSelected
+                              ? "linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%)"
+                              : (isInvalid ? "#fff8ec" : "#ffffff"),
+                            color: isSelected ? "#ffffff" : (isInvalid ? "#9a6b20" : "var(--color-text)"),
                             fontWeight: isSelected ? 600 : 400
                           }}
-                          onClick={() => setBookingData({ ...bookingData, time: slot, stylist: "" })}
+                          title={validationMessage || `Chọn khung ${slot}`}
+                          onClick={() => handleSelectTimeSlot(slot)}
                         >
                           {slot}
                         </Button>

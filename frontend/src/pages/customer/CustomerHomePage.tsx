@@ -375,6 +375,7 @@ export const CustomerHomePage = () => {
           {/* Card 2: Membership — DARK */}
           <Col xs={24} md={8}>
             <Card
+              className="customer-membership-card"
               bordered={false}
               style={{
                 borderRadius: 20,
