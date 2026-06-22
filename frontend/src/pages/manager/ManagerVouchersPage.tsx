@@ -196,7 +196,7 @@ export const ManagerVouchersPage = () => {
       ),
     },
     {
-      title: "Discount",
+      title: "Ưu đãi",
       dataIndex: "discount_value",
       key: "discount",
       render: (val, record) => (
@@ -206,13 +206,13 @@ export const ManagerVouchersPage = () => {
       ),
     },
     {
-      title: "Min Spend",
+      title: "Chi tiêu tối thiểu",
       dataIndex: "min_invoice",
       key: "min_invoice",
       render: (val) => formatMoney(val),
     },
     {
-      title: "Assigned Client",
+      title: "Khách hàng được gán",
       dataIndex: "customer",
       key: "customer",
       render: (custId) => {
@@ -222,7 +222,7 @@ export const ManagerVouchersPage = () => {
       },
     },
     {
-      title: "Validity",
+      title: "Thời hạn hiệu lực",
       key: "validity",
       render: (_, record) => (
         <span style={{ fontSize: 12, color: "var(--color-muted)" }}>
@@ -231,7 +231,7 @@ export const ManagerVouchersPage = () => {
       ),
     },
     {
-      title: "Usage (Used / Limit)",
+      title: "Lượt sử dụng (đã dùng / giới hạn)",
       key: "usage",
       render: (_, record) => (
         <span>
@@ -240,13 +240,13 @@ export const ManagerVouchersPage = () => {
       ),
     },
     {
-      title: "Status",
+      title: "Trạng thái",
       dataIndex: "status",
       key: "status",
       render: (status) => <StatusTag status={status} />,
     },
     {
-      title: "Actions",
+      title: "Thao tác",
       key: "actions",
       render: (_, record) => (
         <Space size="middle">
@@ -307,7 +307,7 @@ export const ManagerVouchersPage = () => {
             icon={<PlusOutlined />}
             onClick={handleOpenCreateModal}
           >
-            Create Voucher
+            Tạo mã ưu đãi
           </Button>
         }
       />
@@ -332,7 +332,7 @@ export const ManagerVouchersPage = () => {
             allowClear
             options={[
               { label: "Active", value: "active" },
-              { label: "Redeemed", value: "redeemed" },
+              { label: "Đã sử dụng", value: "redeemed" },
               { label: "Expired", value: "expired" },
               { label: "Đã hủy", value: "cancelled" },
             ]}
@@ -358,11 +358,11 @@ export const ManagerVouchersPage = () => {
 
       {/* Create / Edit Modal */}
       <Modal
-        title={editingVoucher ? "Edit Voucher Details" : "Create New Campaign Voucher"}
+        title={editingVoucher ? "Chỉnh sửa chi tiết mã ưu đãi" : "Tạo mã ưu đãi cho chiến dịch"}
         open={isModalOpen}
         onOk={handleSaveVoucher}
         onCancel={() => setIsModalOpen(false)}
-        okText={editingVoucher ? "Lưu thay đổi" : "Create Voucher"}
+        okText={editingVoucher ? "Lưu thay đổi" : "Tạo mã ưu đãi"}
         okButtonProps={{ className: "login-button-gold" }}
         destroyOnClose
         width={560}
@@ -374,15 +374,15 @@ export const ManagerVouchersPage = () => {
                 name="code"
                 label="Mã ưu đãi"
                 rules={[
-                  { required: true, message: "Please specify code" },
-                  { pattern: /^[A-Z0-9_-]+$/, message: "Uppercase letters, numbers, hyphens or underscores only" },
+                  { required: true, message: "Vui lòng nhập mã ưu đãi." },
+                  { pattern: /^[A-Z0-9_-]+$/, message: "Chỉ dùng chữ in hoa, số, dấu gạch ngang hoặc gạch dưới." },
                 ]}
               >
                 <Input placeholder="Ví dụ: SUMMER50" style={{ textTransform: "uppercase" }} />
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item name="customer" label="Assign to Specific Client (Optional)">
+              <Form.Item name="customer" label="Gán cho khách hàng cụ thể (tùy chọn)">
                 <Select
                   placeholder="Chọn khách hàng"
                   allowClear
@@ -391,7 +391,7 @@ export const ManagerVouchersPage = () => {
                 >
                   {customers.map((c) => (
                     <Select.Option key={c.id} value={c.id}>
-                      {c.full_name} ({c.phone || "No Phone"})
+                      {c.full_name} ({c.phone || "Chưa có số điện thoại"})
                     </Select.Option>
                   ))}
                 </Select>
@@ -401,15 +401,15 @@ export const ManagerVouchersPage = () => {
 
           <Row gutter={16}>
             <Col span={12}>
-              <Form.Item name="discount_type" label="Discount Type" rules={[{ required: true }]}>
+              <Form.Item name="discount_type" label="Loại ưu đãi" rules={[{ required: true }]}>
                 <Select>
-                  <Select.Option value="amount">Fixed Amount ($)</Select.Option>
-                  <Select.Option value="percent">Percentage (%)</Select.Option>
+                  <Select.Option value="amount">Giảm số tiền cố định</Select.Option>
+                  <Select.Option value="percent">Giảm theo phần trăm (%)</Select.Option>
                 </Select>
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item name="discount_value" label="Discount Value" rules={[{ required: true, message: "Specify value" }]}>
+              <Form.Item name="discount_value" label="Giá trị ưu đãi" rules={[{ required: true, message: "Vui lòng nhập giá trị ưu đãi." }]}>
                 <InputNumber min={1} style={{ width: "100%" }} />
               </Form.Item>
             </Col>
@@ -417,12 +417,12 @@ export const ManagerVouchersPage = () => {
 
           <Row gutter={16}>
             <Col span={12}>
-              <Form.Item name="min_invoice" label="Minimum Invoice Condition ($)" rules={[{ required: true }]}>
+              <Form.Item name="min_invoice" label="Điều kiện hóa đơn tối thiểu" rules={[{ required: true }]}>
                 <InputNumber min={0} style={{ width: "100%" }} />
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item name="usage_limit" label="Total Usage Limit" rules={[{ required: true }]}>
+              <Form.Item name="usage_limit" label="Tổng lượt sử dụng tối đa" rules={[{ required: true }]}>
                 <InputNumber min={1} style={{ width: "100%" }} />
               </Form.Item>
             </Col>
@@ -430,18 +430,18 @@ export const ManagerVouchersPage = () => {
 
           <Row gutter={16}>
             <Col span={12}>
-              <Form.Item name="starts_at" label="Active From" rules={[{ required: true }]}>
+              <Form.Item name="starts_at" label="Hiệu lực từ" rules={[{ required: true }]}>
                 <DatePicker showTime style={{ width: "100%" }} />
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item name="expires_at" label="Active Until" rules={[{ required: true }]}>
+              <Form.Item name="expires_at" label="Hiệu lực đến" rules={[{ required: true }]}>
                 <DatePicker showTime style={{ width: "100%" }} />
               </Form.Item>
             </Col>
           </Row>
 
-          <Form.Item name="status" label="Initial Status" rules={[{ required: true }]}>
+          <Form.Item name="status" label="Trạng thái ban đầu" rules={[{ required: true }]}>
             <Select>
               <Select.Option value="active">Đang hoạt động</Select.Option>
               <Select.Option value="cancelled">Đã hủy</Select.Option>
@@ -461,25 +461,25 @@ export const ManagerVouchersPage = () => {
         {selectedVoucher && (
           <div>
             <Descriptions title="Tổng quan chiến dịch" column={1} bordered size="small">
-              <Descriptions.Item label="Code">{selectedVoucher.code}</Descriptions.Item>
-              <Descriptions.Item label="Discount">
+              <Descriptions.Item label="Mã">{selectedVoucher.code}</Descriptions.Item>
+              <Descriptions.Item label="Ưu đãi">
                 {selectedVoucher.discount_type === "amount"
                   ? formatMoney(selectedVoucher.discount_value)
                   : `${selectedVoucher.discount_value}% OFF`}
               </Descriptions.Item>
-              <Descriptions.Item label="Min Spend">
+              <Descriptions.Item label="Chi tiêu tối thiểu">
                 {formatMoney(selectedVoucher.min_invoice)}
               </Descriptions.Item>
-              <Descriptions.Item label="Redemption Stats">
+              <Descriptions.Item label="Thống kê sử dụng">
                 {selectedVoucher.used_count} used / {selectedVoucher.usage_limit} limit
               </Descriptions.Item>
-              <Descriptions.Item label="Status">
+              <Descriptions.Item label="Trạng thái">
                 <StatusTag status={selectedVoucher.status} />
               </Descriptions.Item>
             </Descriptions>
 
             <Divider />
-            <Typography.Title level={5}>Redemption Ledger</Typography.Title>
+            <Typography.Title level={5}>Sổ sử dụng ưu đãi</Typography.Title>
             
             {getRedemptions(selectedVoucher.id).length > 0 ? (
               <Table
@@ -488,15 +488,15 @@ export const ManagerVouchersPage = () => {
                 pagination={false}
                 size="small"
                 columns={[
-                  { title: "Client", dataIndex: "customerName", key: "cust" },
-                  { title: "Invoice", dataIndex: "invoiceCode", key: "inv" },
-                  { title: "Saved", dataIndex: "discountApplied", key: "saved" },
-                  { title: "Redeemed", dataIndex: "date", key: "date" },
+                  { title: "Khách hàng", dataIndex: "customerName", key: "cust" },
+                  { title: "Hóa đơn", dataIndex: "invoiceCode", key: "inv" },
+                  { title: "Đã tiết kiệm", dataIndex: "discountApplied", key: "saved" },
+                  { title: "Đã sử dụng", dataIndex: "date", key: "date" },
                 ]}
               />
             ) : (
               <div style={{ padding: "20px 0", textAlign: "center", color: "var(--color-muted)" }}>
-                No redemptions logged for this code yet.
+                Mã ưu đãi này chưa có lượt sử dụng nào.
               </div>
             )}
           </div>

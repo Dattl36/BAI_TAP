@@ -8,8 +8,8 @@ const columns = [
   { title: "Stylist Specialist", dataIndex: "name", key: "name", render: (t: string) => <strong>{t}</strong> },
   { title: "Role", dataIndex: "role", key: "role" },
   { title: "Review Score", dataIndex: "score", key: "score", render: (s: number) => <Rate disabled defaultValue={s} allowHalf style={{ fontSize: 13, color: "var(--color-primary)" }} /> },
-  { title: "Completed Sessions", dataIndex: "sessions", key: "sessions" },
-  { title: "Stylist Commission", dataIndex: "commission", key: "commission", render: (text: string) => <span style={{ fontWeight: 600, color: "#10b981" }}>{text}</span> }
+  { title: "Phiên đã hoàn tất", dataIndex: "sessions", key: "sessions" },
+  { title: "Stylist Hoa hồng", dataIndex: "commission", key: "commission", render: (text: string) => <span style={{ fontWeight: 600, color: "#10b981" }}>{text}</span> }
 ];
 
 export const ManagerStaffPerformanceReportPage = () => {

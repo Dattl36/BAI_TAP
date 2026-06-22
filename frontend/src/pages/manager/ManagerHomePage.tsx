@@ -193,13 +193,13 @@ export const ManagerHomePage = () => {
 
   const invoiceColumns = [
     {
-      title: "Invoice ID",
+      title: "Mã hóa đơn",
       dataIndex: "id",
       key: "id",
       render: (id: number) => <span style={{ fontWeight: 600, color: "var(--color-primary-dark)" }}>#INV-{id}</span>,
     },
     {
-      title: "Customer",
+      title: "Khách hàng",
       dataIndex: "customer",
       key: "customer",
       render: (custId: number) => <span>Client #{custId}</span>,
@@ -211,13 +211,13 @@ export const ManagerHomePage = () => {
       render: (val: string) => formatDateTime(val),
     },
     {
-      title: "Final Due",
+      title: "Tổng phải thu",
       dataIndex: "total_due",
       key: "total_due",
       render: (val: string | number) => <span style={{ fontWeight: 600 }}>{formatMoney(val)}</span>,
     },
     {
-      title: "Status",
+      title: "Trạng thái",
       dataIndex: "status",
       key: "status",
       render: (status: string) => <StatusTag status={status} />,
@@ -269,13 +269,13 @@ export const ManagerHomePage = () => {
             <div className="kpi-card-content">
               <div>
                 <Typography.Text type="secondary" style={{ fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                  TODAY'S REVENUE
+                  DOANH THU HÔM NAY
                 </Typography.Text>
                 <Typography.Title level={3} style={{ margin: "6px 0 2px", fontFamily: "'Outfit', sans-serif", fontWeight: 700 }}>
                   {formatMoney(todayRevenue)}
                 </Typography.Title>
                 <span className="kpi-trend kpi-trend-up">
-                  <RiseOutlined /> {totalInvoicesToday} invoices paid today
+                  <RiseOutlined /> {totalInvoicesToday} hóa đơn đã thanh toán hôm nay
                 </span>
               </div>
               <div className="kpi-icon-wrapper" style={{ background: "var(--color-accent)", color: "var(--color-primary-dark)" }}>
@@ -290,13 +290,13 @@ export const ManagerHomePage = () => {
             <div className="kpi-card-content">
               <div>
                 <Typography.Text type="secondary" style={{ fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                  WEEKLY REVENUE
+                  DOANH THU TUẦN NÀY
                 </Typography.Text>
                 <Typography.Title level={3} style={{ margin: "6px 0 2px", fontFamily: "'Outfit', sans-serif", fontWeight: 700 }}>
                   {formatMoney(weeklyRevenue)}
                 </Typography.Title>
                 <span className="kpi-trend" style={{ color: "var(--color-primary-dark)" }}>
-                  Current week total
+                  Tổng doanh thu trong tuần
                 </span>
               </div>
               <div className="kpi-icon-wrapper">
@@ -311,13 +311,13 @@ export const ManagerHomePage = () => {
             <div className="kpi-card-content">
               <div>
                 <Typography.Text type="secondary" style={{ fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                  MONTHLY REVENUE
+                  DOANH THU THÁNG NÀY
                 </Typography.Text>
                 <Typography.Title level={3} style={{ margin: "6px 0 2px", fontFamily: "'Outfit', sans-serif", fontWeight: 700 }}>
                   {formatMoney(monthlyRevenue)}
                 </Typography.Title>
                 <span className="kpi-trend" style={{ color: "var(--color-primary-dark)" }}>
-                  Current month billing
+                  Tổng thanh toán trong tháng
                 </span>
               </div>
               <div className="kpi-icon-wrapper">
@@ -332,13 +332,13 @@ export const ManagerHomePage = () => {
             <div className="kpi-card-content">
               <div>
                 <Typography.Text type="secondary" style={{ fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                  TOTAL BILLINGS LOGGED
+                  TỔNG HÓA ĐƠN ĐÃ GHI NHẬN
                 </Typography.Text>
                 <Typography.Title level={3} style={{ margin: "6px 0 2px", fontFamily: "'Outfit', sans-serif", fontWeight: 700 }}>
                   {totalInvoicesOverall}
                 </Typography.Title>
                 <span className="kpi-trend" style={{ color: "var(--color-muted)" }}>
-                  Invoices recorded
+                  Hóa đơn trong hệ thống
                 </span>
               </div>
               <div className="kpi-icon-wrapper">
@@ -362,7 +362,7 @@ export const ManagerHomePage = () => {
                   {todayAppointmentsCount}
                 </Typography.Title>
                 <span className="kpi-trend" style={{ color: "var(--color-primary-dark)" }}>
-                  Bookings for today
+                  Lịch hẹn trong hôm nay
                 </span>
               </div>
               <div className="kpi-icon-wrapper">
@@ -377,13 +377,13 @@ export const ManagerHomePage = () => {
             <div className="kpi-card-content">
               <div>
                 <Typography.Text type="secondary" style={{ fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                  ACTIVE STYLISTS
+                  NHÀ TẠO MẪU ĐANG HOẠT ĐỘNG
                 </Typography.Text>
                 <Typography.Title level={3} style={{ margin: "6px 0 2px", fontFamily: "'Outfit', sans-serif", fontWeight: 700 }}>
                   {activeStaffCount} / {employeeCount}
                 </Typography.Title>
                 <span className="kpi-trend" style={{ color: "green" }}>
-                  Employment active
+                  Nhân sự đang hoạt động
                 </span>
               </div>
               <div className="kpi-icon-wrapper">
@@ -398,13 +398,13 @@ export const ManagerHomePage = () => {
             <div className="kpi-card-content">
               <div>
                 <Typography.Text type="secondary" style={{ fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                  ACTIVE CAMPAIGN VOUCHERS
+                  MÃ ƯU ĐÃI ĐANG HOẠT ĐỘNG
                 </Typography.Text>
                 <Typography.Title level={3} style={{ margin: "6px 0 2px", fontFamily: "'Outfit', sans-serif", fontWeight: 700 }}>
                   {activeVouchersCount}
                 </Typography.Title>
                 <span className="kpi-trend" style={{ color: "var(--color-primary-dark)" }}>
-                  Available codes for registry
+                  Mã ưu đãi sẵn sàng sử dụng
                 </span>
               </div>
               <div className="kpi-icon-wrapper">
@@ -421,12 +421,12 @@ export const ManagerHomePage = () => {
           <Card
             title={
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span>Revenue Performance Trend</span>
+                <span>Xu hướng hiệu quả doanh thu</span>
                 <Segmented
                   options={[
-                    { label: "Day", value: "day" },
-                    { label: "Week", value: "week" },
-                    { label: "Month", value: "month" },
+                    { label: "Ngày", value: "day" },
+                    { label: "Tuần", value: "week" },
+                    { label: "Tháng", value: "month" },
                   ]}
                   value={trendMode}
                   onChange={(val) => setTrendMode(val as any)}
@@ -444,7 +444,7 @@ export const ManagerHomePage = () => {
           </Card>
         </Col>
         <Col xs={24} lg={8}>
-          <Card title="Appointment Status Share" bordered={false} className="chart-card" style={{ height: 440 }}>
+          <Card title="Tỷ trọng trạng thái lịch hẹn" bordered={false} className="chart-card" style={{ height: 440 }}>
             <div style={{ height: 320, display: "flex", alignItems: "center", justifyContent: "center" }}>
               <AppointmentStatusChart data={statusChartData} />
             </div>
@@ -454,7 +454,7 @@ export const ManagerHomePage = () => {
 
       {/* Recent Activity Table */}
       <Card
-        title="Recent Invoices Feed"
+        title="Hóa đơn gần đây"
         bordered={false}
         extra={
           <Link to="/manager/invoices">
@@ -473,7 +473,7 @@ export const ManagerHomePage = () => {
             size="middle"
           />
         ) : (
-          <EmptyState description="No recent bills or invoicing logged." />
+          <EmptyState description="Chưa có hóa đơn hoặc ghi nhận thanh toán gần đây." />
         )}
       </Card>
     </div>

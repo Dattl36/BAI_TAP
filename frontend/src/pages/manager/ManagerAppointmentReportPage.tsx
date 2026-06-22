@@ -6,8 +6,8 @@ import { ErrorState } from "../../components/common/ErrorState";
 import { EmptyState } from "../../components/common/EmptyState";
 
 const columns = [
-  { title: "Day of Week", dataIndex: "label", key: "label", render: (t: string) => <strong>{t}</strong> },
-  { title: "Bookings Received", dataIndex: "count", key: "count", render: (val: number) => <span style={{ fontWeight: 600 }}>{val} sessions</span> }
+  { title: "Ngày trong tuần", dataIndex: "label", key: "label", render: (t: string) => <strong>{t}</strong> },
+  { title: "Lượt đặt lịch", dataIndex: "count", key: "count", render: (val: number) => <span style={{ fontWeight: 600 }}>{val} phiên</span> }
 ];
 
 export const ManagerAppointmentReportPage = () => {

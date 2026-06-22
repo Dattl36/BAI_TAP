@@ -348,7 +348,7 @@ export const ManagerEmployeesPage = () => {
             </div>
             <Row gutter={[16, 16]}>
               <Col span={12}>
-                <Text type="secondary">Email</Text>
+                <Text type="secondary">Thư điện tử</Text>
                 <div>{selectedEmployee.email || "-"}</div>
               </Col>
               <Col span={12}>
