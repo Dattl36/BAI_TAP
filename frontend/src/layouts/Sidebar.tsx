@@ -41,21 +41,27 @@ const menuItems: MenuItem[] = [
   { key: ROUTES.reports, icon: <LineChartOutlined />, label: "Báo cáo" },
 ];
 
-export const Sidebar = () => {
+export const SidebarMenu = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const selected = menuItems.find((item) => item && "key" in item && location.pathname.startsWith(String(item.key)));
 
   return (
+    <Menu
+      theme="dark"
+      mode="inline"
+      items={menuItems}
+      selectedKeys={selected && "key" in selected ? [String(selected.key)] : [ROUTES.dashboard]}
+      onClick={({ key }) => navigate(key)}
+    />
+  );
+};
+
+export const Sidebar = () => {
+  return (
     <Layout.Sider width={260} className="app-sidebar">
       <div className="app-logo">S A L O N</div>
-      <Menu
-        theme="dark"
-        mode="inline"
-        items={menuItems}
-        selectedKeys={selected && "key" in selected ? [String(selected.key)] : [ROUTES.dashboard]}
-        onClick={({ key }) => navigate(key)}
-      />
+      <SidebarMenu />
     </Layout.Sider>
   );
 };

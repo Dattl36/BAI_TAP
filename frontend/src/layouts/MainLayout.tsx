@@ -1,17 +1,11 @@
-import { Layout } from "antd";
 import { Outlet } from "react-router-dom";
 
 import { HeaderBar } from "./HeaderBar";
-import { Sidebar } from "./Sidebar";
+import { ResponsiveSidebarLayout } from "./ResponsiveSidebarLayout";
+import { SidebarMenu } from "./Sidebar";
 
 export const MainLayout = () => (
-  <Layout className="app-shell">
-    <Sidebar />
-    <Layout>
-      <HeaderBar />
-      <Layout.Content className="app-content">
-        <Outlet />
-      </Layout.Content>
-    </Layout>
-  </Layout>
+  <ResponsiveSidebarLayout sidebar={<SidebarMenu />} header={<HeaderBar />} logo={<div className="app-logo">S A L O N</div>}>
+    <Outlet />
+  </ResponsiveSidebarLayout>
 );
