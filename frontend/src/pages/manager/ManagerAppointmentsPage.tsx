@@ -231,13 +231,13 @@ export const ManagerAppointmentsPage = () => {
   // 1. Table View Columns
   const tableColumns: ColumnsType<Appointment> = [
     {
-      title: "Booking Code",
+      title: "Mã lịch hẹn",
       dataIndex: "id",
       key: "id",
       render: (id) => <span style={{ fontWeight: 600, color: "var(--color-primary-dark)" }}>#B-{id}</span>,
     },
     {
-      title: "Customer",
+      title: "Khách hàng",
       dataIndex: "customer",
       key: "customer",
       render: (custId) => {
@@ -245,13 +245,13 @@ export const ManagerAppointmentsPage = () => {
         return (
           <div>
             <div style={{ fontWeight: 500 }}>{cust?.full_name || `Client #${custId}`}</div>
-            <div style={{ fontSize: 11, color: "var(--color-muted)" }}>{cust?.phone || "No Phone"}</div>
+            <div style={{ fontSize: 11, color: "var(--color-muted)" }}>{cust?.phone || "Chưa có số điện thoại"}</div>
           </div>
         );
       },
     },
     {
-      title: "Service",
+      title: "Dịch vụ",
       key: "service",
       render: (_, record) => {
         if (record.service_details?.name) return record.service_details.name;
@@ -262,7 +262,7 @@ export const ManagerAppointmentsPage = () => {
             return servObj?.name || `Service #${item.service}`;
           })
           .join(", ");
-        return servicesText || "General Service";
+        return servicesText || "Dịch vụ tổng quát";
       },
     },
     {
@@ -290,7 +290,7 @@ export const ManagerAppointmentsPage = () => {
       },
     },
     {
-      title: "Timing",
+      title: "Thời gian",
       key: "timing",
       render: (_, record) => (
         <div>
@@ -302,23 +302,23 @@ export const ManagerAppointmentsPage = () => {
       ),
     },
     {
-      title: "Source",
+      title: "Nguồn đặt",
       dataIndex: "source",
       key: "source",
       render: (src) => (
         <Tag color={src === "receptionist" ? "orange" : "blue"} style={{ textTransform: "capitalize", fontSize: 10, fontWeight: 600 }}>
-          {src || "Customer"}
+          {src || "Khách hàng"}
         </Tag>
       ),
     },
     {
-      title: "Status",
+      title: "Trạng thái",
       dataIndex: "status",
       key: "status",
       render: (status) => <StatusTag status={status} />,
     },
     {
-      title: "Actions",
+      title: "Thao tác",
       key: "actions",
       render: (_, record) => (
         <Space size="small">
@@ -357,7 +357,7 @@ export const ManagerAppointmentsPage = () => {
           const time = dayjs(item.scheduled_start).format("HH:mm");
           return (
             <li key={item.id} style={{ marginBottom: 2 }}>
-              <Tooltip title={`Booking #${item.id} with ${stylist?.full_name || "Stylist"}`}>
+              <Tooltip title={`Lịch hẹn #${item.id} với ${stylist?.full_name || "Nhà tạo mẫu"}`}>
                 <Badge
                   status={item.status === "cancelled" ? "error" : "success"}
                   text={
@@ -487,8 +487,8 @@ export const ManagerAppointmentsPage = () => {
                 style={{ width: "100%", height: 38 }}
                 allowClear
               >
-                <Select.Option value="customer">Customer App</Select.Option>
-                <Select.Option value="receptionist">Front Desk Desk</Select.Option>
+                <Select.Option value="customer">Ứng dụng khách hàng</Select.Option>
+                <Select.Option value="receptionist">Quầy lễ tân</Select.Option>
               </Select>
             </Col>
           </Row>
@@ -543,7 +543,7 @@ export const ManagerAppointmentsPage = () => {
                           <Space wrap>
                             {dayBookings.map((b) => {
                               const cust = customers.find((c) => String(c.id) === String(b.customer));
-                              const servName = b.service_details?.name || "General Treatment";
+                              const servName = b.service_details?.name || "Liệu trình tổng quát";
                               const start = dayjs(b.scheduled_start).format("HH:mm");
                               const end = dayjs(b.scheduled_end).format("HH:mm");
                               return (
@@ -565,7 +565,7 @@ export const ManagerAppointmentsPage = () => {
                                     <StatusTag status={b.status} />
                                   </div>
                                   <div style={{ fontSize: 12, marginTop: 4, fontWeight: 500 }}>
-                                    {cust?.full_name || "Guest Client"}
+                                    {cust?.full_name || "Khách vãng lai"}
                                   </div>
                                   <div style={{ fontSize: 11, color: "var(--color-muted)" }}>{servName}</div>
                                 </Card>
@@ -597,11 +597,11 @@ export const ManagerAppointmentsPage = () => {
         onCancel={() => setIsDetailOpen(false)}
         footer={[
           <Button key="close" onClick={() => setIsDetailOpen(false)}>
-            Close
+            Đóng
           </Button>,
           selectedAppointment && selectedAppointment.status !== "cancelled" && selectedAppointment.status !== "completed" && (
             <Button key="reschedule" type="primary" ghost style={{ borderColor: "var(--color-primary)", color: "var(--color-primary)" }} onClick={() => { setIsDetailOpen(false); handleOpenReschedule(selectedAppointment); }}>
-              Reschedule
+              Đổi lịch
             </Button>
           ),
         ]}
@@ -610,22 +610,22 @@ export const ManagerAppointmentsPage = () => {
         {selectedAppointment && (
           <div style={{ marginTop: 20 }}>
             <Descriptions bordered column={1} size="small">
-              <Descriptions.Item label="Client Name">
+              <Descriptions.Item label="Tên khách hàng">
                 <strong>{customers.find((c) => String(c.id) === String(selectedAppointment.customer))?.full_name || "Walk-in Guest"}</strong>
               </Descriptions.Item>
               <Descriptions.Item label="Nhà tạo mẫu">
                 {employees.find((e) => String(e.id) === String(selectedAppointment.staff))?.full_name || "Unassigned"}
               </Descriptions.Item>
-              <Descriptions.Item label="Service Requested">
-                {selectedAppointment.service_details?.name || "Multiple Services"}
+              <Descriptions.Item label="Dịch vụ yêu cầu">
+                {selectedAppointment.service_details?.name || "Nhiều dịch vụ"}
               </Descriptions.Item>
-              <Descriptions.Item label="Timing">
+              <Descriptions.Item label="Thời gian">
                 {formatDateTime(selectedAppointment.scheduled_start)} to {dayjs(selectedAppointment.scheduled_end).format("HH:mm")}
               </Descriptions.Item>
-              <Descriptions.Item label="Status">
+              <Descriptions.Item label="Trạng thái">
                 <StatusTag status={selectedAppointment.status} />
               </Descriptions.Item>
-              <Descriptions.Item label="Booking Source">
+              <Descriptions.Item label="Nguồn đặt lịch">
                 <Tag color={selectedAppointment.source === "receptionist" ? "orange" : "blue"}>
                   {selectedAppointment.source === "receptionist" ? "FRONT DESK" : "CUSTOMER APP"}
                 </Tag>
@@ -640,7 +640,7 @@ export const ManagerAppointmentsPage = () => {
             <Divider style={{ margin: "20px 0" }} />
 
             <Form form={notesForm} layout="vertical" onFinish={handleSaveNotes}>
-              <Form.Item name="note" label="Internal Management Notes">
+              <Form.Item name="note" label="Ghi chú nội bộ">
                 <Input.TextArea rows={3} placeholder="Thêm checklist, công thức màu hoặc hướng dẫn phục vụ cụ thể..." />
               </Form.Item>
               <Form.Item style={{ textAlign: "right", margin: 0 }}>
@@ -659,24 +659,24 @@ export const ManagerAppointmentsPage = () => {
         open={isRescheduleOpen}
         onOk={handleSaveReschedule}
         onCancel={() => setIsRescheduleOpen(false)}
-        okText="Reschedule"
+        okText="Đổi lịch"
         okButtonProps={{ className: "login-button-gold" }}
         destroyOnClose
       >
         <Form form={rescheduleForm} layout="vertical" style={{ marginTop: 20 }}>
-          <Form.Item name="staff" label="Reassign Stylist" rules={[{ required: true }]}>
+          <Form.Item name="staff" label="Phân công lại nhà tạo mẫu" rules={[{ required: true }]}>
             <Select>
               {employees
                 .filter((e) => e.role_type === "staff")
                 .map((e) => (
                   <Select.Option key={e.id} value={Number(e.id)}>
-                    {e.full_name} ({e.specialties || "Specialist"})
+                    {e.full_name} ({e.specialties || "Chuyên viên"})
                   </Select.Option>
                 ))}
             </Select>
           </Form.Item>
 
-          <Form.Item name="date" label="New Date" rules={[{ required: true }]}>
+          <Form.Item name="date" label="Ngày mới" rules={[{ required: true }]}>
             <DatePicker style={{ width: "100%" }} />
           </Form.Item>
 
@@ -701,15 +701,15 @@ export const ManagerAppointmentsPage = () => {
         open={isCancelOpen}
         onOk={handleSaveCancel}
         onCancel={() => setIsCancelOpen(false)}
-        okText="Cancel Booking"
+        okText="Hủy lịch hẹn"
         okButtonProps={{ danger: true }}
         destroyOnClose
       >
         <Form form={cancelForm} layout="vertical" style={{ marginTop: 20 }}>
           <Form.Item
             name="reason"
-            label="Reason for Cancellation"
-            rules={[{ required: true, message: "Please specify cancellation reason" }]}
+            label="Lý do hủy lịch"
+            rules={[{ required: true, message: "Vui lòng nhập lý do hủy lịch." }]}
           >
             <Input.TextArea placeholder="Ví dụ: khách yêu cầu qua điện thoại, nhà tạo mẫu không khả dụng..." rows={3} />
           </Form.Item>

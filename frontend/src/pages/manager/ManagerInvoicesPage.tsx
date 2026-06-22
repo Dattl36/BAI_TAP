@@ -104,7 +104,7 @@ export const ManagerInvoicesPage = () => {
   };
 
   const handlePrint = (invoiceId: string | number) => {
-    message.loading("Preparing print template...", 1);
+    message.loading("Đang chuẩn bị mẫu in...", 1);
     setTimeout(() => {
       window.print();
     }, 1000);
@@ -112,7 +112,7 @@ export const ManagerInvoicesPage = () => {
 
   const handleDownloadPDF = (invoiceId: string | number) => {
     const key = "pdf_download";
-    message.loading({ content: "Generating PDF file...", key });
+    message.loading({ content: "Đang tạo tệp PDF...", key });
     setTimeout(() => {
       message.success({ content: `Invoice_INV-${invoiceId}.pdf downloaded successfully!`, key, duration: 2 });
     }, 1500);
@@ -164,25 +164,25 @@ export const ManagerInvoicesPage = () => {
   // Table columns definition
   const columns: ColumnsType<Invoice> = [
     {
-      title: "Invoice Code",
+      title: "Mã hóa đơn",
       dataIndex: "id",
       key: "id",
       render: (id) => <span style={{ fontWeight: 600, color: "var(--color-primary-dark)" }}>#INV-{id}</span>,
     },
     {
-      title: "Booking ID",
+      title: "Mã lịch hẹn",
       dataIndex: "appointment",
       key: "appointment",
       render: (aptId) => <span>#B-{aptId}</span>,
     },
     {
-      title: "Payment Date",
+      title: "Ngày thanh toán",
       dataIndex: "created_at",
       key: "date",
       render: (val) => formatDateTime(val),
     },
     {
-      title: "Customer",
+      title: "Khách hàng",
       dataIndex: "customer",
       key: "customer",
       render: (custId) => {
@@ -191,7 +191,7 @@ export const ManagerInvoicesPage = () => {
       },
     },
     {
-      title: "Assigned Stylist",
+      title: "Nhà tạo mẫu phụ trách",
       key: "stylist",
       render: (_, record) => {
         const apt = appointments.find((a) => String(a.id) === String(record.appointment));
@@ -211,7 +211,7 @@ export const ManagerInvoicesPage = () => {
       key: "method",
       render: (_, record) => {
         const successfulPayments = payments.filter((p) => String(p.invoice) === String(record.id) && p.status === "successful");
-        if (successfulPayments.length === 0) return <Tag color="warning">Unpaid</Tag>;
+        if (successfulPayments.length === 0) return <Tag color="warning">Chưa thanh toán</Tag>;
         return (
           <Space size={4}>
             {successfulPayments.map((p, idx) => (
@@ -224,13 +224,13 @@ export const ManagerInvoicesPage = () => {
       },
     },
     {
-      title: "Status",
+      title: "Trạng thái",
       dataIndex: "status",
       key: "status",
       render: (status) => <StatusTag status={status} />,
     },
     {
-      title: "Actions",
+      title: "Thao tác",
       key: "actions",
       render: (_, record) => (
         <Space size="middle">
@@ -399,7 +399,7 @@ export const ManagerInvoicesPage = () => {
       <Card bordered={false} style={{ borderRadius: 16 }}>
         {isQueryError ? (
           <ErrorState
-            message="Failed to fetch transactions list."
+            message="Không thể tải danh sách giao dịch."
             onRetry={() => void invoicesQuery.refetch()}
           />
         ) : (
@@ -418,14 +418,14 @@ export const ManagerInvoicesPage = () => {
       <Modal
         title={
           <div style={{ fontSize: 18, fontFamily: "'Outfit', sans-serif" }}>
-            Invoice Details <span style={{ color: "var(--color-primary-dark)", fontWeight: 600 }}>#INV-{selectedInvoice?.id}</span>
+            Chi tiết hóa đơn <span style={{ color: "var(--color-primary-dark)", fontWeight: 600 }}>#INV-{selectedInvoice?.id}</span>
           </div>
         }
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
         footer={[
           <Button key="close" onClick={() => setIsModalOpen(false)}>
-            Close
+            Đóng
           </Button>,
           <Button
             key="print"
@@ -454,10 +454,10 @@ export const ManagerInvoicesPage = () => {
             <Row gutter={16}>
               <Col span={12}>
                 <Descriptions title="Thông tin thanh toán" column={1} size="small">
-                  <Descriptions.Item label="Client Name">
+                  <Descriptions.Item label="Tên khách hàng">
                     <strong>{getSelectedInvoiceCustomer()?.full_name || "Walk-in Guest"}</strong>
                   </Descriptions.Item>
-                  <Descriptions.Item label="Phone">
+                  <Descriptions.Item label="Số điện thoại">
                     {getSelectedInvoiceCustomer()?.phone || "N/A"}
                   </Descriptions.Item>
                   <Descriptions.Item label="Email">
@@ -467,16 +467,16 @@ export const ManagerInvoicesPage = () => {
               </Col>
               <Col span={12}>
                 <Descriptions title="Tham chiếu" column={1} size="small">
-                  <Descriptions.Item label="Booking ID">#B-{selectedInvoice.appointment}</Descriptions.Item>
+                  <Descriptions.Item label="Mã lịch hẹn">#B-{selectedInvoice.appointment}</Descriptions.Item>
                   <Descriptions.Item label="Nhà tạo mẫu">{getSelectedInvoiceStylist()}</Descriptions.Item>
-                  <Descriptions.Item label="Issued Date">{formatDateTime(selectedInvoice.created_at || selectedInvoice.issued_at)}</Descriptions.Item>
+                  <Descriptions.Item label="Ngày phát hành">{formatDateTime(selectedInvoice.created_at || selectedInvoice.issued_at)}</Descriptions.Item>
                 </Descriptions>
               </Col>
             </Row>
 
             <Divider style={{ margin: "16px 0" }} />
 
-            <Typography.Title level={5} style={{ marginBottom: 12 }}>Line Items</Typography.Title>
+            <Typography.Title level={5} style={{ marginBottom: 12 }}>Các khoản trong hóa đơn</Typography.Title>
             <Table
               dataSource={getSelectedInvoiceItems()}
               rowKey="id"
@@ -486,7 +486,7 @@ export const ManagerInvoicesPage = () => {
                 { title: "Description", dataIndex: "description", key: "desc" },
                 { title: "Qty", dataIndex: "quantity", key: "qty", width: 80, align: "center" },
                 {
-                  title: "Unit Price",
+                  title: "Đơn giá",
                   dataIndex: "unit_price",
                   key: "unit",
                   width: 120,
@@ -494,7 +494,7 @@ export const ManagerInvoicesPage = () => {
                   render: (val) => formatMoney(val),
                 },
                 {
-                  title: "Total",
+                  title: "Tổng cộng",
                   dataIndex: "line_total",
                   key: "total",
                   width: 120,
@@ -508,16 +508,16 @@ export const ManagerInvoicesPage = () => {
 
             <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 6 }}>
               <div style={{ display: "flex", width: 260, justifyContent: "space-between" }}>
-                <Typography.Text type="secondary">Subtotal:</Typography.Text>
+                <Typography.Text type="secondary">Tạm tính:</Typography.Text>
                 <Typography.Text style={{ fontWeight: 500 }}>{formatMoney(selectedInvoice.subtotal)}</Typography.Text>
               </div>
               <div style={{ display: "flex", width: 260, justifyContent: "space-between" }}>
-                <Typography.Text type="secondary">Campaign Discount:</Typography.Text>
+                <Typography.Text type="secondary">Ưu đãi chiến dịch:</Typography.Text>
                 <Typography.Text type="danger">- {formatMoney(selectedInvoice.discount_total)}</Typography.Text>
               </div>
               {Number(selectedInvoice.reward_discount) > 0 && (
                 <div style={{ display: "flex", width: 260, justifyContent: "space-between" }}>
-                  <Typography.Text type="secondary">Points Redeemed:</Typography.Text>
+                  <Typography.Text type="secondary">Điểm đã sử dụng:</Typography.Text>
                   <Typography.Text type="danger">- {formatMoney(selectedInvoice.reward_discount)}</Typography.Text>
                 </div>
               )}
@@ -533,7 +533,7 @@ export const ManagerInvoicesPage = () => {
                 <Typography.Text style={{ color: "green", fontWeight: 600 }}>{formatMoney(selectedInvoice.paid_amount)}</Typography.Text>
               </div>
               <div style={{ display: "flex", width: 260, justifyContent: "space-between" }}>
-                <Typography.Text type="secondary">Balance Remaining:</Typography.Text>
+                <Typography.Text type="secondary">Số dư còn lại:</Typography.Text>
                 <Typography.Text style={{ fontWeight: 600 }}>{formatMoney(selectedInvoice.balance_due)}</Typography.Text>
               </div>
             </div>

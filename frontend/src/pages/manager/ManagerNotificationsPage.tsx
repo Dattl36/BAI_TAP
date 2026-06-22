@@ -71,10 +71,10 @@ export const ManagerNotificationsPage = () => {
 
       if (recipientType === "all") {
         targets = activeEmployees;
-        label = "All Staff";
+        label = "Toàn bộ nhân viên";
       } else if (recipientType === "group") {
         targets = activeEmployees.filter((e) => e.role_type === values.group);
-        label = values.group === "staff" ? "Stylists Group" : "Receptionists Group";
+        label = values.group === "staff" ? "Nhóm nhà tạo mẫu" : "Nhóm lễ tân";
       } else {
         const emp = activeEmployees.find((e) => e.id === values.specific_employee);
         if (emp) {
@@ -125,9 +125,9 @@ export const ManagerNotificationsPage = () => {
   };
 
   const getPriorityTag = (category: string) => {
-    if (category.endsWith("high")) return <Tag color="error">High Priority</Tag>;
-    if (category.endsWith("medium")) return <Tag color="warning">Medium Priority</Tag>;
-    return <Tag color="blue">Low Priority</Tag>;
+    if (category.endsWith("high")) return <Tag color="error">Cao</Tag>;
+    if (category.endsWith("medium")) return <Tag color="warning">Trung bình</Tag>;
+    return <Tag color="blue">Thấp</Tag>;
   };
 
   // Filter logs
@@ -141,14 +141,14 @@ export const ManagerNotificationsPage = () => {
 
   const columns: ColumnsType<Notification> = [
     {
-      title: "Date Sent",
+      title: "Ngày gửi",
       dataIndex: "created_at",
       key: "date",
       width: 140,
       render: (val) => formatDateTime(val),
     },
     {
-      title: "Title & Message",
+      title: "Thông tin",
       key: "message",
       render: (_, record) => (
         <div>
@@ -158,7 +158,7 @@ export const ManagerNotificationsPage = () => {
       ),
     },
     {
-      title: "Recipient ID",
+      title: "Người nhận",
       dataIndex: "recipient",
       key: "recipient",
       width: 120,
@@ -168,21 +168,21 @@ export const ManagerNotificationsPage = () => {
       },
     },
     {
-      title: "Priority",
+      title: "Ưu tiên",
       dataIndex: "category",
       key: "priority",
       width: 130,
       render: (cat) => getPriorityTag(cat || "broadcast_medium"),
     },
     {
-      title: "Read Status",
+      title: "Trạng thái",
       key: "status",
       width: 110,
       render: (_, record) => {
         if (record.read_at) {
-          return <Tag color="default">Read</Tag>;
+          return <Tag color="default">Đã đọc</Tag>;
         }
-        return <Tag color="processing">Delivered</Tag>;
+        return <Tag color="processing">Đã gửi</Tag>;
       },
     },
   ];
@@ -210,7 +210,7 @@ export const ManagerNotificationsPage = () => {
               layout="vertical"
               initialValues={{ priority: "medium" }}
             >
-              <Form.Item label="Target Recipients" required>
+              <Form.Item label="Gửi đến" required>
                 <Radio.Group
                   value={recipientType}
                   onChange={(e) => setRecipientType(e.target.value)}
@@ -219,30 +219,30 @@ export const ManagerNotificationsPage = () => {
                   buttonStyle="solid"
                 >
                   <Radio.Button value="all" style={{ width: "33.3%", textAlign: "center" }}>
-                    <GlobalOutlined /> All Staff
+                    <GlobalOutlined /> Toàn bộ
                   </Radio.Button>
                   <Radio.Button value="group" style={{ width: "33.3%", textAlign: "center" }}>
-                    <GroupOutlined /> Group
+                    <GroupOutlined /> Nhóm
                   </Radio.Button>
                   <Radio.Button value="specific" style={{ width: "33.3%", textAlign: "center" }}>
-                    <UserOutlined /> Specific
+                    <UserOutlined /> Cá nhân
                   </Radio.Button>
                 </Radio.Group>
               </Form.Item>
 
               {recipientType === "group" && (
-                <Form.Item name="group" label="Select Staff Role" rules={[{ required: true }]}>
-                  <Select placeholder="Chọn nhóm vai trò">
-                    <Select.Option value="staff">Stylists / Salon Staff</Select.Option>
-                    <Select.Option value="receptionist">Receptionists</Select.Option>
+                <Form.Item name="group" label="Chọn nhóm" rules={[{ required: true }]}>
+                  <Select placeholder="Chọn nhóm">
+                    <Select.Option value="staff">Stylists/Salon Staff</Select.Option>
+                    <Select.Option value="receptionist">Lễ tân</Select.Option>
                   </Select>
                 </Form.Item>
               )}
 
               {recipientType === "specific" && (
-                <Form.Item name="specific_employee" label="Select Employee" rules={[{ required: true }]}>
+                <Form.Item name="specific_employee" label="Tìm nhân viên" rules={[{ required: true }]}>
                   <Select
-                    placeholder="Chọn nhân viên đang hoạt động"
+                    placeholder="Nhập tên nhân viên..."
                     showSearch
                     optionFilterProp="children"
                   >
@@ -257,34 +257,40 @@ export const ManagerNotificationsPage = () => {
                 </Form.Item>
               )}
 
-              <Form.Item name="priority" label="Priority Level" rules={[{ required: true }]}>
-                <Select>
-                  <Select.Option value="low">Low Priority</Select.Option>
-                  <Select.Option value="medium">Medium Priority</Select.Option>
-                  <Select.Option value="high">High Priority</Select.Option>
-                </Select>
+              <Form.Item name="priority" label="Mức độ ưu tiên" rules={[{ required: true }]}>
+                <Radio.Group style={{ width: "100%" }} buttonStyle="solid">
+                  <Radio.Button value="low" style={{ width: "33.3%", textAlign: "center" }}>
+                    Thấp
+                  </Radio.Button>
+                  <Radio.Button value="medium" style={{ width: "33.3%", textAlign: "center" }}>
+                    Trung bình
+                  </Radio.Button>
+                  <Radio.Button value="high" style={{ width: "33.3%", textAlign: "center" }}>
+                    Cao
+                  </Radio.Button>
+                </Radio.Group>
               </Form.Item>
 
               <Form.Item
                 name="title"
-                label="Notification Title"
+                label="Tiêu đề thông báo"
                 rules={[
-                  { required: true, message: "Title is required" },
-                  { max: 100, message: "Title must be less than 100 characters" },
+                  { required: true, message: "Vui lòng nhập tiêu đề thông báo." },
+                  { max: 100, message: "Tiêu đề không được vượt quá 100 ký tự." },
                 ]}
               >
-                <Input placeholder="Ví dụ: thông báo đổi lịch, cập nhật chính sách nhân viên" />
+                <Input placeholder="Nhập tiêu đề..." />
               </Form.Item>
 
               <Form.Item
                 name="message"
-                label="Message Body"
+                label="Nội dung thông báo"
                 rules={[
-                  { required: true, message: "Message body is required" },
-                  { min: 10, message: "Message must be at least 10 characters" },
+                  { required: true, message: "Vui lòng nhập nội dung thông báo." },
+                  { min: 10, message: "Nội dung thông báo cần tối thiểu 10 ký tự." },
                 ]}
               >
-                <Input.TextArea rows={4} placeholder="Nhập nội dung thông báo tại đây..." />
+                <Input.TextArea rows={4} placeholder="Viết nội dung tin nhắn tại đây..." />
               </Form.Item>
 
               <Form.Item style={{ margin: 0 }}>
@@ -296,7 +302,7 @@ export const ManagerNotificationsPage = () => {
                   loading={sending}
                   style={{ width: "100%", height: 40 }}
                 >
-                  Broadcast Message
+                  BROADCAST MESSAGE
                 </Button>
               </Form.Item>
             </Form>
@@ -308,7 +314,7 @@ export const ManagerNotificationsPage = () => {
           <Card title="Nhật ký gửi thông báo" bordered={false}>
             <div className="table-toolbar" style={{ marginBottom: 20 }}>
               <Input
-                placeholder="Tìm nội dung thông báo..."
+                placeholder="Lọc nhật ký..."
                 prefix={<SearchOutlined style={{ color: "var(--color-muted)" }} />}
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
@@ -319,7 +325,7 @@ export const ManagerNotificationsPage = () => {
 
             {notificationsQuery.isError ? (
               <ErrorState
-                message="Failed to load broadcast log."
+                message="Không thể tải nhật ký gửi thông báo."
                 onRetry={() => void notificationsQuery.refetch()}
               />
             ) : (

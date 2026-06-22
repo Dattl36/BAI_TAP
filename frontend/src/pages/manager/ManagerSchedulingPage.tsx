@@ -46,8 +46,8 @@ const SHIFT_TEMPLATES = [
   { label: "Morning Shift (08:00 - 14:00)", value: "morning", start: "08:00:00", end: "14:00:00", type: "available" },
   { label: "Afternoon Shift (14:00 - 20:00)", value: "afternoon", start: "14:00:00", end: "20:00:00", type: "available" },
   { label: "Evening Shift (17:00 - 22:00)", value: "evening", start: "17:00:00", end: "22:00:00", type: "available" },
-  { label: "Day Off", value: "off", start: "00:00:00", end: "23:59:59", type: "unavailable" },
-  { label: "Custom Available Hours", value: "custom", type: "available" },
+  { label: "Ngày nghỉ", value: "off", start: "00:00:00", end: "23:59:59", type: "unavailable" },
+  { label: "Tùy chỉnh giờ làm việc", value: "custom", type: "available" },
 ];
 
 export const ManagerSchedulingPage = () => {
@@ -289,7 +289,7 @@ export const ManagerSchedulingPage = () => {
       if (conflicts.length > 0) {
         setConflictAlerts(conflicts);
         Modal.error({
-          title: "Scheduling Conflict Detected",
+          title: "Phát hiện trùng lịch",
           content: (
             <div>
               <p>Cannot assign this shift. The stylist has customer bookings scheduled during hours outside this shift:</p>
@@ -330,7 +330,7 @@ export const ManagerSchedulingPage = () => {
     
     if (conflicts.length > 0) {
       Modal.error({
-        title: "Cannot Clear Roster Shift",
+        title: "Không thể xóa ca khỏi lịch",
         content: (
           <div>
             <p>Cannot clear shift because there are customer bookings scheduled for this stylist on this day:</p>
@@ -347,9 +347,9 @@ export const ManagerSchedulingPage = () => {
     }
 
     Modal.confirm({
-      title: "Clear Shift",
-      content: "Are you sure you want to clear this shift assignment? The stylist will have no scheduled hours on this day.",
-      okText: "Clear Shift",
+      title: "Xóa ca",
+      content: "Bạn có chắc muốn xóa ca làm này? Nhà tạo mẫu sẽ không còn giờ làm được phân công trong ngày này.",
+      okText: "Xóa ca",
       okType: "danger",
       onOk: () => {
         deleteMutation.mutate(selectedBlock.id);
@@ -390,7 +390,7 @@ export const ManagerSchedulingPage = () => {
             justifyContent: "space-between",
           }}
         >
-          <span style={{ fontSize: 11, color: "var(--color-muted)" }}>No shift set</span>
+          <span style={{ fontSize: 11, color: "var(--color-muted)" }}>Chưa phân ca</span>
           {bookings.length > 0 && (
             <Badge count={`${bookings.length} bookings`} style={{ backgroundColor: "#ef4444", fontSize: 10 }} />
           )}
@@ -404,7 +404,7 @@ export const ManagerSchedulingPage = () => {
     
     if (block.availability_type === "unavailable") {
       color = "error";
-      text = "DAY OFF";
+      text = "NGHỈ CA";
     } else {
       const template = SHIFT_TEMPLATES.find(
         (t) => t.start === block.start_time && t.end === block.end_time
@@ -466,7 +466,7 @@ export const ManagerSchedulingPage = () => {
 
   const columnsDef: ColumnsType<Employee> = [
     {
-      title: "Stylist Name",
+      title: "Tên nhà tạo mẫu",
       dataIndex: "full_name",
       key: "name",
       width: 180,
@@ -518,13 +518,13 @@ export const ManagerSchedulingPage = () => {
               <Badge status="warning" /> Morning
             </span>
             <span style={{ fontSize: 12, display: "flex", alignItems: "center", gap: 6 }}>
-              <Badge status="processing" /> Afternoon
+              <Badge status="processing" /> Buổi chiều
             </span>
             <span style={{ fontSize: 12, display: "flex", alignItems: "center", gap: 6 }}>
               <Badge color="purple" /> Evening
             </span>
             <span style={{ fontSize: 12, display: "flex", alignItems: "center", gap: 6 }}>
-              <Badge status="error" /> Day Off
+              <Badge status="error" /> Ngày nghỉ
             </span>
           </Space>
         </div>
@@ -563,7 +563,7 @@ export const ManagerSchedulingPage = () => {
         open={isModalOpen}
         onOk={handleSaveShift}
         onCancel={() => setIsModalOpen(false)}
-        okText={selectedBlock ? "Update Shift" : "Assign Shift"}
+        okText={selectedBlock ? "Cập nhật ca" : "Phân ca"}
         okButtonProps={{ className: "login-button-gold", loading: createMutation.isPending || updateMutation.isPending }}
         footer={[
           selectedBlock && (
@@ -574,7 +574,7 @@ export const ManagerSchedulingPage = () => {
               style={{ float: "left" }}
               loading={deleteMutation.isPending}
             >
-              Clear Shift
+              Xóa ca
             </Button>
           ),
           <Button key="cancel" onClick={() => setIsModalOpen(false)}>
@@ -594,14 +594,14 @@ export const ManagerSchedulingPage = () => {
                 <strong>Date:</strong> {selectedDate.format("dddd, MMMM D, YYYY")}
               </Typography.Paragraph>
               <Typography.Paragraph style={{ margin: "4px 0 0" }}>
-                <strong>Stylist:</strong> {selectedEmployee.full_name} ({selectedEmployee.specialties || "Specialist"})
+                <strong>Nhà tạo mẫu:</strong> {selectedEmployee.full_name} ({selectedEmployee.specialties || "Chuyên viên"})
               </Typography.Paragraph>
             </div>
 
             {/* Conflict Alert Panel */}
             {conflictAlerts.length > 0 && (
               <Alert
-                message="Scheduling Conflicts Found"
+                message="Phát hiện trùng lịch làm việc"
                 description={
                   <div>
                     <p style={{ margin: "0 0 6px" }}>The stylist has active customer appointments during these hours:</p>
@@ -620,7 +620,7 @@ export const ManagerSchedulingPage = () => {
             )}
 
             <Form form={form} layout="vertical" onValuesChange={recalculateConflicts}>
-              <Form.Item name="shift" label="Shift Template" rules={[{ required: true }]}>
+              <Form.Item name="shift" label="Mẫu ca làm" rules={[{ required: true }]}>
                 <Select onChange={handleShiftTypeChange}>
                   {SHIFT_TEMPLATES.map((t) => (
                     <Select.Option key={t.value} value={t.value}>
@@ -645,14 +645,14 @@ export const ManagerSchedulingPage = () => {
                 </Row>
               )}
 
-              <Form.Item name="availability_type" label="Work Status" rules={[{ required: true }]}>
+              <Form.Item name="availability_type" label="Trạng thái làm việc" rules={[{ required: true }]}>
                 <Select disabled={shiftValue !== "custom"}>
-                  <Select.Option value="available">Available for Bookings</Select.Option>
-                  <Select.Option value="unavailable">Unavailable (Off Duty)</Select.Option>
+                  <Select.Option value="available">Có thể nhận lịch đặt</Select.Option>
+                  <Select.Option value="unavailable">Không khả dụng (nghỉ ca)</Select.Option>
                 </Select>
               </Form.Item>
 
-              <Form.Item name="reason" label="Shift Notes / Reason for Day Off">
+              <Form.Item name="reason" label="Ghi chú ca làm / Lý do nghỉ">
                 <Input placeholder="Ví dụ: xoay ca hằng tuần, việc cá nhân" />
               </Form.Item>
             </Form>

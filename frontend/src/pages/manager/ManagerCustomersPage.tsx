@@ -17,11 +17,11 @@ export const ManagerCustomersPage = () => {
   });
 
   const columns: ColumnsType<Customer> = [
-    { title: "Code", dataIndex: "code", key: "code", render: (t) => <strong>#{t || "CUST"}</strong> },
-    { title: "Client Name", dataIndex: "full_name", key: "full_name", render: (text: string) => <span style={{ fontWeight: 500 }}>{text}</span> },
+    { title: "Mã", dataIndex: "code", key: "code", render: (t) => <strong>#{t || "CUST"}</strong> },
+    { title: "Tên khách hàng", dataIndex: "full_name", key: "full_name", render: (text: string) => <span style={{ fontWeight: 500 }}>{text}</span> },
     { title: "Phone Line", dataIndex: "phone" },
     { title: "Email Account", dataIndex: "email" },
-    { title: "Status", dataIndex: "status", key: "status", render: (s) => <StatusTag status={s} /> }
+    { title: "Trạng thái", dataIndex: "status", key: "status", render: (s) => <StatusTag status={s} /> }
   ];
 
   return (
