@@ -2,6 +2,7 @@ from decimal import Decimal
 
 from django.utils import timezone
 
+from apps.billing.services import _money, _recalculate_invoice
 from apps.core.exceptions import BusinessError, ErrorCodes
 from apps.promotions.models import Voucher, VoucherRedemption
 
@@ -18,9 +19,8 @@ def apply_voucher(actor, invoice, code):
     discount = voucher.discount_value
     if voucher.discount_type == "percent":
         discount = invoice.subtotal * voucher.discount_value / Decimal("100")
-    invoice.discount_total += discount
-    invoice.total_due = invoice.subtotal - invoice.discount_total - invoice.reward_discount
-    invoice.balance_due = invoice.total_due - invoice.paid_amount
+    invoice.discount_total = _money(invoice.discount_total) + _money(discount)
+    _recalculate_invoice(invoice)
     invoice.save()
     voucher.used_count += 1
     voucher.status = "redeemed" if voucher.used_count >= voucher.usage_limit else voucher.status
@@ -30,8 +30,7 @@ def apply_voucher(actor, invoice, code):
 
 
 def apply_reward_discount(invoice, amount):
-    invoice.reward_discount += Decimal(str(amount))
-    invoice.total_due = invoice.subtotal - invoice.discount_total - invoice.reward_discount
-    invoice.balance_due = invoice.total_due - invoice.paid_amount
+    invoice.reward_discount = _money(invoice.reward_discount) + _money(amount)
+    _recalculate_invoice(invoice)
     invoice.save()
     return invoice
