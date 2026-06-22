@@ -22,3 +22,8 @@ class InvoiceSerializer(serializers.ModelSerializer):
 class DiscountRequestSerializer(serializers.Serializer):
     voucher_code = serializers.CharField(required=False)
     points = serializers.IntegerField(required=False, min_value=1)
+
+
+class InvoiceAdjustmentSerializer(serializers.Serializer):
+    amount = serializers.DecimalField(max_digits=12, decimal_places=2)
+    reason = serializers.CharField(trim_whitespace=True)

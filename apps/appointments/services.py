@@ -1,5 +1,6 @@
-from datetime import timedelta
+from datetime import datetime, timedelta
 from django.db import transaction
+from django.db.models import Prefetch
 from django.utils import timezone
 
 from apps.accounts.roles import Roles
@@ -87,10 +88,13 @@ def transition_appointment(actor, appointment, new_status, reason=""):
         
         # Tự động hoàn tiền vào ví nếu hóa đơn đã thanh toán một phần hoặc toàn bộ
         if hasattr(appointment, 'invoice') and appointment.invoice.paid_amount > 0:
+            from apps.billing.services import _money
+            from apps.customers.models import CustomerProfile
             from apps.payments.models import WalletTransaction
-            customer = appointment.customer
-            refund_amount = appointment.invoice.paid_amount
-            customer.wallet_balance += refund_amount
+
+            customer = CustomerProfile.objects.select_for_update().get(id=appointment.customer_id)
+            refund_amount = _money(appointment.invoice.paid_amount)
+            customer.wallet_balance = _money(customer.wallet_balance) + refund_amount
             customer.save(update_fields=["wallet_balance"])
             
             WalletTransaction.objects.create(
@@ -151,3 +155,111 @@ def update_from_service_execution(actor, appointment, status):
     if target and appointment.status != target:
         return transition_appointment(actor, appointment, target)
     return appointment
+
+
+def _ensure_aware(value):
+    if timezone.is_naive(value):
+        return timezone.make_aware(value, timezone.get_current_timezone())
+    return value
+
+
+def _combine_aware(day, value):
+    combined = datetime.combine(day, value)
+    return timezone.make_aware(combined, timezone.get_current_timezone())
+
+
+def _overlaps(start, end, other_start, other_end):
+    return start < other_end and end > other_start
+
+
+def get_busy_staff_ids(start, end):
+    start = _ensure_aware(start)
+    end = _ensure_aware(end)
+    return list(
+        Appointment.objects.filter(
+            status__in=ACTIVE_STATUSES,
+            scheduled_start__lt=end,
+            scheduled_end__gt=start,
+        )
+        .values_list("staff_id", flat=True)
+        .distinct()
+    )
+
+
+def get_available_slots(*, start, end, staff_id=None, service_id=None, duration_minutes=None):
+    from django.conf import settings
+
+    from apps.employees.models import EmployeeProfile, StaffAvailability
+    from apps.services.models import Service
+
+    start = _ensure_aware(start)
+    end = _ensure_aware(end)
+    if end <= start:
+        raise BusinessError("Thoi gian ket thuc phai sau thoi gian bat dau.", ErrorCodes.VALIDATION_ERROR)
+
+    max_range = timedelta(days=settings.APPOINTMENT_LOOKUP_MAX_RANGE_DAYS)
+    if end - start > max_range:
+        raise BusinessError("Khoang thoi gian tra cuu qua lon.", ErrorCodes.VALIDATION_ERROR)
+
+    if service_id:
+        duration_minutes = Service.objects.get(id=service_id).duration_minutes
+    if not duration_minutes:
+        raise BusinessError("Vui long chon dich vu hoac duration_minutes.", ErrorCodes.VALIDATION_ERROR)
+
+    duration = timedelta(minutes=duration_minutes)
+    interval = timedelta(minutes=settings.APPOINTMENT_SLOT_INTERVAL_MINUTES)
+    availability_qs = StaffAvailability.objects.filter(date__gte=start.date(), date__lte=end.date()).order_by("date", "start_time")
+    staff_qs = EmployeeProfile.objects.filter(employment_status="active").prefetch_related(
+        Prefetch("availability_blocks", queryset=availability_qs, to_attr="bounded_availability_blocks")
+    )
+    if staff_id:
+        staff_qs = staff_qs.filter(id=staff_id)
+
+    appointments = list(
+        Appointment.objects.filter(
+            status__in=ACTIVE_STATUSES,
+            scheduled_start__lt=end,
+            scheduled_end__gt=start,
+        ).only("staff_id", "scheduled_start", "scheduled_end")
+    )
+    appointments_by_staff = {}
+    for appointment in appointments:
+        appointments_by_staff.setdefault(appointment.staff_id, []).append(appointment)
+
+    slots = []
+    now = timezone.now()
+    for staff in staff_qs:
+        blocks = getattr(staff, "bounded_availability_blocks", [])
+        available_blocks = [block for block in blocks if block.availability_type == "available"]
+        unavailable_blocks = [block for block in blocks if block.availability_type == "unavailable"]
+        for block in available_blocks:
+            block_start = max(_combine_aware(block.date, block.start_time), start, now)
+            block_end = min(_combine_aware(block.date, block.end_time), end)
+            cursor = block_start
+            while cursor + duration <= block_end:
+                candidate_end = cursor + duration
+                blocked_by_unavailable = any(
+                    _overlaps(
+                        cursor,
+                        candidate_end,
+                        _combine_aware(unavailable.date, unavailable.start_time),
+                        _combine_aware(unavailable.date, unavailable.end_time),
+                    )
+                    for unavailable in unavailable_blocks
+                )
+                blocked_by_appointment = any(
+                    _overlaps(cursor, candidate_end, appointment.scheduled_start, appointment.scheduled_end)
+                    for appointment in appointments_by_staff.get(staff.id, [])
+                )
+                if not blocked_by_unavailable and not blocked_by_appointment:
+                    slots.append(
+                        {
+                            "staff_id": staff.id,
+                            "staff_name": staff.full_name,
+                            "start": cursor.isoformat(),
+                            "end": candidate_end.isoformat(),
+                        }
+                    )
+                cursor += interval
+
+    return slots

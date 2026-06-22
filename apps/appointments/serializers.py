@@ -49,3 +49,28 @@ class AppointmentTransitionSerializer(serializers.Serializer):
     scheduled_start = serializers.DateTimeField(required=False)
     scheduled_end = serializers.DateTimeField(required=False)
     staff = serializers.IntegerField(required=False)
+
+    def validate(self, attrs):
+        start = attrs.get("scheduled_start")
+        end = attrs.get("scheduled_end")
+        if start and end and end <= start:
+            raise serializers.ValidationError("Thoi gian ket thuc phai sau thoi gian bat dau.")
+        return attrs
+
+
+class BusyStaffQuerySerializer(serializers.Serializer):
+    start = serializers.DateTimeField()
+    end = serializers.DateTimeField()
+
+    def validate(self, attrs):
+        start = attrs["start"]
+        end = attrs["end"]
+        if end <= start:
+            raise serializers.ValidationError("Thoi gian ket thuc phai sau thoi gian bat dau.")
+        return attrs
+
+
+class AvailabilityQuerySerializer(BusyStaffQuerySerializer):
+    staff = serializers.IntegerField(required=False)
+    service = serializers.IntegerField(required=False)
+    duration_minutes = serializers.IntegerField(required=False, min_value=1, max_value=24 * 60)
