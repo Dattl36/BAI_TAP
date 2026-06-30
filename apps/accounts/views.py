@@ -25,22 +25,7 @@ class AuthViewSet(viewsets.GenericViewSet):
         user = serializer.save()
         create_customer_profile_for_user(user)
         
-        import random
-        from django.core.cache import cache
-        from django.core.mail import send_mail
-        otp_code = f"{random.randint(100000, 999999)}"
-        
-        cache.set(f"otp_{user.email}", otp_code, timeout=300)
-        
-        send_mail(
-            "Salon App - Mã xác minh đăng ký",
-            f"Mã xác minh (OTP) của bạn là: {otp_code}\nMã này sẽ hết hạn sau 5 phút.",
-            "no-reply@salon.com",
-            [user.email],
-            fail_silently=False,
-        )
-        
-        return success({"message": "Mã OTP đã được gửi tới email", "email": user.email}, "Registered", status.HTTP_201_CREATED)
+        return success({"message": "Đăng ký thành công!", "email": user.email}, "Registered", status.HTTP_201_CREATED)
 
     @action(detail=False, methods=["post"], url_path="verify-email")
     def verify_email(self, request):

@@ -20,9 +20,10 @@ export const RegisterPage = () => {
   const registerMutation = useMutation({
     mutationFn: authApi.register,
     onSuccess: (_, variables) => {
-      void messageApi.success("Đăng ký thành công! Vui lòng kiểm tra email để lấy mã xác minh.");
-      setRegisteredEmail(variables.email || "");
-      setIsOtpModalVisible(true);
+      void messageApi.success("Đăng ký thành công! Vui lòng đăng nhập.");
+      setTimeout(() => {
+        navigate("/login");
+      }, 1000);
     },
     onError: (error) => {
       void messageApi.error(getErrorMessage(error));
