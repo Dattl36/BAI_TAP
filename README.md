@@ -1,23 +1,46 @@
-# Lab 2 - Thực hành Hệ điều hành (Shell Script)
+# Báo cáo kết quả thực hành Lab 2 - Hệ điều hành
 
-Repository này chứa các bài tập thực hành Lab 2 môn Hệ điều hành bằng ngôn ngữ Shell Script (Bash).
+Dưới đây là kết quả chạy (output) của các bài tập Shell Script trong thư mục này.
 
-## Các bài tập
+---
 
-- **bai2.sh**: Chương trình cho phép nhập vào tên và MSSV. Kiểm tra nếu MSSV đó không trùng với mình thì bắt nhập lại. In ra màn hình kết quả.
-- **bai3.sh**: Chương trình cho phép nhập vào một số n. Kiểm tra nếu n < 10 thì bắt nhập lại. Tính tổng các số từ 1 đến n. In kết quả ra màn hình.
-- **bai4.sh**: Chương trình cho phép nhập vào một chuỗi. Kiểm tra chuỗi đó có tồn tại trong một file text (ví dụ test.txt) cùng thư mục hay không.
+## Bài tập 2: Kiểm tra MSSV
+**File code:** `bai2.sh`
 
-## Hướng dẫn sử dụng
-
-Cấp quyền thực thi cho các file script (chỉ cần làm 1 lần):
-```bash
-chmod +x *.sh
+**Kết quả chạy:**
+```text
+$ ./bai2.sh
+Nhập tên của bạn: Dung Ta
+Nhập MSSV của bạn: 1234567
+Xin chào Dung Ta, MSSV: 1234567. Bạn đã nhập đúng MSSV!
 ```
 
-Sau đó, chạy từng bài tập bằng các lệnh sau:
-```bash
-./bai2.sh
-./bai3.sh
-./bai4.sh
+---
+
+## Bài tập 3: Tính tổng từ 1 đến n (với n >= 10)
+**File code:** `bai3.sh`
+
+**Kết quả chạy:**
+```text
+$ ./bai3.sh
+Nhập vào một số n (n >= 10): 5
+Số n phải là số nguyên và n >= 10. Vui lòng nhập lại!
+Nhập vào một số n (n >= 10): 10
+Tổng các số từ 1 đến 10 là: 55
+```
+
+---
+
+## Bài tập 4: Tìm chuỗi trong file text
+**File code:** `bai4.sh`
+
+**Kết quả chạy:**
+```text
+$ ./bai4.sh
+Nhập vào một chuỗi cần tìm: linux
+Chuỗi 'linux' CÓ tồn tại trong file test.txt.
+
+$ ./bai4.sh
+Nhập vào một chuỗi cần tìm: windows
+Chuỗi 'windows' KHÔNG tồn tại trong file test.txt.
 ```
