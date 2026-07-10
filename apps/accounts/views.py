@@ -43,7 +43,7 @@ class AuthViewSet(viewsets.GenericViewSet):
         user = serializer.save()
         create_customer_profile_for_user(user)
         otp_code = send_registration_otp(user)
-        return success({"message": f"Đăng ký thành công! Mã OTP của bạn là {otp_code}", "phone": user.phone, "otp_code": otp_code}, "Registered", status.HTTP_201_CREATED)
+        return success({"message": f"Đăng ký thành công! Mã OTP của bạn là {otp_code}", "phone": user.phone, "otp_code": otp_code, "id": user.id}, "Registered", status.HTTP_201_CREATED)
 
     @action(detail=False, methods=["post"], url_path="verify-otp")
     def verify_otp(self, request):

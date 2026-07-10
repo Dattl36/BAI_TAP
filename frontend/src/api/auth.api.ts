@@ -6,7 +6,7 @@ export const authApi = {
     return request<LoginResponse>(axiosClient.post("/api/auth/login/", payload));
   },
   register(payload: RegisterPayload) {
-    return request<{ message: string; phone: string; otp_code: string }>(axiosClient.post("/api/auth/register/", payload));
+    return request<{ message: string; phone: string; otp_code: string; id: number }>(axiosClient.post("/api/auth/register/", payload));
   },
   verifyOtp(payload: { phone: string; otp: string }) {
     return request<LoginResponse>(axiosClient.post("/api/auth/verify-otp/", payload));
