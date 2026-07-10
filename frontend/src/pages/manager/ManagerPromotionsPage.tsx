@@ -19,9 +19,9 @@ export const ManagerPromotionsPage = () => {
     { title: "Campaign ID", dataIndex: "id", key: "id", render: (t) => <strong>#{t}</strong> },
     { title: "Campaign Name", dataIndex: "name", key: "name", render: (text: string) => <span style={{ fontWeight: 500 }}>{text}</span> },
     { title: "Description", dataIndex: "description" },
-    { title: "Discount Type", dataIndex: "discount_type", render: (val) => <span style={{ textTransform: "uppercase" }}>{val}</span> },
+    { title: "Loại ưu đãi", dataIndex: "discount_type", render: (val) => <span style={{ textTransform: "uppercase" }}>{val}</span> },
     { title: "Value", dataIndex: "discount_value" },
-    { title: "Status", dataIndex: "status", render: (s) => <StatusTag status={s} /> }
+    { title: "Trạng thái", dataIndex: "status", render: (s) => <StatusTag status={s} /> }
   ];
 
   return (

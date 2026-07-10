@@ -1,18 +1,18 @@
-import { LockOutlined, MailOutlined, UserOutlined } from "@ant-design/icons";
+import { IdcardOutlined, LockOutlined, MailOutlined, UserOutlined } from "@ant-design/icons";
 import { useMutation } from "@tanstack/react-query";
-import { Button, Card, Form, Input, Typography, message, Modal } from "antd";
-import { Link, useNavigate } from "react-router-dom";
+import { Button, Card, Form, Input, Modal, Typography, message } from "antd";
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 import { authApi } from "../../api/auth.api";
 import { ROUTES } from "../../constants/routes";
 import type { RegisterPayload } from "../../types/auth";
-import { getErrorMessage } from "../../utils/error";
+import { getErrorMessage, getFieldErrors } from "../../utils/error";
 
 export const RegisterPage = () => {
   const navigate = useNavigate();
+  const [form] = Form.useForm<RegisterPayload>();
   const [messageApi, contextHolder] = message.useMessage();
-
   const [isOtpModalVisible, setIsOtpModalVisible] = useState(false);
   const [registeredEmail, setRegisteredEmail] = useState("");
   const [otpCode, setOtpCode] = useState("");
@@ -20,12 +20,20 @@ export const RegisterPage = () => {
   const registerMutation = useMutation({
     mutationFn: authApi.register,
     onSuccess: (_, variables) => {
-      void messageApi.success("Đăng ký thành công! Vui lòng đăng nhập.");
-      setTimeout(() => {
-        navigate("/login");
-      }, 1000);
+      form.resetFields(["password"]);
+      void messageApi.success("Đăng ký thành công. Vui lòng kiểm tra email hoặc terminal backend để lấy mã OTP.");
+      setRegisteredEmail(variables.email || "");
+      setIsOtpModalVisible(true);
     },
     onError: (error) => {
+      const fieldErrors = getFieldErrors(error);
+      const formErrors = Object.entries(fieldErrors).map(([name, errors]) => ({
+        name: name as keyof RegisterPayload,
+        errors,
+      }));
+      if (formErrors.length > 0) {
+        form.setFields(formErrors);
+      }
       void messageApi.error(getErrorMessage(error));
     },
   });
@@ -33,13 +41,11 @@ export const RegisterPage = () => {
   const verifyOtpMutation = useMutation({
     mutationFn: authApi.verifyEmail,
     onSuccess: (data) => {
-      void messageApi.success("Xác minh tài khoản thành công!");
+      void messageApi.success("Xác minh tài khoản thành công.");
       localStorage.setItem("accessToken", data.access);
       localStorage.setItem("refreshToken", data.refresh);
       setIsOtpModalVisible(false);
-      setTimeout(() => {
-        navigate("/customer");
-      }, 1000);
+      setTimeout(() => navigate("/customer"), 1000);
     },
     onError: (error) => {
       void messageApi.error(getErrorMessage(error));
@@ -49,16 +55,31 @@ export const RegisterPage = () => {
   const resendOtpMutation = useMutation({
     mutationFn: authApi.resendOtp,
     onSuccess: () => {
-      void messageApi.success("Đã gửi lại mã OTP vào email của bạn.");
+      void messageApi.success("Đã gửi lại mã OTP.");
     },
     onError: (error) => {
       void messageApi.error(getErrorMessage(error));
     },
   });
 
+  const handleSubmit = (values: RegisterPayload) => {
+    form.setFields([
+      { name: "username", errors: [] },
+      { name: "email", errors: [] },
+      { name: "full_name", errors: [] },
+      { name: "password", errors: [] },
+    ]);
+    registerMutation.mutate({
+      ...values,
+      username: values.username?.trim(),
+      email: values.email?.trim(),
+      full_name: values.full_name?.trim(),
+    });
+  };
+
   const handleVerifyOtp = () => {
     if (!otpCode || otpCode.length < 6) {
-      void messageApi.error("Vui lòng nhập đủ 6 số mã OTP");
+      void messageApi.error("Vui lòng nhập đủ 6 số mã OTP.");
       return;
     }
     verifyOtpMutation.mutate({ email: registeredEmail, otp: otpCode });
@@ -73,7 +94,6 @@ export const RegisterPage = () => {
     <div className="login-split-container">
       {contextHolder}
 
-      {/* Left Column: Branding Image Panel */}
       <div
         className="login-brand-panel"
         style={{
@@ -92,36 +112,50 @@ export const RegisterPage = () => {
         </div>
       </div>
 
-      {/* Right Column: Registration Form Panel */}
       <div className="login-form-panel">
         <Card className="login-form-card" bordered={false}>
-          {/* Logo element above form */}
           <div style={{ fontSize: 16, letterSpacing: "0.15em", fontWeight: 600, color: "var(--color-primary)", marginBottom: 12 }}>
             S A L O N
           </div>
 
-          <div style={{ marginBottom: 28 }}>
+          <div style={{ marginBottom: 24 }}>
             <Typography.Title level={2} style={{ margin: 0, fontFamily: "'Playfair Display', serif", fontWeight: 500 }}>
               Tạo tài khoản khách hàng
             </Typography.Title>
             <Typography.Paragraph type="secondary" style={{ marginTop: 6, fontSize: 14 }}>
-              Tham gia hệ thống của chúng tôi để quản lý các lịch hẹn dễ dàng hơn.
+              Họ tên có thể dùng dấu cách. Tên đăng nhập dùng để đăng nhập và không chứa dấu cách.
             </Typography.Paragraph>
           </div>
 
-          <Form<RegisterPayload>
-            layout="vertical"
-            onFinish={(values) => registerMutation.mutate(values)}
-            requiredMark={false}
-          >
+          <Form<RegisterPayload> form={form} layout="vertical" onFinish={handleSubmit} requiredMark={false}>
+            <Form.Item
+              name="full_name"
+              label={<span style={{ fontWeight: 600, fontSize: 13, color: "var(--color-text)" }}>Họ và tên</span>}
+              rules={[
+                { required: true, message: "Vui lòng nhập họ và tên." },
+                { min: 2, message: "Họ và tên phải có ít nhất 2 ký tự." },
+              ]}
+            >
+              <Input
+                prefix={<IdcardOutlined style={{ color: "var(--color-muted)", marginRight: 4 }} />}
+                placeholder="Nguyễn Văn A"
+                autoComplete="name"
+                style={{ height: 42, borderRadius: 8 }}
+              />
+            </Form.Item>
+
             <Form.Item
               name="username"
               label={<span style={{ fontWeight: 600, fontSize: 13, color: "var(--color-text)" }}>Tên đăng nhập</span>}
-              rules={[{ required: true, message: "Vui lòng nhập tên đăng nhập." }]}
+              rules={[
+                { required: true, message: "Vui lòng nhập tên đăng nhập." },
+                { whitespace: true, message: "Tên đăng nhập không được chỉ gồm khoảng trắng." },
+                { pattern: /^\S+$/, message: "Tên đăng nhập không được chứa dấu cách." },
+              ]}
             >
               <Input
                 prefix={<UserOutlined style={{ color: "var(--color-muted)", marginRight: 4 }} />}
-                placeholder="Chọn tên đăng nhập"
+                placeholder="ten_dang_nhap"
                 autoComplete="username"
                 style={{ height: 42, borderRadius: 8 }}
               />
@@ -129,10 +163,10 @@ export const RegisterPage = () => {
 
             <Form.Item
               name="email"
-              label={<span style={{ fontWeight: 600, fontSize: 13, color: "var(--color-text)" }}>Địa chỉ Email</span>}
+              label={<span style={{ fontWeight: 600, fontSize: 13, color: "var(--color-text)" }}>Địa chỉ email</span>}
               rules={[
                 { required: true, message: "Vui lòng nhập email của bạn." },
-                { type: "email", message: "Vui lòng nhập địa chỉ email hợp lệ." }
+                { type: "email", message: "Vui lòng nhập địa chỉ email hợp lệ." },
               ]}
             >
               <Input
@@ -148,7 +182,7 @@ export const RegisterPage = () => {
               label={<span style={{ fontWeight: 600, fontSize: 13, color: "var(--color-text)" }}>Mật khẩu</span>}
               rules={[
                 { required: true, message: "Vui lòng nhập mật khẩu." },
-                { min: 8, message: "Mật khẩu phải chứa ít nhất 8 ký tự." }
+                { min: 8, message: "Mật khẩu phải chứa ít nhất 8 ký tự." },
               ]}
             >
               <Input.Password
@@ -181,7 +215,7 @@ export const RegisterPage = () => {
       </div>
 
       <Modal
-        title={<div style={{ textAlign: "center", fontSize: 20 }}>Xác minh địa chỉ Email</div>}
+        title={<div style={{ textAlign: "center", fontSize: 20 }}>Xác minh địa chỉ email</div>}
         open={isOtpModalVisible}
         onOk={handleVerifyOtp}
         onCancel={() => setIsOtpModalVisible(false)}
@@ -194,22 +228,16 @@ export const RegisterPage = () => {
       >
         <div style={{ textAlign: "center", margin: "24px 0" }}>
           <Typography.Paragraph type="secondary" style={{ marginBottom: 24 }}>
-            Chúng tôi đã gửi một mã xác minh gồm 6 chữ số đến email <br/>
+            Chúng tôi đã gửi một mã xác minh gồm 6 chữ số đến email <br />
             <strong style={{ color: "var(--color-text)" }}>{registeredEmail}</strong>
           </Typography.Paragraph>
-          
-          <Input.OTP 
-            length={6} 
-            value={otpCode}
-            onChange={(val) => setOtpCode(val)}
-            size="large"
-            style={{ marginBottom: 24 }}
-          />
+
+          <Input.OTP length={6} value={otpCode} onChange={(val) => setOtpCode(val)} size="large" style={{ marginBottom: 24 }} />
 
           <Typography.Paragraph type="secondary" style={{ fontSize: 13 }}>
             Không nhận được mã?{" "}
-            <Button 
-              type="link" 
+            <Button
+              type="link"
               onClick={handleResendOtp}
               loading={resendOtpMutation.isPending}
               style={{ padding: 0, fontWeight: 600, color: "var(--color-primary-dark)" }}

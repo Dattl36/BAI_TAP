@@ -46,10 +46,10 @@ export const ManagerSettingsPage = () => {
     } else {
       // Set default values
       form.setFieldsValue({
-        salon_name: "Luxury Salon & Spa Spa",
+        salon_name: "Salon & Spa Cao cấp",
         phone: "+84 987 654 321",
         email: "lienhe@saloncaocap.vn",
-        address: "123 Premium Way, District 1, HCMC",
+        address: "123 Đường Premium, Quận 1, TP. Hồ Chí Minh",
         tax_rate: 10,
         opening_time: dayjs("2026-01-01T09:00:00"),
         closing_time: dayjs("2026-01-01T21:00:00"),
@@ -85,15 +85,15 @@ export const ManagerSettingsPage = () => {
       ),
       children: (
         <div style={{ marginTop: 16 }}>
-          <Typography.Title level={5} style={{ marginBottom: 16 }}>General Business Details</Typography.Title>
+          <Typography.Title level={5} style={{ marginBottom: 16 }}>Thông tin doanh nghiệp</Typography.Title>
           <Row gutter={16}>
             <Col span={12}>
-              <Form.Item name="salon_name" label="Salon Name" rules={[{ required: true }]}>
+              <Form.Item name="salon_name" label="Tên salon" rules={[{ required: true }]}>
                 <Input placeholder="Salon & Spa Cao cấp" />
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item name="phone" label="Contact Hotline" rules={[{ required: true }]}>
+              <Form.Item name="phone" label="Đường dây liên hệ" rules={[{ required: true }]}>
                 <Input placeholder="+84 987 654 321" />
               </Form.Item>
             </Col>
@@ -101,19 +101,19 @@ export const ManagerSettingsPage = () => {
 
           <Row gutter={16}>
             <Col span={12}>
-              <Form.Item name="email" label="Contact Email" rules={[{ required: true, type: "email" }]}>
+              <Form.Item name="email" label="Email liên hệ" rules={[{ required: true, type: "email" }]}>
                 <Input placeholder="lienhe@saloncaocap.vn" />
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item name="tax_rate" label="VAT / Service Tax Rate (%)" rules={[{ required: true }]}>
+              <Form.Item name="tax_rate" label="Thuế VAT / Phí dịch vụ (%)" rules={[{ required: true }]}>
                 <InputNumber min={0} max={100} style={{ width: "100%" }} />
               </Form.Item>
             </Col>
           </Row>
 
-          <Form.Item name="address" label="Street Address" rules={[{ required: true }]}>
-            <Input.TextArea rows={2} placeholder="123 Premium Way, District 1, HCMC" />
+          <Form.Item name="address" label="Địa chỉ salon" rules={[{ required: true }]}>
+            <Input.TextArea rows={2} placeholder="123 Đường Premium, Quận 1, TP. Hồ Chí Minh" />
           </Form.Item>
         </div>
       ),
@@ -127,25 +127,25 @@ export const ManagerSettingsPage = () => {
       ),
       children: (
         <div style={{ marginTop: 16 }}>
-          <Typography.Title level={5} style={{ marginBottom: 16 }}>Operational Working Hours</Typography.Title>
+          <Typography.Title level={5} style={{ marginBottom: 16 }}>Giờ vận hành</Typography.Title>
           <Row gutter={16}>
             <Col span={12}>
-              <Form.Item name="opening_time" label="Opening Time" rules={[{ required: true }]}>
+              <Form.Item name="opening_time" label="Giờ mở cửa" rules={[{ required: true }]}>
                 <TimePicker format="HH:mm" style={{ width: "100%" }} />
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item name="closing_time" label="Closing Time" rules={[{ required: true }]}>
+              <Form.Item name="closing_time" label="Giờ đóng cửa" rules={[{ required: true }]}>
                 <TimePicker format="HH:mm" style={{ width: "100%" }} />
               </Form.Item>
             </Col>
           </Row>
 
           <Divider />
-          <Typography.Title level={5}>Holiday / Weekend Operation</Typography.Title>
+          <Typography.Title level={5}>Vận hành ngày nghỉ / cuối tuần</Typography.Title>
           <Row gutter={16} align="middle" style={{ marginTop: 16 }}>
             <Col span={18}>
-              <Typography.Text strong>Open on National Holidays</Typography.Text>
+              <Typography.Text strong>Mở cửa vào ngày lễ quốc gia</Typography.Text>
               <div>Allow bookings on national holidays (custom schedules can still be configured).</div>
             </Col>
             <Col span={6} style={{ textAlign: "right" }}>
@@ -161,15 +161,15 @@ export const ManagerSettingsPage = () => {
       key: "commissions",
       label: (
         <span>
-          <PercentageOutlined /> Commission & Loyalty Rules
+          <PercentageOutlined /> Hoa hồng và quy tắc thân thiết
         </span>
       ),
       children: (
         <div style={{ marginTop: 16 }}>
-          <Typography.Title level={5} style={{ marginBottom: 16 }}>Stylist Roster Commissions</Typography.Title>
+          <Typography.Title level={5} style={{ marginBottom: 16 }}>Hoa hồng nhà tạo mẫu</Typography.Title>
           <Row gutter={16}>
             <Col span={12}>
-              <Form.Item name="commission_rate" label="Default Stylist Commission (%)" rules={[{ required: true }]}>
+              <Form.Item name="commission_rate" label="Hoa hồng mặc định cho nhà tạo mẫu (%)" rules={[{ required: true }]}>
                 <InputNumber min={0} max={100} style={{ width: "100%" }} formatter={(value) => `${value}%`} />
               </Form.Item>
             </Col>
@@ -179,10 +179,10 @@ export const ManagerSettingsPage = () => {
           </div>
 
           <Divider />
-          <Typography.Title level={5}>Loyalty points & Rewards</Typography.Title>
+          <Typography.Title level={5}>Điểm thân thiết và phần thưởng</Typography.Title>
           <Row gutter={16} align="middle" style={{ marginTop: 16, marginBottom: 16 }}>
             <Col span={18}>
-              <Typography.Text strong>Enable Loyalty Point Accrual</Typography.Text>
+              <Typography.Text strong>Bật tích lũy điểm thân thiết</Typography.Text>
               <div>Allow clients to accumulate reward points on completed bookings.</div>
             </Col>
             <Col span={6} style={{ textAlign: "right" }}>
@@ -194,7 +194,7 @@ export const ManagerSettingsPage = () => {
 
           <Row gutter={16}>
             <Col span={12}>
-              <Form.Item name="points_ratio" label="Point Accrual Ratio ($1 spent equals X points)">
+              <Form.Item name="points_ratio" label="Tỷ lệ tích điểm (mỗi 1 đơn vị chi tiêu tương ứng X điểm)">
                 <InputNumber min={0.1} step={0.5} style={{ width: "100%" }} />
               </Form.Item>
             </Col>
@@ -226,7 +226,7 @@ export const ManagerSettingsPage = () => {
               icon={<SaveOutlined />}
               loading={loading}
             >
-              Save Settings
+              Lưu cài đặt
             </Button>
           }
         >

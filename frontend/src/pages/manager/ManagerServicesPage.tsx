@@ -19,10 +19,10 @@ export const ManagerServicesPage = () => {
 
   const columns: ColumnsType<SalonService> = [
     { title: "Service Name", dataIndex: "name", key: "name", render: (text: string) => <span style={{ fontWeight: 600 }}>{text}</span> },
-    { title: "Category", dataIndex: "category" },
+    { title: "Danh mục", dataIndex: "category" },
     { title: "Duration", dataIndex: "duration_minutes", render: (val) => `${val} Mins` },
     { title: "Base Price", dataIndex: "base_price", render: (val) => <span style={{ fontWeight: 600, color: "var(--color-primary-dark)" }}>{formatMoney(val)}</span> },
-    { title: "Status", dataIndex: "status", render: (s) => <StatusTag status={s} /> }
+    { title: "Trạng thái", dataIndex: "status", render: (s) => <StatusTag status={s} /> }
   ];
 
   return (

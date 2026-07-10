@@ -55,7 +55,7 @@ export const PublicHomePage = () => {
   const articlesList = getListItems(articlesData);
 
   return (
-    <div style={{ animation: "fadeIn 0.5s ease", width: "100%" }}>
+    <div className="public-home-page" style={{ animation: "fadeIn 0.5s ease", width: "100%" }}>
       {/* Hero Banner Section */}
       <div
         style={{

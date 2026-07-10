@@ -1,18 +1,20 @@
 import { Layout } from "antd";
 import { Outlet } from "react-router-dom";
 
+import { MobileBottomNav } from "../../components/responsive/MobileBottomNav";
 import { CustomerHeader } from "./CustomerHeader";
 import { CustomerNavigation } from "./CustomerNavigation";
 
 export const CustomerLayout = () => (
   <Layout className="app-shell" style={{ background: "var(--color-bg)" }}>
     <CustomerHeader />
-    <div style={{ background: "var(--color-surface)", borderBottom: "1px solid var(--app-border)", zIndex: 10 }}>
-      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px", display: "flex", justifyContent: "center" }}>
+    <div className="customer-top-nav">
+      <div className="customer-top-nav__inner">
         <CustomerNavigation />
       </div>
     </div>
     <Layout.Content 
+      className="customer-content"
       style={{ 
         maxWidth: 1200, 
         margin: "0 auto", 
@@ -24,5 +26,6 @@ export const CustomerLayout = () => (
     >
       <Outlet />
     </Layout.Content>
+    <MobileBottomNav />
   </Layout>
 );

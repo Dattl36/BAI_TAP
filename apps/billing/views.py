@@ -5,7 +5,7 @@ from apps.accounts.scopes import scope_queryset
 from apps.appointments.models import Appointment
 from apps.billing.discount_services import apply_voucher
 from apps.billing.models import Invoice
-from apps.billing.serializers import DiscountRequestSerializer, InvoiceSerializer
+from apps.billing.serializers import DiscountRequestSerializer, InvoiceAdjustmentSerializer, InvoiceSerializer
 from apps.billing.services import adjust_invoice, create_invoice_from_appointment, issue_invoice
 from apps.core.responses import success
 from apps.promotions.reward_services import redeem_points
@@ -42,5 +42,7 @@ class InvoiceViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["post"])
     def adjust(self, request, pk=None):
-        invoice = adjust_invoice(request.user, self.get_object(), request.data.get("amount", 0), request.data.get("reason", ""))
+        serializer = InvoiceAdjustmentSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        invoice = adjust_invoice(request.user, self.get_object(), serializer.validated_data["amount"], serializer.validated_data["reason"])
         return success(self.get_serializer(invoice).data)
