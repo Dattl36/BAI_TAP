@@ -1,5 +1,6 @@
 databases:
   - name: salon-db
+    plan: free
     databaseName: salon
     user: salon_user
 
@@ -7,6 +8,7 @@ services:
   - type: web
     name: salon-backend
     env: python
+    plan: free
     buildCommand: "./build.sh"
     startCommand: "gunicorn salon_backend.wsgi:application"
     envVars:
