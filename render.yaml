@@ -10,7 +10,7 @@ services:
     env: python
     plan: free
     buildCommand: "./build.sh"
-    startCommand: "gunicorn salon_backend.wsgi:application"
+    startCommand: "python seed_services.py && python seed_admin.py && gunicorn salon_backend.wsgi:application"
     envVars:
       - key: DATABASE_URL
         fromDatabase:
