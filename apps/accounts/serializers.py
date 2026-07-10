@@ -14,6 +14,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     username = serializers.CharField(max_length=150)
     email = serializers.EmailField()
     full_name = serializers.CharField(max_length=160, required=False, allow_blank=True)
+    phone = serializers.CharField(max_length=32, required=True)
 
     class Meta:
         model = User
@@ -57,14 +58,14 @@ class LoginSerializer(serializers.Serializer):
         return attrs
 
 
-class EmailSerializer(serializers.Serializer):
-    email = serializers.EmailField()
+class PhoneSerializer(serializers.Serializer):
+    phone = serializers.CharField(max_length=32)
 
-    def validate_email(self, value):
-        return value.strip().lower()
+    def validate_phone(self, value):
+        return value.strip()
 
 
-class VerifyEmailSerializer(EmailSerializer):
+class VerifyOtpSerializer(PhoneSerializer):
     otp = serializers.RegexField(regex=r"^\d{6}$")
 
 

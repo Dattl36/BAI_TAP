@@ -6,12 +6,12 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from apps.accounts.models import User
 from apps.accounts.permissions import IsManager
 from apps.accounts.serializers import (
-    EmailSerializer,
     LoginSerializer,
     ManagerUserSerializer,
     RegisterSerializer,
     UserSerializer,
-    VerifyEmailSerializer,
+    PhoneSerializer,
+    VerifyOtpSerializer,
 )
 from apps.accounts.services import create_customer_profile_for_user, deactivate_user, send_registration_otp, verify_registration_otp
 from apps.core.exceptions import BusinessError
@@ -23,14 +23,14 @@ class AuthViewSet(viewsets.GenericViewSet):
     throttle_scope = None
 
     def get_permissions(self):
-        if self.action in {"register", "login", "verify_email", "resend_otp"}:
+        if self.action in {"register", "login", "verify_otp", "resend_otp"}:
             return [AllowAny()]
         return [IsAuthenticated()]
 
     def get_throttles(self):
         if self.action in {"register", "resend_otp"}:
             self.throttle_scope = "otp_send"
-        elif self.action == "verify_email":
+        elif self.action == "verify_otp":
             self.throttle_scope = "otp_verify"
         else:
             self.throttle_scope = None
@@ -42,38 +42,38 @@ class AuthViewSet(viewsets.GenericViewSet):
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
         create_customer_profile_for_user(user)
-        send_registration_otp(user)
-        return success({"message": "Đăng ký thành công! Mã OTP đã được gửi tới email của bạn.", "email": user.email}, "Registered", status.HTTP_201_CREATED)
+        otp_code = send_registration_otp(user)
+        return success({"message": f"Đăng ký thành công! Mã OTP của bạn là {otp_code}", "phone": user.phone, "otp_code": otp_code}, "Registered", status.HTTP_201_CREATED)
 
-    @action(detail=False, methods=["post"], url_path="verify-email")
-    def verify_email(self, request):
-        serializer = VerifyEmailSerializer(data=request.data)
+    @action(detail=False, methods=["post"], url_path="verify-otp")
+    def verify_otp(self, request):
+        serializer = VerifyOtpSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        email = serializer.validated_data["email"]
-        verify_registration_otp(email, serializer.validated_data["otp"])
+        phone = serializer.validated_data["phone"]
+        verify_registration_otp(phone, serializer.validated_data["otp"])
 
-        user = User.objects.filter(email__iexact=email).first()
+        user = User.objects.filter(phone=phone).first()
         if not user:
-            raise BusinessError("Ma xac minh khong hop le hoac da het han")
+            raise BusinessError("Mã xác minh không hợp lệ hoặc đã hết hạn")
 
         user.is_active = True
         user.save(update_fields=["is_active"])
 
         refresh = RefreshToken.for_user(user)
-        return success({"refresh": str(refresh), "access": str(refresh.access_token)}, "Xac minh tai khoan thanh cong")
+        return success({"refresh": str(refresh), "access": str(refresh.access_token)}, "Xác minh tài khoản thành công")
 
     @action(detail=False, methods=["post"], url_path="resend-otp")
     def resend_otp(self, request):
-        serializer = EmailSerializer(data=request.data)
+        serializer = PhoneSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        email = serializer.validated_data["email"]
+        phone = serializer.validated_data["phone"]
 
-        user = User.objects.filter(email__iexact=email, is_active=False).first()
+        user = User.objects.filter(phone=phone, is_active=False).first()
         if not user:
-            raise BusinessError("Neu tai khoan can xac minh, ma OTP moi se duoc gui.")
+            raise BusinessError("Nếu tài khoản cần xác minh, mã OTP mới sẽ được gửi.")
 
-        send_registration_otp(user, enforce_resend_limits=True)
-        return success({"message": "Da gui lai ma OTP"})
+        otp_code = send_registration_otp(user, enforce_resend_limits=True)
+        return success({"message": f"Đã gửi lại mã OTP: {otp_code}", "otp_code": otp_code})
 
     @action(detail=False, methods=["post"])
     def login(self, request):

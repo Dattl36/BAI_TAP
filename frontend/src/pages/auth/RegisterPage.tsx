@@ -1,4 +1,4 @@
-import { IdcardOutlined, LockOutlined, MailOutlined, UserOutlined } from "@ant-design/icons";
+import { IdcardOutlined, LockOutlined, MailOutlined, PhoneOutlined, UserOutlined } from "@ant-design/icons";
 import { useMutation } from "@tanstack/react-query";
 import { Button, Card, Form, Input, Modal, Typography, message } from "antd";
 import { useState } from "react";
@@ -14,15 +14,16 @@ export const RegisterPage = () => {
   const [form] = Form.useForm<RegisterPayload>();
   const [messageApi, contextHolder] = message.useMessage();
   const [isOtpModalVisible, setIsOtpModalVisible] = useState(false);
-  const [registeredEmail, setRegisteredEmail] = useState("");
+  const [registeredPhone, setRegisteredPhone] = useState("");
   const [otpCode, setOtpCode] = useState("");
 
   const registerMutation = useMutation({
     mutationFn: authApi.register,
-    onSuccess: (_, variables) => {
+    onSuccess: (data, variables) => {
       form.resetFields(["password"]);
-      void messageApi.success("Đăng ký thành công. Vui lòng kiểm tra email hoặc terminal backend để lấy mã OTP.");
-      setRegisteredEmail(variables.email || "");
+      void messageApi.success(data.message || "Đăng ký thành công.");
+      setRegisteredPhone(variables.phone || "");
+      setOtpCode(data.otp_code || "");
       setIsOtpModalVisible(true);
     },
     onError: (error) => {
@@ -39,7 +40,7 @@ export const RegisterPage = () => {
   });
 
   const verifyOtpMutation = useMutation({
-    mutationFn: authApi.verifyEmail,
+    mutationFn: authApi.verifyOtp,
     onSuccess: (data) => {
       void messageApi.success("Xác minh tài khoản thành công.");
       localStorage.setItem("accessToken", data.access);
@@ -54,8 +55,11 @@ export const RegisterPage = () => {
 
   const resendOtpMutation = useMutation({
     mutationFn: authApi.resendOtp,
-    onSuccess: () => {
-      void messageApi.success("Đã gửi lại mã OTP.");
+    onSuccess: (data) => {
+      void messageApi.success(data.message || "Đã gửi lại mã OTP.");
+      if (data.otp_code) {
+        setOtpCode(data.otp_code);
+      }
     },
     onError: (error) => {
       void messageApi.error(getErrorMessage(error));
@@ -67,6 +71,7 @@ export const RegisterPage = () => {
       { name: "username", errors: [] },
       { name: "email", errors: [] },
       { name: "full_name", errors: [] },
+      { name: "phone", errors: [] },
       { name: "password", errors: [] },
     ]);
     registerMutation.mutate({
@@ -74,6 +79,7 @@ export const RegisterPage = () => {
       username: values.username?.trim(),
       email: values.email?.trim(),
       full_name: values.full_name?.trim(),
+      phone: values.phone?.trim(),
     });
   };
 
@@ -82,12 +88,12 @@ export const RegisterPage = () => {
       void messageApi.error("Vui lòng nhập đủ 6 số mã OTP.");
       return;
     }
-    verifyOtpMutation.mutate({ email: registeredEmail, otp: otpCode });
+    verifyOtpMutation.mutate({ phone: registeredPhone, otp: otpCode });
   };
 
   const handleResendOtp = () => {
-    if (!registeredEmail) return;
-    resendOtpMutation.mutate({ email: registeredEmail });
+    if (!registeredPhone) return;
+    resendOtpMutation.mutate({ phone: registeredPhone });
   };
 
   return (
@@ -178,6 +184,22 @@ export const RegisterPage = () => {
             </Form.Item>
 
             <Form.Item
+              name="phone"
+              label={<span style={{ fontWeight: 600, fontSize: 13, color: "var(--color-text)" }}>Số điện thoại</span>}
+              rules={[
+                { required: true, message: "Vui lòng nhập số điện thoại." },
+                { pattern: /^[0-9]{10,11}$/, message: "Số điện thoại không hợp lệ (10-11 chữ số)." },
+              ]}
+            >
+              <Input
+                prefix={<PhoneOutlined style={{ color: "var(--color-muted)", marginRight: 4 }} />}
+                placeholder="0912345678"
+                autoComplete="tel"
+                style={{ height: 42, borderRadius: 8 }}
+              />
+            </Form.Item>
+
+            <Form.Item
               name="password"
               label={<span style={{ fontWeight: 600, fontSize: 13, color: "var(--color-text)" }}>Mật khẩu</span>}
               rules={[
@@ -228,8 +250,8 @@ export const RegisterPage = () => {
       >
         <div style={{ textAlign: "center", margin: "24px 0" }}>
           <Typography.Paragraph type="secondary" style={{ marginBottom: 24 }}>
-            Chúng tôi đã gửi một mã xác minh gồm 6 chữ số đến email <br />
-            <strong style={{ color: "var(--color-text)" }}>{registeredEmail}</strong>
+            Chúng tôi đã gửi một mã xác minh gồm 6 chữ số đến số điện thoại <br />
+            <strong style={{ color: "var(--color-text)" }}>{registeredPhone}</strong>
           </Typography.Paragraph>
 
           <Input.OTP length={6} value={otpCode} onChange={(val) => setOtpCode(val)} size="large" style={{ marginBottom: 24 }} />
