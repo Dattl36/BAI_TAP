@@ -22,8 +22,8 @@ services = [
 for s in services:
     service, created = Service.objects.get_or_create(name=s["name"], defaults=s)
     if created:
-        print(f"Created: {service.name}")
+        print(f"Created service: {service.id}")
     else:
-        print(f"Exists: {service.name}")
+        print(f"Service exists: {service.id}")
 
 print("Done seeding services and products!")
