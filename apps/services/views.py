@@ -8,8 +8,16 @@ from apps.services.serializers import ServicePriceHistorySerializer, ServiceSeri
 from apps.services.services import update_service_catalog
 
 
+from rest_framework.permissions import IsAuthenticated
+from apps.accounts.permissions import IsManager
+
 class ServiceViewSet(viewsets.ModelViewSet):
     serializer_class = ServiceSerializer
+
+    def get_permissions(self):
+        if self.action in ["list", "retrieve", "price_history"]:
+            return [IsAuthenticated()]
+        return [IsManager()]
 
     def get_queryset(self):
         if getattr(self.request.user, "role", None) == Roles.MANAGER:
@@ -17,8 +25,8 @@ class ServiceViewSet(viewsets.ModelViewSet):
         return Service.objects.filter(active=True, status="active")
 
     def perform_update(self, serializer):
-        service = self.get_object()
-        update_service_catalog(self.request.user, service, **serializer.validated_data)
+        reason = self.request.data.get("reason", "")
+        update_service_catalog(self.request.user, serializer.instance, reason=reason, **serializer.validated_data)
 
     def perform_destroy(self, instance):
         instance.active = False

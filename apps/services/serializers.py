@@ -9,6 +9,11 @@ class ServiceSerializer(serializers.ModelSerializer):
         fields = "__all__"
         read_only_fields = ("is_deleted", "deleted_at", "created_at", "updated_at")
 
+    def validate_base_price(self, value):
+        if value < 0:
+            raise serializers.ValidationError("Giá dịch vụ không thể là số âm.")
+        return value
+
 
 class ServicePriceHistorySerializer(serializers.ModelSerializer):
     class Meta:
