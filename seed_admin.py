@@ -5,7 +5,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "salon_backend.settings")
 django.setup()
 
 from django.contrib.auth import get_user_model
-from apps.accounts.models import EmployeeProfile
+from apps.employees.models import EmployeeProfile
 
 User = get_user_model()
 
@@ -31,7 +31,7 @@ if created:
         user=user,
         defaults={"role_type": "manager"}
     )
-    print(f"✅ Đã tạo tài khoản Quản lý thành công: {username} / {password}")
+    print(f"[OK] Da tao tai khoan Quan ly thanh cong: {username} / {password}")
 else:
     # Đảm bảo user này là manager
     user.role = "manager"
@@ -43,4 +43,4 @@ else:
         user=user,
         defaults={"role_type": "manager"}
     )
-    print(f"⚡ Tài khoản {username} đã tồn tại, đã cấp quyền Quản lý!")
+    print(f"[OK] Tai khoan {username} da ton tai, da cap quyen Quan ly!")
