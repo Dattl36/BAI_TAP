@@ -10,32 +10,28 @@ from apps.core.exceptions import BusinessError
 
 @pytest.mark.django_db
 def test_registration_otp_is_single_use(settings):
-    settings.EMAIL_BACKEND = "django.core.mail.backends.locmem.EmailBackend"
     cache.clear()
-    user = User.objects.create_user(username="otp-user", email="otp@example.com", password="ChangeMe123!", is_active=False)
+    user = User.objects.create_user(username="otp-user", email="otp@example.com", phone="0912345678", password="ChangeMe123!", is_active=False)
 
-    send_registration_otp(user)
-    from django.core import mail
+    otp = send_registration_otp(user)
 
-    otp = re.search(r"\b\d{6}\b", mail.outbox[-1].body).group(0)
-    assert verify_registration_otp("OTP@example.com", otp) is True
+    assert verify_registration_otp("0912345678", otp) is True
 
     with pytest.raises(BusinessError):
-        verify_registration_otp("otp@example.com", otp)
+        verify_registration_otp("0912345678", otp)
 
 
 @pytest.mark.django_db
 def test_registration_otp_locks_after_configured_failures(settings):
-    settings.EMAIL_BACKEND = "django.core.mail.backends.locmem.EmailBackend"
     settings.OTP_VERIFY_MAX_FAILURES = 1
     cache.clear()
-    user = User.objects.create_user(username="otp-lock", email="lock@example.com", password="ChangeMe123!", is_active=False)
+    user = User.objects.create_user(username="otp-lock", email="lock@example.com", phone="0987654321", password="ChangeMe123!", is_active=False)
     send_registration_otp(user)
 
     with pytest.raises(BusinessError) as first:
-        verify_registration_otp("lock@example.com", "000000")
+        verify_registration_otp("0987654321", "000000")
     assert first.value.status_code == 400
 
     with pytest.raises(BusinessError) as second:
-        verify_registration_otp("lock@example.com", "111111")
+        verify_registration_otp("0987654321", "111111")
     assert second.value.status_code == 429
