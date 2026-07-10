@@ -29,3 +29,21 @@ class CustomerProfile(SoftDeleteModel):
 
     def __str__(self):
         return self.full_name
+
+
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.contrib.auth import get_user_model
+
+@receiver(post_save, sender=get_user_model())
+def create_customer_profile(sender, instance, created, **kwargs):
+    if created and instance.role == "customer":
+        CustomerProfile.objects.get_or_create(
+            user=instance,
+            defaults={
+                "full_name": instance.full_name or instance.username,
+                "phone": instance.phone,
+                "email": instance.email,
+            }
+        )
+

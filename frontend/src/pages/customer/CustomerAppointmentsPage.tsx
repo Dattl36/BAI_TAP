@@ -69,16 +69,7 @@ export const CustomerAppointmentsPage = () => {
 
   // Dynamic Tailwind CDN Injection and intersection observer setup
   useEffect(() => {
-    // 1. Add Tailwind Play CDN
-    const existingScript = document.getElementById("tailwind-cdn") as HTMLScriptElement | null;
-    if (!existingScript) {
-      const script = document.createElement("script");
-      script.src = "https://cdn.tailwindcss.com?plugins=forms,container-queries";
-      script.id = "tailwind-cdn";
-      document.head.appendChild(script);
-    }
-
-    // 2. Add Tailwind Config
+    // 1. Add Tailwind Config
     const existingConfig = document.getElementById("tailwind-config-script") as HTMLScriptElement | null;
     if (!existingConfig) {
       const configScript = document.createElement("script");
@@ -177,6 +168,15 @@ export const CustomerAppointmentsPage = () => {
       document.head.appendChild(configScript);
     }
 
+    // 2. Add Tailwind Play CDN
+    const existingScript = document.getElementById("tailwind-cdn") as HTMLScriptElement | null;
+    if (!existingScript) {
+      const script = document.createElement("script");
+      script.src = "https://cdn.tailwindcss.com?plugins=forms,container-queries";
+      script.id = "tailwind-cdn";
+      document.head.appendChild(script);
+    }
+
     // 3. Add Google Fonts
     const existingFonts = document.getElementById("google-fonts-appointments") as HTMLLinkElement | null;
     if (!existingFonts) {
@@ -265,7 +265,7 @@ export const CustomerAppointmentsPage = () => {
       document.getElementById("google-fonts-appointments")?.remove();
       document.getElementById("custom-styles-appointments")?.remove();
     };
-  }, [currentPage, statusFilter, selectedMonth, searchQuery]);
+  }, []);
 
   if (isLoading) {
     return <PageLoading />;

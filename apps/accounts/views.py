@@ -43,7 +43,7 @@ class AuthViewSet(viewsets.GenericViewSet):
         user = serializer.save()
         create_customer_profile_for_user(user)
         send_registration_otp(user)
-        return success({"message": "Ma OTP da duoc gui toi email", "email": user.email}, "Registered", status.HTTP_201_CREATED)
+        return success({"message": "Đăng ký thành công! Mã OTP đã được gửi tới email của bạn.", "email": user.email}, "Registered", status.HTTP_201_CREATED)
 
     @action(detail=False, methods=["post"], url_path="verify-email")
     def verify_email(self, request):

@@ -17,10 +17,36 @@ export const LoginPage = () => {
 
   const mutation = useMutation({
     mutationFn: authApi.login,
-    onSuccess: (tokens) => {
+    onSuccess: async (tokens) => {
       tokenService.setTokens(tokens.access, tokens.refresh);
-      const redirectUrl = searchParams.get("redirect") || ROUTES.dashboard;
-      navigate(redirectUrl, { replace: true });
+      try {
+        const user = await authApi.getMe();
+        const redirectUrl = searchParams.get("redirect");
+        if (redirectUrl && redirectUrl !== ROUTES.dashboard) {
+          navigate(redirectUrl, { replace: true });
+          return;
+        }
+        
+        // Directly route to the role hub
+        switch (user.role) {
+          case "customer":
+            navigate("/customer", { replace: true });
+            break;
+          case "receptionist":
+            navigate("/receptionist", { replace: true });
+            break;
+          case "staff":
+            navigate("/staff", { replace: true });
+            break;
+          case "manager":
+            navigate("/manager", { replace: true });
+            break;
+          default:
+            navigate("/403", { replace: true });
+        }
+      } catch (err) {
+        navigate(ROUTES.dashboard, { replace: true });
+      }
     },
 
     onError: (error) => {

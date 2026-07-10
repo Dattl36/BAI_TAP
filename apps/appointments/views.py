@@ -57,14 +57,26 @@ class AppointmentViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["post"])
     def confirm(self, request, pk=None):
+        from apps.accounts.roles import Roles
+        from rest_framework.exceptions import PermissionDenied
+        if request.user.role not in [Roles.RECEPTIONIST, Roles.MANAGER]:
+            raise PermissionDenied("Chỉ lễ tân hoặc quản lý mới có thể thực hiện thao tác này.")
         return success(self.get_serializer(transition_appointment(request.user, self.get_object(), "confirmed")).data)
 
     @action(detail=True, methods=["post"])
     def arrive(self, request, pk=None):
+        from apps.accounts.roles import Roles
+        from rest_framework.exceptions import PermissionDenied
+        if request.user.role not in [Roles.RECEPTIONIST, Roles.MANAGER]:
+            raise PermissionDenied("Chỉ lễ tân hoặc quản lý mới có thể thực hiện thao tác này.")
         return success(self.get_serializer(transition_appointment(request.user, self.get_object(), "arrived")).data)
 
     @action(detail=True, methods=["post"], url_path="no-show")
     def no_show(self, request, pk=None):
+        from apps.accounts.roles import Roles
+        from rest_framework.exceptions import PermissionDenied
+        if request.user.role not in [Roles.RECEPTIONIST, Roles.MANAGER]:
+            raise PermissionDenied("Chỉ lễ tân hoặc quản lý mới có thể thực hiện thao tác này.")
         reason = request.data.get("reason", "")
         return success(self.get_serializer(transition_appointment(request.user, self.get_object(), "no_show", reason)).data)
 
