@@ -5,7 +5,9 @@ import {
   Card,
   Col,
   Drawer,
+  Form,
   Input,
+  Modal,
   Row,
   Select,
   Space,
@@ -13,19 +15,24 @@ import {
   Table,
   Tag,
   Typography,
+  message,
 } from "antd";
 import {
   CheckCircleOutlined,
   CustomerServiceOutlined,
+  EditOutlined,
   EyeOutlined,
   LockOutlined,
+  PlusOutlined,
   ReloadOutlined,
   ScissorOutlined,
   SearchOutlined,
   TeamOutlined,
 } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
+import { useMutation } from "@tanstack/react-query";
 
+import { accountsApi } from "../../api/accounts.api";
 import { axiosClient, request } from "../../api/axiosClient";
 import { getListItems } from "../../utils/apiResponse";
 import type { ListResponse } from "../../types/common";
@@ -89,6 +96,11 @@ export const ManagerEmployeesPage = () => {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [usingFallback, setUsingFallback] = useState(true);
   const [selectedEmployee, setSelectedEmployee] = useState<EmployeeRow | null>(null);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditRoleModalOpen, setIsEditRoleModalOpen] = useState(false);
+  const [form] = Form.useForm();
+  const [roleForm] = Form.useForm();
+  const [messageApi, contextHolder] = message.useMessage();
 
   const fetchEmployees = useCallback(async () => {
     setLoading(true);
@@ -118,6 +130,32 @@ export const ManagerEmployeesPage = () => {
   useEffect(() => {
     void fetchEmployees();
   }, [fetchEmployees]);
+
+  const createEmployeeMutation = useMutation({
+    mutationFn: accountsApi.create,
+    onSuccess: () => {
+      void messageApi.success("Thêm nhân viên thành công!");
+      setIsAddModalOpen(false);
+      form.resetFields();
+      void fetchEmployees();
+    },
+    onError: () => {
+      void messageApi.error("Có lỗi xảy ra khi thêm nhân viên.");
+    },
+  });
+
+  const updateRoleMutation = useMutation({
+    mutationFn: ({ id, role }: { id: number; role: string }) => accountsApi.update(id, { role }),
+    onSuccess: () => {
+      void messageApi.success("Cập nhật vai trò thành công!");
+      setIsEditRoleModalOpen(false);
+      setSelectedEmployee(null);
+      void fetchEmployees();
+    },
+    onError: () => {
+      void messageApi.error("Có lỗi xảy ra khi cập nhật vai trò.");
+    },
+  });
 
   const baseEmployees = useMemo(
     () => employees,
@@ -198,15 +236,29 @@ export const ManagerEmployeesPage = () => {
       key: "actions",
       align: "center",
       render: (_, record) => (
-        <Button type="text" icon={<EyeOutlined />} onClick={() => setSelectedEmployee(record)}>
-          Xem
-        </Button>
+        <Space size="small">
+          <Button type="text" icon={<EyeOutlined />} onClick={() => setSelectedEmployee(record)}>
+            Xem
+          </Button>
+          <Button 
+            type="text" 
+            icon={<EditOutlined />} 
+            onClick={() => {
+              setSelectedEmployee(record);
+              roleForm.setFieldsValue({ role: record.role_type });
+              setIsEditRoleModalOpen(true);
+            }}
+          >
+            Đổi vai trò
+          </Button>
+        </Space>
       ),
     },
   ];
 
   return (
     <div style={{ animation: "fadeIn 0.5s ease" }}>
+      {contextHolder}
       <div style={{ marginBottom: 24 }}>
         <Title level={2} style={{ margin: 0, fontFamily: "'Playfair Display', serif" }}>
           Quản lý nhân viên
@@ -264,6 +316,9 @@ export const ManagerEmployeesPage = () => {
 
           <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 16 }}>
             <Space wrap size={16}>
+              <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsAddModalOpen(true)}>
+                Thêm nhân viên
+              </Button>
               <Input
                 allowClear
                 placeholder="Tìm theo tên, email, số điện thoại..."
@@ -363,6 +418,111 @@ export const ManagerEmployeesPage = () => {
           </Space>
         ) : null}
       </Drawer>
+
+      <Modal
+        title="Thêm nhân viên mới"
+        open={isAddModalOpen}
+        onCancel={() => setIsAddModalOpen(false)}
+        onOk={() => form.submit()}
+        confirmLoading={createEmployeeMutation.isPending}
+        okText="Thêm mới"
+        cancelText="Hủy"
+        destroyOnClose
+      >
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={(values) => createEmployeeMutation.mutate(values)}
+          initialValues={{ role: "staff" }}
+        >
+          <Form.Item
+            name="username"
+            label="Tên đăng nhập"
+            rules={[{ required: true, message: "Vui lòng nhập tên đăng nhập" }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="full_name"
+            label="Họ và tên"
+            rules={[{ required: true, message: "Vui lòng nhập họ và tên" }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="email"
+            label="Email"
+            rules={[
+              { required: true, message: "Vui lòng nhập email" },
+              { type: "email", message: "Email không hợp lệ" },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="phone"
+            label="Số điện thoại"
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="password"
+            label="Mật khẩu"
+            rules={[{ required: true, message: "Vui lòng nhập mật khẩu" }]}
+          >
+            <Input.Password />
+          </Form.Item>
+          <Form.Item
+            name="role"
+            label="Vai trò"
+            rules={[{ required: true, message: "Vui lòng chọn vai trò" }]}
+          >
+            <Select>
+              <Select.Option value="staff">Nhà tạo mẫu</Select.Option>
+              <Select.Option value="receptionist">Lễ tân</Select.Option>
+              <Select.Option value="manager">Quản lý</Select.Option>
+            </Select>
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      <Modal
+        title="Đổi vai trò nhân viên"
+        open={isEditRoleModalOpen}
+        onCancel={() => setIsEditRoleModalOpen(false)}
+        onOk={() => roleForm.submit()}
+        confirmLoading={updateRoleMutation.isPending}
+        okText="Cập nhật"
+        cancelText="Hủy"
+        destroyOnClose
+      >
+        <Form
+          form={roleForm}
+          layout="vertical"
+          onFinish={(values) => {
+            if (selectedEmployee && selectedEmployee.user) {
+              updateRoleMutation.mutate({ id: selectedEmployee.user as number, role: values.role });
+            } else {
+              void messageApi.error("Không tìm thấy thông tin tài khoản của nhân viên này.");
+            }
+          }}
+        >
+          <div style={{ marginBottom: 16 }}>
+            <Text type="secondary">Nhân viên:</Text> <Text strong>{selectedEmployee?.full_name}</Text>
+          </div>
+          <Form.Item
+            name="role"
+            label="Vai trò mới"
+            rules={[{ required: true, message: "Vui lòng chọn vai trò" }]}
+          >
+            <Select>
+              <Select.Option value="staff">Nhà tạo mẫu</Select.Option>
+              <Select.Option value="receptionist">Lễ tân</Select.Option>
+              <Select.Option value="manager">Quản lý</Select.Option>
+            </Select>
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 };

@@ -98,4 +98,42 @@ class ManagerUserSerializer(serializers.ModelSerializer):
         user = User(**validated_data)
         user.set_password(password)
         user.save()
+        
+        if user.role in {Roles.RECEPTIONIST, Roles.STAFF, Roles.MANAGER}:
+            from apps.employees.models import EmployeeProfile
+            EmployeeProfile.objects.create(
+                user=user,
+                role_type=user.role,
+                full_name=user.full_name,
+                phone=user.phone,
+            )
+            
         return user
+
+    def update(self, instance, validated_data):
+        password = validated_data.pop("password", None)
+        if password:
+            instance.set_password(password)
+            
+        old_role = instance.role
+        
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        
+        if 'role' in validated_data and old_role != instance.role:
+            if instance.role in {Roles.RECEPTIONIST, Roles.STAFF, Roles.MANAGER}:
+                from apps.employees.models import EmployeeProfile
+                profile, created = EmployeeProfile.objects.get_or_create(
+                    user=instance,
+                    defaults={
+                        'role_type': instance.role,
+                        'full_name': instance.full_name,
+                        'phone': instance.phone,
+                    }
+                )
+                if not created:
+                    profile.role_type = instance.role
+                    profile.save(update_fields=['role_type'])
+                    
+        return instance
